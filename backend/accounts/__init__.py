@@ -1,1 +1,1 @@
-"""Authentication and workspace module placeholder (M1)."""
+"""Authentication, RBAC and audit-log services."""
