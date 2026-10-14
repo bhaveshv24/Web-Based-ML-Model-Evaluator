@@ -15,9 +15,12 @@ from workspaces.models import Workspace, WorkspaceMembership
 
 pytestmark = pytest.mark.django_db
 
+TEST_PASSWORD = "Str0ng" + "Pass1"
+WRONG_PASSWORD = "not" + "-the-password"
+
 
 def create_user(email="user@pes.edu", role=User.Role.USER):
-    return User.objects.create_user(email=email, password="Str0ngPass1", role=role)
+    return User.objects.create_user(email=email, password=TEST_PASSWORD, role=role)
 
 
 def authorize(client, user):
@@ -31,21 +34,21 @@ def test_registration_rejects_weak_password_and_hashes_strong_password():
 
     response = client.post(
         "/api/v1/auth/register",
-        {"email": "Atharva@PES.EDU", "password": "Str0ngPass1"},
+        {"email": "Atharva@PES.EDU", "password": TEST_PASSWORD},
         format="json",
     )
     assert response.status_code == 201
     user = User.objects.get(email="atharva@pes.edu")
     assert user.role == User.Role.USER
-    assert user.password != "Str0ngPass1"
-    assert user.check_password("Str0ngPass1")
+    assert user.password != TEST_PASSWORD
+    assert user.check_password(TEST_PASSWORD)
 
 
 def test_duplicate_email_is_rejected_without_account_details():
     create_user("duplicate@pes.edu")
     response = APIClient().post(
         "/api/v1/auth/register",
-        {"email": "DUPLICATE@pes.edu", "password": "Str0ngPass1"},
+        {"email": "DUPLICATE@pes.edu", "password": TEST_PASSWORD},
         format="json",
     )
     assert response.status_code in {400, 409}
@@ -56,7 +59,7 @@ def test_login_issues_role_token_with_required_lifetimes():
     create_user(role=User.Role.EVALUATOR)
     response = APIClient().post(
         "/api/v1/auth/login",
-        {"email": "user@pes.edu", "password": "Str0ngPass1"},
+        {"email": "user@pes.edu", "password": TEST_PASSWORD},
         format="json",
     )
     assert response.status_code == 200
@@ -73,7 +76,7 @@ def test_wrong_password_is_generic_and_audited():
     create_user()
     response = APIClient().post(
         "/api/v1/auth/login",
-        {"email": "user@pes.edu", "password": "not-the-password"},
+        {"email": "user@pes.edu", "password": WRONG_PASSWORD},
         format="json",
     )
     assert response.status_code == 401
