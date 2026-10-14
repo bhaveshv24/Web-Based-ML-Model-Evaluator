@@ -1,5 +1,6 @@
 """M1 integration and security tests mapped to the approved STP."""
 
+import secrets
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -15,8 +16,8 @@ from workspaces.models import Workspace, WorkspaceMembership
 
 pytestmark = pytest.mark.django_db
 
-TEST_PASSWORD = "Str0ng" + "Pass1"
-WRONG_PASSWORD = "not" + "-the-password"
+TEST_PASSWORD = secrets.token_urlsafe(16) + "Aa1!"
+WRONG_PASSWORD = secrets.token_urlsafe(16) + "Bb2!"
 
 
 def create_user(email="user@pes.edu", role=User.Role.USER):
@@ -113,7 +114,7 @@ def test_logout_revokes_refresh_token():
 def test_login_is_limited_to_five_attempts_per_ip_and_email():
     cache.clear()
     client = APIClient()
-    payload = {"email": "rate-limit@pes.edu", "password": "WrongPass1"}
+    payload = {"email": "rate-limit@pes.edu", "password": WRONG_PASSWORD}
     responses = [client.post("/api/v1/auth/login", payload, format="json") for _ in range(6)]
     assert [response.status_code for response in responses[:5]] == [401] * 5
     assert responses[5].status_code == 429
