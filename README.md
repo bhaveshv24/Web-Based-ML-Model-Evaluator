@@ -27,7 +27,19 @@ This foundation increment adds executable, dependency-light domain services for:
 - sanitized failure messages;
 - a requirements-to-sprint Jira backlog and CI quality gate.
 
-These services are intentionally independent of Django, PostgreSQL and Docker so they satisfy NFR-009 and can be tested in CI. The Django REST, Celery/Redis, sandbox, React and report layers are layered onto these services in the planned sprints.
+The domain services remain dependency-light, while the M1 increment now adds a Django REST API for secure JWT authentication, private evaluation history and evaluator workspaces. PostgreSQL and Redis are wired through Docker Compose; SQLite remains available for isolated tests and local development.
+
+## M1 API
+
+The versioned endpoints implemented for MLE-02 through MLE-04 are:
+
+- `POST /api/v1/auth/register`, `/auth/login`, `/auth/token/refresh`, `/auth/logout`
+- `GET /api/v1/evaluations` with `status`, `task_type`, `from`, `to` and `page` filters
+- `GET` or `DELETE /api/v1/evaluations/{id}` with owner-only object access
+- `GET` or `POST /api/v1/workspaces` for EVALUATOR/ADMIN accounts
+- `POST /api/v1/workspaces/{id}/members` and `GET /api/v1/workspaces/{id}/evaluations`
+
+Access JWTs expire after 15 minutes. Refresh JWTs expire after seven days, rotate on refresh and are blacklisted after rotation or logout. Login is limited to five attempts per minute for each IP/email combination.
 
 ## Run the tests
 
@@ -35,7 +47,17 @@ These services are intentionally independent of Django, PostgreSQL and Docker so
 python3 -m pytest -q
 ```
 
-The test suite uses only the Python standard library plus `pytest`.
+Install the development dependencies first with `python3 -m pip install -e '.[dev]'`.
+
+## Run the API with Docker Compose
+
+```bash
+cp .env.example .env
+# Replace both placeholder secrets in .env before starting the stack.
+docker compose up --build
+```
+
+The Compose topology is `api -> PostgreSQL` for persistence and `api -> Redis` for the scheduled Celery/evaluation layer. Secrets are read from `.env`, which is ignored by Git and must never be committed.
 
 ## Planned runtime stack
 
