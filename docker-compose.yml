@@ -14,6 +14,70 @@ services:
       - media:/app/media
     restart: unless-stopped
 
+  # Celery worker (SAD D-01): runs jobs and the sandboxed model inspection. It reaches Docker
+  # only through the socket proxy on an internal network; it never mounts the raw socket.
+  worker:
+    build: .
+    env_file: .env
+    command: celery -A config worker --loglevel=INFO --concurrency=${WORKER_CONCURRENCY:-3}
+    environment:
+      SANDBOX_DOCKER_URL: tcp://docker-proxy:2375
+      # Same path inside the worker and on the Docker host, so bind mounts resolve.
+      SANDBOX_WORK_DIR: ${SANDBOX_HOST_WORK_DIR:?set SANDBOX_HOST_WORK_DIR in .env}
+      SANDBOX_HOST_WORK_DIR: ${SANDBOX_HOST_WORK_DIR}
+    volumes:
+      - media:/app/media
+      - ${SANDBOX_HOST_WORK_DIR}:${SANDBOX_HOST_WORK_DIR}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      docker-proxy:
+        condition: service_started
+    networks:
+      - default
+      - sandbox-control
+    restart: unless-stopped
+
+  # Periodic reaper (NFR-006): fails stuck jobs and removes orphaned containers/workspaces.
+  beat:
+    build: .
+    env_file: .env
+    command: celery -A config beat --loglevel=INFO --schedule /tmp/celerybeat-schedule
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Allow-list proxy in front of the Docker socket (SRS 3.2, SAD 2.3). Only the container
+  # API section is enabled; images, volumes, networks, exec, build, swarm etc. stay denied.
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:0.3.0
+    environment:
+      CONTAINERS: 1
+      POST: 1
+      ALLOW_START: 1
+      ALLOW_STOP: 1
+      ALLOW_RESTARTS: 1
+      IMAGES: 0
+      NETWORKS: 0
+      VOLUMES: 0
+      EXEC: 0
+      BUILD: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - sandbox-control
+    restart: unless-stopped
+
+  # Build-only service for the sandbox image: docker compose --profile sandbox build sandbox
+  sandbox:
+    build: ./sandbox
+    image: ${SANDBOX_IMAGE:-ml-evaluator-sandbox:1.0}
+    profiles: ["sandbox"]
+    network_mode: none
+
   db:
     image: postgres:15-alpine
     environment:
@@ -36,6 +100,10 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+networks:
+  sandbox-control:
+    internal: true
 
 volumes:
   postgres:

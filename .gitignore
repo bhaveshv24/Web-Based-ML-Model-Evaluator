@@ -15,3 +15,5 @@ media/
 postgres_data/
 db.sqlite3
 
+sandbox-jobs/
+docker-tests.log
