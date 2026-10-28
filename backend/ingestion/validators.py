@@ -8,6 +8,7 @@ from pathlib import PurePath
 MODEL_LIMIT_BYTES = 100 * 1024 * 1024
 DATASET_LIMIT_BYTES = 50 * 1024 * 1024
 DATASET_ROW_LIMIT = 500_000
+_FOREIGN_SIGNATURES = (b"MZ", b"\x7fELF", b"#!", b"%PDF", b"\x89PNG", b"GIF8")
 
 
 @dataclass(frozen=True)
@@ -47,6 +48,14 @@ def validate_model_upload(filename: str, size_bytes: int, prefix: bytes) -> list
         issues.append(
             ValidationIssue("MODEL_SIGNATURE", "Archive content is not accepted as a model")
         )
+    # Executables, scripts and documents renamed to .pkl/.joblib are never valid models.
+    if suffix in {".pkl", ".joblib"} and prefix.startswith(_FOREIGN_SIGNATURES):
+        issues.append(
+            ValidationIssue("MODEL_SIGNATURE", "Content does not match a serialized model")
+        )
+    # ONNX is a protobuf message whose first field (ir_version) is a varint, tag byte 0x08.
+    if suffix == ".onnx" and prefix[:1] not in {b"\x08", b"\x12", b""}:
+        issues.append(ValidationIssue("MODEL_SIGNATURE", "Content does not match ONNX extension"))
     return issues
 
 
