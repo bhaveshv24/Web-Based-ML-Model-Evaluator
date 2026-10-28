@@ -7,6 +7,7 @@ and lifecycle; real containment is covered by tests/test_sandbox_docker.py.
 """
 
 import io
+import secrets
 import time
 import uuid
 
@@ -48,7 +49,9 @@ def worker(settings, tmp_path):
 
 
 def client_for_new_user():
-    user = User.objects.create_user(email=f"e2e-{uuid.uuid4().hex[:6]}@pes.edu", password="x1")
+    user = User.objects.create_user(
+        email=f"e2e-{uuid.uuid4().hex[:6]}@pes.edu", password=secrets.token_urlsafe(16) + "Aa1!"
+    )
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION=f"Bearer {AccessToken.for_user(user)}")
     return client

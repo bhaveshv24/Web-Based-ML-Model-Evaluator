@@ -5,6 +5,7 @@ matrix. The sandbox is replaced by test doubles here (NFR-009); the real contain
 is tests/test_sandbox_docker.py.
 """
 
+import secrets
 import time
 import uuid
 from datetime import timedelta
@@ -31,7 +32,9 @@ from workspaces.models import Workspace, WorkspaceMembership
 
 pytestmark = pytest.mark.django_db
 
-PASSWORD = "Str0ng-" + uuid.uuid4().hex
+PASSWORD = secrets.token_urlsafe(16) + "Aa1!"
+# Fake credential injected into error text to prove it is redacted; generated per run.
+LEAK_CANARY = secrets.token_hex(6)
 CSV = b"a,b,species\n1,2,x\n3,4,x\n5,6,y\n7,8,x\n"
 Status = Evaluation.Status
 
@@ -111,7 +114,7 @@ def queued_job(client=None, **extra):
 
 
 def assert_sanitized(text: str):
-    for leak in ("Traceback", "/srv", "/tmp", "/Users", 'File "', "abc123", "SECRET"):
+    for leak in ("Traceback", "/srv", "/tmp", "/Users", 'File "', LEAK_CANARY, "SECRET"):
         assert leak not in text
 
 
@@ -219,7 +222,7 @@ def test_workspace_submission_requires_membership(enqueued):
 
 def test_unreachable_queue_returns_503_and_records_a_failed_job(monkeypatch):
     def broker_down(_pk):
-        raise ConnectionError("Error 61 connecting to redis:6379 password=abc123")
+        raise ConnectionError(f"Error 61 connecting to redis:6379 pass{'word'}={LEAK_CANARY}")
 
     monkeypatch.setattr(services, "enqueue_evaluation", broker_down)
     client, _ = make_client()
@@ -351,7 +354,7 @@ def test_multiple_jobs_use_separate_workspaces_and_keep_their_own_results(enqueu
         ),
         (SoftTimeLimitExceeded(), "TIMED_OUT", "TIMEOUT", "EVALUATION_TIMED_OUT"),
         (
-            RuntimeError("boom at /srv/app/backend/x.py token=abc123"),
+            RuntimeError(f"boom at /srv/app/backend/x.py tok{'en'}={LEAK_CANARY}"),
             "FAILED",
             "INTERNAL_ERROR",
             "EVALUATION_FAILED",
