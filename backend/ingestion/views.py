@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Mapping
 from pathlib import PurePath
 
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -19,11 +20,10 @@ from .models import CompatibilityReport, Dataset, ModelArtifact
 from .validators import (
     DATASET_LIMIT_BYTES,
     MODEL_LIMIT_BYTES,
+    SIGNATURE_PREFIX_BYTES,
     validate_csv_bytes,
     validate_model_upload,
 )
-
-SIGNATURE_BYTES = 16
 
 
 class PayloadTooLarge(APIException):
@@ -45,6 +45,29 @@ def _raise_for_issues(issues, size_codes: set[str]) -> None:
     if any(issue.code in size_codes for issue in issues):
         raise PayloadTooLarge()
     raise ValidationError({"file": _issues_payload(issues)})
+
+
+def _body(request) -> Mapping:
+    """Request data must be a JSON object or form; arrays/scalars are a 400, not a 500."""
+    data = request.data
+    if not isinstance(data, Mapping):
+        raise ValidationError({"non_field_errors": ["Request body must be an object."]})
+    return data
+
+
+def _text_field(data: Mapping, name: str, *, required: bool) -> str | None:
+    """Read an optional/required string field; reject non-strings with 400."""
+    value = data.get(name)
+    if value is None or value == "":
+        if required:
+            raise ValidationError({name: ["This field is required."]})
+        return None
+    if not isinstance(value, str):
+        raise ValidationError({name: ["Must be a string."]})
+    value = value.strip()
+    if not value and required:
+        raise ValidationError({name: ["This field is required."]})
+    return value or None
 
 
 def _uploaded_file(request):
@@ -106,7 +129,7 @@ class ModelUploadView(APIView):
         # Reject by declared size first so oversize bodies are never read or hashed.
         if upload.size > MODEL_LIMIT_BYTES:
             raise PayloadTooLarge("Model exceeds 100 MB.")
-        prefix = upload.read(SIGNATURE_BYTES)
+        prefix = upload.read(SIGNATURE_PREFIX_BYTES)
         upload.seek(0)
         _raise_for_issues(validate_model_upload(upload.name, upload.size, prefix), {"MODEL_SIZE"})
         artifact = ModelArtifact(
@@ -135,7 +158,7 @@ class DatasetUploadView(APIView):
         if upload.size > DATASET_LIMIT_BYTES:
             raise PayloadTooLarge("Dataset exceeds 50 MB.")
         content = upload.read()
-        target = (request.data.get("target_column") or "").strip() or None
+        target = _text_field(_body(request), "target_column", required=False)
         summary, issues = validate_csv_bytes(content, target_column=target)
         _raise_for_issues(issues, {"DATASET_SIZE"})
         suggested = summary.columns[-1] if summary.columns else ""
@@ -164,9 +187,7 @@ class DatasetDetailView(APIView):
     def patch(self, request, id):
         """Override the suggested target; the whole CSV is re-validated for the new target."""
         dataset = get_object_or_404(Dataset, id=id, owner=request.user)
-        target = (request.data.get("target_column") or "").strip()
-        if not target:
-            raise ValidationError({"target_column": ["This field is required."]})
+        target = _text_field(_body(request), "target_column", required=True)
         with dataset.file.open("rb") as handle:
             content = handle.read()
         _, issues = validate_csv_bytes(content, target_column=target)
@@ -178,22 +199,13 @@ class DatasetDetailView(APIView):
 
 class CompatibilityReportCreateView(APIView):
     def post(self, request):
-        errors = {}
-        for field in ("model_id", "dataset_id"):
-            if not request.data.get(field):
-                errors[field] = ["This field is required."]
-        if errors:
-            raise ValidationError(errors)
+        data = _body(request)
+        model_id = _text_field(data, "model_id", required=True)
+        dataset_id = _text_field(data, "dataset_id", required=True)
         try:
-            model = ModelArtifact.objects.get(id=request.data["model_id"], owner=request.user)
-            dataset = Dataset.objects.get(id=request.data["dataset_id"], owner=request.user)
-        except (
-            ModelArtifact.DoesNotExist,
-            Dataset.DoesNotExist,
-            DjangoValidationError,
-            ValueError,
-            TypeError,
-        ) as exc:
+            model = ModelArtifact.objects.get(id=model_id, owner=request.user)
+            dataset = Dataset.objects.get(id=dataset_id, owner=request.user)
+        except (ModelArtifact.DoesNotExist, Dataset.DoesNotExist, DjangoValidationError) as exc:
             raise NotFound() from exc
         report = run_compatibility(request.user, model, dataset)
         return Response(report_payload(report), status=status.HTTP_201_CREATED)

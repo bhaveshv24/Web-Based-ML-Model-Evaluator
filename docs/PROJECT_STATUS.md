@@ -21,3 +21,9 @@ At audit time the default branch contained only `Team13_SRS_SAD_STP.pdf`, with o
 
 Celery jobs, the hardened execution sandbox, React UI, ReportLab export, full security/performance suites and final evidence remain scheduled in the Jira backlog. No unexecuted test is represented as passed.
 
+
+## Known limitations (tracked)
+
+- **Model inspection is unavailable until the M3 sandbox exists (MLE-11).** `ingestion.inspection.inspect_model()` returns `None` by design because pickle/joblib must never be loaded by the web process. Until it is connected, `POST /api/v1/compatibility-reports` fails closed with a `MODEL_INSPECTION` check, so no real report can reach `PASSED`. The passing-path tests inject a fake inspector. Closing this is part of MLE-11/MLE-16 and must be re-verified end to end once the sandbox is wired in.
+- Model signature checks are structural (first bytes only): binary pickle header, joblib pickle or known compression header, and a protobuf walk of the ONNX ModelProto header. They reduce disguised uploads but are not proof a file loads; the sandbox performs the real inspection.
+- CSV limits: 50 MB, 500,000 rows, 1,000 columns, 255-character column names. At most 20 row-level issues are reported per upload.
