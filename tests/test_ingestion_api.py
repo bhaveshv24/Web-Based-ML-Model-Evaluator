@@ -2,6 +2,7 @@
 
 import hashlib
 import secrets
+import time
 import uuid
 from pathlib import Path
 
@@ -18,6 +19,8 @@ pytestmark = pytest.mark.django_db
 
 PASSWORD = secrets.token_urlsafe(16) + "Aa1!"
 GOOD_CSV = b"a,b,species\n1,2,setosa\n3,4,virginica\n"
+# ir_version=8, producer_name="pytorch", producer_version="2.1", then a graph field.
+ONNX_HEADER = b"\x08\x08\x12\x07pytorch\x1a\x032.1\x3a\x80\x01" + b"\x00" * 8
 
 
 @pytest.fixture(autouse=True)
@@ -66,7 +69,7 @@ def test_valid_model_is_stored_under_uuid_name_with_sha256():
 @pytest.mark.parametrize("name", ["model.pkl", "model.joblib", "model.onnx"])
 def test_all_three_supported_extensions_are_accepted(name):
     client, _ = make_client()
-    content = b"\x08\x07rest" if name.endswith("onnx") else b"\x80\x04rest"
+    content = ONNX_HEADER if name.endswith("onnx") else b"\x80\x04rest"
     assert upload_model(client, name, content).status_code == 201
 
 
@@ -274,3 +277,95 @@ def test_report_inputs_are_validated_and_owner_scoped():
     assert owner.post("/api/v1/compatibility-reports", unknown, format="json").status_code == 404
     report_id = owner.post("/api/v1/compatibility-reports", payload, format="json").json()["id"]
     assert other.get(f"/api/v1/compatibility-reports/{report_id}").status_code == 404
+
+
+# ------------------------------------------------- review follow-up (PR #27) regression tests
+@pytest.mark.parametrize(
+    ("name", "content"),
+    [
+        ("fake.pkl", b"just some arbitrary text, not a pickle"),
+        ("fake.joblib", b"arbitrary bytes that are not joblib"),
+        ("fake.onnx", b"\x08garbage that only starts with 0x08"),
+        ("fake.onnx", b"\x08\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"),
+        ("fake.pkl", b"\x80\x09unknown protocol"),
+    ],
+)
+def test_arbitrary_bytes_do_not_pass_signature_check(name, content):
+    client, _ = make_client()
+    response = upload_model(client, name, content)
+    assert response.status_code == 400
+    assert "MODEL_SIGNATURE" in str(response.json())
+    assert not ModelArtifact.objects.exists()
+
+
+@pytest.mark.parametrize(
+    "header",
+    [b"x\x9c", b"\x1f\x8b", b"BZh", b"\xfd7zXZ\x00", b"\x5d\x00\x00", b"\x04\x22\x4d\x18"],
+)
+def test_compressed_joblib_is_accepted(header):
+    client, _ = make_client()
+    assert upload_model(client, "model.joblib", header + b"0" * 40).status_code == 201
+
+
+def test_oversized_csv_field_is_a_400_not_a_500():
+    client, _ = make_client()
+    response = upload_csv(client, b"a,t\n" + b"x" * 200_000 + b",1\n")
+    assert response.status_code == 400
+    assert "DATASET_PARSE" in str(response.json())
+
+
+def test_very_wide_csv_is_rejected_quickly():
+    client, _ = make_client()
+    header = ",".join(f"c{i}" for i in range(50_000)).encode()
+    started = time.monotonic()
+    response = upload_csv(client, header + b"\n1\n")
+    assert response.status_code == 400
+    assert "DATASET_COLUMNS" in str(response.json())
+    assert time.monotonic() - started < 5
+
+
+def test_overlong_column_name_is_rejected_before_it_reaches_the_database():
+    client, _ = make_client()
+    response = upload_csv(client, b"a," + b"n" * 300 + b"\n1,2\n")
+    assert response.status_code == 400
+    assert "DATASET_COLUMN_NAME" in str(response.json())
+
+
+def test_row_level_errors_are_capped():
+    client, _ = make_client()
+    content = b"a,t\n" + b"1,2,3\n" * 5000
+    response = upload_csv(client, content)
+    assert response.status_code == 400
+    reported = response.json()["error"]["details"][0]["messages"]
+    assert 1 <= len(reported) <= 20
+
+
+@pytest.mark.parametrize("bad", [123, ["a"], {"x": 1}, True])
+def test_non_string_target_column_is_a_400(bad):
+    client, _ = make_client()
+    dataset_id = upload_csv(client).json()["id"]
+    response = client.patch(f"/api/v1/datasets/{dataset_id}", {"target_column": bad}, format="json")
+    assert response.status_code == 400
+    assert Dataset.objects.get(id=dataset_id).target_column == "species"
+
+
+@pytest.mark.parametrize("bad", [[1, 2], "text", 7])
+def test_non_object_json_body_is_a_400(bad):
+    client, _ = make_client()
+    dataset_id = upload_csv(client).json()["id"]
+    assert client.patch(f"/api/v1/datasets/{dataset_id}", bad, format="json").status_code == 400
+    assert client.post("/api/v1/compatibility-reports", bad, format="json").status_code == 400
+
+
+@pytest.mark.parametrize("bad", [123, ["x"], {"a": 1}])
+def test_non_string_report_ids_are_a_400(bad):
+    client, _ = make_client()
+    payload = {"model_id": bad, "dataset_id": bad}
+    assert client.post("/api/v1/compatibility-reports", payload, format="json").status_code == 400
+
+
+def test_non_string_target_column_in_upload_form_is_not_a_500():
+    client, _ = make_client()
+    response = upload_csv(client, target_column="  ")
+    assert response.status_code == 201  # blank means "use the suggested target"
+    assert response.json()["target_column"] == "species"
