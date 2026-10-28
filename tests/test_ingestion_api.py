@@ -298,9 +298,13 @@ def test_arbitrary_bytes_do_not_pass_signature_check(name, content):
     assert not ModelArtifact.objects.exists()
 
 
-def test_compressed_joblib_is_accepted():
+@pytest.mark.parametrize(
+    "header",
+    [b"x\x9c", b"\x1f\x8b", b"BZh", b"\xfd7zXZ\x00", b"\x5d\x00\x00", b"\x04\x22\x4d\x18"],
+)
+def test_compressed_joblib_is_accepted(header):
     client, _ = make_client()
-    assert upload_model(client, "model.joblib", b"x\x9c" + b"0" * 40).status_code == 201
+    assert upload_model(client, "model.joblib", header + b"0" * 40).status_code == 201
 
 
 def test_oversized_csv_field_is_a_400_not_a_500():

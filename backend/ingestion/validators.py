@@ -38,6 +38,7 @@ _JOBLIB_COMPRESSION_MAGIC = (
     b"BZh",  # bzip2
     b"\xfd7zXZ\x00",  # xz
     b"\x5d\x00\x00",  # lzma
+    b"\x04\x22\x4d\x18",  # lz4 frame
 )
 _ONNX_MODEL_FIELDS = {  # ModelProto field number -> expected protobuf wire type
     1: 0, 2: 2, 3: 2, 4: 2, 5: 0, 6: 2, 7: 2, 8: 2, 14: 2, 20: 2,

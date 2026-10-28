@@ -97,7 +97,14 @@ def test_pickle_signature_requires_binary_pickle_header():
 
 
 def test_joblib_accepts_pickle_or_known_compression_headers():
-    for header in (b"\x80\x04x", b"x\x9cdata", b"\x1f\x8bdata", b"BZh9data", b"\xfd7zXZ\x00d"):
+    for header in (
+        b"\x80\x04x",
+        b"x\x9cdata",
+        b"\x1f\x8bdata",
+        b"BZh9data",
+        b"\xfd7zXZ\x00d",
+        b"\x04\x22\x4d\x18data",
+    ):
         assert not validate_model_upload("m.joblib", 50, header)
     assert "MODEL_SIGNATURE" in codes(validate_model_upload("m.joblib", 50, b"not joblib"))
 
