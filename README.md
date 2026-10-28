@@ -41,6 +41,15 @@ The versioned endpoints implemented for MLE-02 through MLE-04 are:
 
 Access JWTs expire after 15 minutes. Refresh JWTs expire after seven days, rotate on refresh and are blacklisted after rotation or logout. Login is limited to five attempts per minute for each IP/email combination.
 
+## M2 API (MLE-5 to MLE-7)
+
+- `POST /api/v1/models` - multipart `file`; `.pkl`/`.joblib`/`.onnx`, <= 100 MB, signature checked, stored as `<uuid><ext>` with SHA-256 (413 if oversize, 400 otherwise)
+- `POST /api/v1/datasets` - multipart `file` (+ optional `target_column`); UTF-8 CSV <= 50 MB / 500k rows; returns columns, row count, suggested and selected target, SHA-256
+- `GET` or `PATCH /api/v1/datasets/{id}` - PATCH `{"target_column": ...}` overrides the target and re-validates
+- `POST /api/v1/compatibility-reports` - `{model_id, dataset_id}` -> PASSED/FAILED with per-check expected and actual values; `GET .../{id}` re-reads it
+
+Model inspection is behind `ingestion.inspection.inspect_model`. Pickle/joblib are never loaded by the web process, so until the M3 sandbox provides an inspector the report fails closed (`MODEL_INSPECTION`).
+
 ## Run the tests
 
 ```bash
