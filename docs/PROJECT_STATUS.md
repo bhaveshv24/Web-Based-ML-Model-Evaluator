@@ -24,6 +24,18 @@ Celery jobs, the hardened execution sandbox, React UI, ReportLab export, full se
 
 ## Known limitations (tracked)
 
-- **Model inspection is unavailable until the M3 sandbox exists (MLE-11).** `ingestion.inspection.inspect_model()` returns `None` by design because pickle/joblib must never be loaded by the web process. Until it is connected, `POST /api/v1/compatibility-reports` fails closed with a `MODEL_INSPECTION` check, so no real report can reach `PASSED`. The passing-path tests inject a fake inspector. Closing this is part of MLE-11/MLE-16 and must be re-verified end to end once the sandbox is wired in.
+- **Model inspection runs through the M3 sandbox (MLE-11).** `ingestion.inspection.inspect_model()` sends the check to the Celery worker when `SANDBOX_INSPECTION_ENABLED=1`. The worker loads the model only inside the hardened container. When inspection is disabled or unavailable, `POST /api/v1/compatibility-reports` still fails closed with `MODEL_INSPECTION`. The end-to-end path through a real Redis broker and worker is covered by `tests/test_async_e2e.py`.
 - Model signature checks are structural (first bytes only): binary pickle header, joblib pickle or known compression header, and a protobuf walk of the ONNX ModelProto header. They reduce disguised uploads but are not proof a file loads; the sandbox performs the real inspection.
 - CSV limits: 50 MB, 500,000 rows, 1,000 columns, 255-character column names. At most 20 row-level issues are reported per upload.
+
+
+## M3 increment - MLE-9 to MLE-12 (28 October 2026)
+
+Implemented on branch `TSMP-9-12-sandboxed-evaluation`; see the README section "M3 API and evaluation engine" and [docs/M3_TRACEABILITY.md](M3_TRACEABILITY.md).
+
+- Asynchronous evaluation lifecycle with Celery + Redis, compare-and-set state machine, 202/QUEUED submission, status and chart endpoints.
+- Task detection with override and explicit rejection of unsupported targets; trusted metric engine with ROC-AUC, prediction validation and scikit-learn cross-checks.
+- Hardened per-job Docker sandbox with post-create policy verification, read-only inputs (X and model only) and docker-socket-proxy access.
+- 120 s enforced timeout with container kill/removal, idempotent cleanup, reaper for crashed workers, sanitized error catalog and audit events.
+
+Evidence status: the containment suite `tests/test_sandbox_docker.py` needs a Docker host. It was **not executed on the development machine (no Docker)**. It runs in the CI job `sandbox-tests` with `REQUIRE_DOCKER_TESTS=1`, and this increment is not complete until that job passes.
