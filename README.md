@@ -38,8 +38,11 @@ The versioned endpoints implemented for MLE-02 through MLE-04 are:
 - `GET` or `DELETE /api/v1/evaluations/{id}` with owner-only object access
 - `GET` or `POST /api/v1/workspaces` for EVALUATOR/ADMIN accounts
 - `POST /api/v1/workspaces/{id}/members` and `GET /api/v1/workspaces/{id}/evaluations`
+- `PATCH /api/v1/admin/users/{id}` with `{"is_active": bool}` for ADMIN accounts (API-23, BR-08). Deactivation blacklists the user's refresh tokens. Users are never deleted, and admins cannot deactivate themselves.
 
 Access JWTs expire after 15 minutes. Refresh JWTs expire after seven days, rotate on refresh and are blacklisted after rotation or logout. Login is limited to five attempts per minute for each IP/email combination.
+
+Model and dataset uploads are limited per user (SEC-007, default `30/min`, `UPLOAD_RATE_LIMIT`). Uploaded models, datasets and stored reports are purged after `RETENTION_DAYS` (default 30, NFR-010) by the hourly Celery beat task `ingestion.purge_expired`, or on demand with `python manage.py purge_expired`. Evaluation history keeps its checksums and metrics.
 
 ## M2 API (MLE-5 to MLE-7)
 
@@ -188,5 +191,11 @@ Pickle and joblib uploads are executable content. They must never be imported or
 
 ## Dependency security status
 
-`pip-audit` on the development environment (28 October 2026) reports known advisories for **Django 5.1.15, Django REST Framework 3.15.2 and SimpleJWT 5.3.1**. These pins (`Django>=5.1,<5.2`, `djangorestframework>=3.15,<3.16`, `djangorestframework-simplejwt>=5.3,<5.4`) come from the M1 foundation and predate the M3 work. The fixes need framework upgrades (Django 5.2+, DRF 3.17+, SimpleJWT 5.5+), tracked under the dependency scan (ST-SEC-12, MLE-20) rather than in MLE-9 to MLE-12. No advisories are reported for Celery, Redis, the Docker SDK, scikit-learn, pandas, ONNX Runtime, onnx 1.23 or skl2onnx 1.20, or for the sandbox image's pinned `sandbox/requirements.txt` (`pip-audit -r sandbox/requirements.txt`). The only other finding is the virtual environment's own `setuptools`, which is not a project dependency. Bandit reports no findings for `backend/` and `sandbox/`; one documented `# nosec B108` marks the container-internal `/tmp` path.
+Framework floors were raised for TSMP-21 (DEF-01, ST-SEC-12) to Django 5.2 LTS (`>=5.2.17`), Django REST Framework `>=3.18.2` and SimpleJWT `>=5.5.1`. The previous pins (Django 5.1.15, DRF 3.15.2, SimpleJWT 5.3.1) had published advisories, including unauthenticated denial-of-service issues, and Django 5.1 is past end of support. After the upgrade, `pip-audit --skip-editable` reports no known vulnerabilities in project dependencies, and `pip-audit -r sandbox/requirements.txt` is clean. Bandit reports no medium or high findings for `backend/` and `sandbox/`. One documented `# nosec B108` marks the container-internal `/tmp` path, and one Low B406 notice concerns `xml.sax.saxutils.escape`, which is used for output escaping, not parsing. The CI `security-scan` job runs both scanners on every push.
 
+## Validation (TSMP-21 / TSMP-22)
+
+- [Repository audit](docs/TSMP-21-22_REPOSITORY_AUDIT.md)
+- [Test execution report](docs/TSMP-21_TEST_EXECUTION_REPORT.md) and [defect register](docs/TSMP-21_DEFECT_REGISTER.md)
+- [Requirements traceability matrix](docs/TSMP-22_REQUIREMENTS_TRACEABILITY_MATRIX.md) and [validation report](docs/TSMP-22_VALIDATION_REPORT.md)
+- Reproducible scripts are in `scripts/validation/`. Raw evidence is in `docs/evidence/tsmp-21/`.

@@ -1,0 +1,9 @@
+building fixtures with scikit-learn 1.5.2
+== REL-01: Kill the worker during a RUNNING job, then restart it
+   PASS: RUNNING with 1 sandbox container(s); worker killed; restarted after 15 s; job -> FAILED (WORKER_LOST: 'The evaluation worker stopped unexpectedly.') 192 s after the crash; orphan containers at end=0 (checked up to 192 s after crash)
+== IT-EXE-05(live): Model that never returns, with the deployed 120 s limit
+   PASS: status=TIMED_OUT (TIMEOUT: 'The evaluation exceeded the execution time limit and was stopped. Limit: 120 seconds.'); duration=120.568 s; sandbox containers left=0
+== RET-01: Age artifacts to 31 days in the deployed DB, run retention
+   PASS: files before=('1', '1'); purge output 'models=1, datasets=1, reports=0, artifacts=0'; files after (old model, old dataset, young model)=('0', '0', '1'); API lookups=(404, 404, 200)
+
+15/15 passed -> /Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/docs/evidence/tsmp-21/system-results.json

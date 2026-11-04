@@ -1,0 +1,17 @@
+# pip-audit retest after DEF-01 fix (2026-11-04T15:59:23Z)
+Django                        5.2.19
+djangorestframework           3.18.3
+djangorestframework_simplejwt 5.5.1
+Found 3 known vulnerabilities in 1 package
+Name       Version ID                  Fix Versions
+---------- ------- ------------------- ------------
+setuptools 80.9.0  PYSEC-2026-3447     83.0.0
+setuptools 80.9.0  PYSEC-2026-3447     83.0.0
+setuptools 80.9.0  GHSA-xmj3-9gf7-h52w 84.1.0
+
+Name                         Skip Reason
+---------------------------- -------------------------------
+web-based-ml-model-evaluator distribution marked as editable
+
+# sandbox
+No known vulnerabilities found

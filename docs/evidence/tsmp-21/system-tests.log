@@ -1,0 +1,63 @@
+building fixtures with scikit-learn 1.5.2
+== ST-AUTH-01(API): Register, login, refresh, logout over HTTP
+   PASS: weak pw=400, role=USER, refresh=200, reuse old refresh=401, logout=204, refresh after logout=401, anonymous history=401
+== ST-ING-01(API): Upload model+CSV, pick target, validate (pass and fail)
+   PASS: iris rows=150, suggested=species; iris pair=PASSED; wine pair=FAILED checks=[{"code": "TARGET_EXCLUDED", "status": "PASSED", "message": "Target column is excluded from the feature set", "expected": "'cultivar' not in features", "actual": ["alcohol", "malic_acid", "ash", "alcalinity_of_ash", "magnesium", "total_phenols", "flavanoids", "nonflavanoid_phenols", "proanthocyanins
+== ST-ING-02: Unauthenticated upload of model and dataset
+   PASS: models=401, datasets=401, media files 4 -> 4
+== ST-EXE-01(API): Upload, validate, run in real sandbox, read results and charts
+   PASS: compat=PASSED; POST=202 QUEUED in 63 ms; final=SUCCEEDED duration=1.117 s; accuracy=1.0; confusion 3x3; ROC classes=['setosa', 'versicolor', 'virginica']; sandbox_image=ml-evaluator-sandbox:1.0
+== IT-EXE-03(live): ONNX regression model through the deployed stack
+   PASS: status=SUCCEEDED task=REGRESSION metrics={'r2': 0.9991, 'mae': 3.9203, 'mse': 23.1813, 'rmse': 4.8147}
+== IT-EXE-06(live): Truncated model file
+   PASS: compatibility=FAILED checks={"id": "306fa36c-27e4-43cb-8f89-6326127780dd", "model_id": "78954f20-2ea3-4bae-8ec8-76d4fd47d7b8", "dataset_id": "48d74948-b37c-4487-9321-7444faf4cc25", "result": "FAILED", "checks": [{"code": "TARGET_EXCLUDED", "status": "PASSED", "message": "Target column is leaks=[]
+== ST-REP-03(API): Compare 3 evaluations, download PDF and JSON
+   PASS: comparison=201; best accuracy -> b921256d-eebe-4982-a4bf-8442d0c8455e; json=200 evaluations=3; pdf=200 11874 bytes, 7 pages; mixed-task compare=400
+== ST-SEC-10(live): Six failed logins within one minute
+   PASS: status codes=[401, 401, 401, 401, 401, 429]
+== ST-SEC-11: Upload a 200 MB model file
+   PASS: HTTP 413 after 0.05 s; client sent 5.9 MB before the response; api memory 120.4MiB -> 120.7MiB; files >100 MB stored=0
+== PERF-02: Evaluate 10,000 x 50 CSV with a ~20 MB model
+   PASS: model 18.55 MB (33 trees), CSV 4.09 MB; status=SUCCEEDED; duration=1.264 s
+== PERF-03: Validate a 50 MB CSV
+   PASS: 52428716 bytes (50.00 MiB), HTTP 201, rows=457242, elapsed=0.88 s
+== PERF-04: Submit 5 jobs at once with 3 workers
+   PASS: 5 concurrent jobs in 3.5 s wall; statuses=['SUCCEEDED']; equal to baseline=5/5; max jobs running at once=3; no containers left=True
+== REL-01: Kill the worker during a RUNNING job, then restart it
+Traceback (most recent call last):
+  File "/Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/scripts/validation/system_tests.py", line 576, in main
+    ok, actual = test(ctx)
+                 ^^^^^^^^^
+  File "/Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/scripts/validation/system_tests.py", line 461, in t_rel
+    model_id, dataset_id, report = api.prepared_pair(Fixtures.hanging_model(), "hang.pkl",
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/scripts/validation/system_tests.py", line 82, in prepared_pair
+    assert model_response.status_code == 201, model_response.text
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {"error":{"code":"THROTTLED","message":"Request could not be completed.","details":[{"field":"detail","messages":"Request was throttled. Expected available in 14 seconds."}]}}
+   FAIL: ERROR AssertionError: {"error":{"code":"THROTTLED","message":"Request could not be completed.","details":[{"field":"detail","messages":"Request was throttled. Expected available in 14 seconds."}]}}
+== IT-EXE-05(live): Model that never returns, with the deployed 120 s limit
+Traceback (most recent call last):
+  File "/Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/scripts/validation/system_tests.py", line 576, in main
+    ok, actual = test(ctx)
+                 ^^^^^^^^^
+  File "/Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/scripts/validation/system_tests.py", line 499, in t_timeout
+    model_id, dataset_id, report = api.prepared_pair(Fixtures.hanging_model(), "hang.pkl",
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/scripts/validation/system_tests.py", line 82, in prepared_pair
+    assert model_response.status_code == 201, model_response.text
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {"error":{"code":"THROTTLED","message":"Request could not be completed.","details":[{"field":"detail","messages":"Request was throttled. Expected available in 14 seconds."}]}}
+   FAIL: ERROR AssertionError: {"error":{"code":"THROTTLED","message":"Request could not be completed.","details":[{"field":"detail","messages":"Request was throttled. Expected available in 14 seconds."}]}}
+== RET-01: Age artifacts to 31 days in the deployed DB, run retention
+Traceback (most recent call last):
+  File "/Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/scripts/validation/system_tests.py", line 576, in main
+    ok, actual = test(ctx)
+                 ^^^^^^^^^
+  File "/Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/scripts/validation/system_tests.py", line 516, in t_ret
+    old_model = api.upload("/models", "old.pkl", ctx.fx.iris_bytes["gnb_iris.pkl"]).json()["id"]
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+KeyError: 'id'
+   FAIL: ERROR KeyError: 'id'
+
+12/15 passed -> /Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/docs/evidence/tsmp-21/system-results.json
