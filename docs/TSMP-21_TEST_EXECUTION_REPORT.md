@@ -160,7 +160,7 @@ any retest; first-run failures are noted in the Actual column.
 | PERF-04 | NFR-003 | 5 jobs, 3 workers | All finish; equal to baseline | 5/5 SUCCEEDED; 5/5 metrics equal to single-run baseline; at most 3 running at once; 3.5 s wall; 0 containers left | PASS | `SYS:PERF-04` |
 | REL-01 | NFR-006 | Kill worker mid-job, restart | FAILED within 5 min; no orphan | FAILED (`WORKER_LOST`) 192 s after the crash; 0 orphan containers | PASS | `SYS:REL-01` |
 | USA-01 | NFR-005 | Five first-time users | ≤ 5 primary screens | **Not executed.** No browser workflow for upload/validate/run (DEF-07) and no participants | **BLOCKED** | - |
-| PORT-01 | NFR-008 | Fresh `docker compose up` on two OSes | Reachable; smoke passes | macOS 26.6.2 (Colima): `down -v` + `up` → API in 8 s; 15/15 live cases pass. Linux: CI `compose-smoke` (see §5) | PASS | `port01-macos.log`; CI run (§5) |
+| PORT-01 | NFR-008 | Fresh `docker compose up` on two OSes | Reachable; smoke passes | macOS 26.6.2 arm64 (Colima): `down -v` + `up` → API in 8 s; 15/15 live cases pass. Ubuntu x86_64 (CI `compose-smoke`): API in 6 s; 3/3 smoke cases including a sandboxed evaluation | PASS | `port01-macos.log`, `port01-linux-ci-compose-smoke.json`, CI run 41863894224 |
 | RET-01 | NFR-010 | Age artifacts to 31 days, run purge | Files and DB references removed | **First attempt impossible: no retention job (DEF-02).** After fix: aged files and rows removed (API 404), fresh upload kept | PASS (after fix) | `SYS:RET-01`; `test_tsmp21_retention.py` |
 
 ### 3.7 Live system cases (Compose stack, final code)
@@ -220,8 +220,23 @@ within a minute. They count as errors in the 0.53% error rate.
 
 ## 5. CI runs
 
-Branch `feature/TSMP-21-22-validation` CI (jobs `core-tests`, `sandbox-tests`,
-`security-scan`, `compose-smoke`): CI_RUN_LINK
+All four jobs passed on both pushes of branch `feature/TSMP-21-22-validation`. GitHub Actions
+was reporting degraded performance, so both runs waited about 20 minutes in the queue.
+
+| Run | Commit | core-tests | sandbox-tests | security-scan | compose-smoke |
+|---|---|---|---|---|---|
+| [41863340528](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/41863340528) | `e0b96b3` (code and tooling) | success | success | success | success |
+| [41863894224](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/41863894224) | `bb0f254` (with docs and evidence) | success | success | success | success |
+
+- `core-tests`: ruff, migration check, full suite with Redis, coverage gate.
+- `sandbox-tests`: the real-Docker containment suite on Ubuntu, with the skip guard and the
+  no-leftover-container check.
+- `security-scan`: pip-audit (project and sandbox) and Bandit `-ll`. This is the ST-SEC-12
+  retest in CI.
+- `compose-smoke` (PORT-01, Linux): Ubuntu, Linux 7.0.0-1017-azure x86_64, Docker 28.0.4. The
+  API was ready 6 s after `docker compose up -d --build`. `ST-AUTH-01(API)`, `ST-ING-01(API)` and
+  `ST-EXE-01(API)` passed 3/3, including a real sandboxed evaluation (202 in 67 ms, SUCCEEDED in
+  1.651 s). Artifact copy: `docs/evidence/tsmp-21/port01-linux-ci-compose-smoke.json`.
 
 ## 6. Reproduction
 
@@ -271,7 +286,7 @@ set -a; . /tmp/browser.env; set +a; node results_dashboard.mjs
 | `pip-audit-retest.log`, `bandit-retest-ll.log` | ST-SEC-12 retest after the DEF-01 fix |
 | `system-results.json`, `system-tests-run1.log`, `system-tests-run2.log` | Live cases with actual result and status |
 | `perf01_*.csv`, `perf01-report.html`, `perf01-console.log` | PERF-01 Locust output |
-| `port01-macos.log` | PORT-01 fresh install on macOS |
+| `port01-macos.log`, `port01-linux-ci-compose-smoke.json` | PORT-01 on macOS (local) and Ubuntu (CI artifact) |
 | `browser-results.json`, `screenshots/01..07-*.png`, `browser-comparison-*.{json,pdf}` | Browser cases and the downloaded comparison reports |
 
 Screenshots are produced by the browser script against the live stack. No screenshot was edited

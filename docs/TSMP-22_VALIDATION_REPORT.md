@@ -53,7 +53,8 @@ in the RTM.
 | STP planned cases (80) | **75 passed, 4 failed, 1 blocked → 93.75%** (≥ 90% required) |
 
 Per STP module: M1 14/16, M2 14/15, M3 14/15, M4 13/13, security 13/13, non-functional 7/8.
-The PORT-01 result depends on the Linux CI `compose-smoke` job; see the test execution report.
+CI run [41863894224](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/41863894224):
+all four jobs (core-tests, sandbox-tests, security-scan, compose-smoke) succeeded.
 All 4 failures and the 1 blocked case come from the missing React SPA (DEF-07).
 
 ## 3. System and browser validation
@@ -125,8 +126,8 @@ simultaneous jobs need `WORKER_CONCURRENCY=5` and enough host memory (1 GB per s
   viewport. Errors appear as short human-readable notices (`#notice`, `aria-live`). Charts have
   ARIA labels. The browser console was clean after the favicon fix (DEF-13).
 - **PORT-01 / NFR-008:** a fresh `docker compose down -v && up` on macOS (Colima) served the API
-  in 8 s and passed every live case. Linux is covered by the CI `compose-smoke` job (see the test
-  execution report for the run link). **Windows (Docker Desktop) was not tested. Firefox and
+  in 8 s and passed every live case. On Ubuntu x86_64 (CI `compose-smoke`, run 41863894224) the API was
+  ready in 6 s and 3/3 smoke cases passed, including a sandboxed evaluation. **Windows (Docker Desktop) was not tested. Firefox and
   Edge were not tested**; only Chrome was. NFR-008 is therefore PARTIAL.
 - **Note for macOS developers:** the real-Docker test suite must run from a Linux container on
   the Docker host (`scripts/validation/run_docker_suite_linux.sh`), because the host's `/tmp`
@@ -155,7 +156,7 @@ Against the STP release exit criteria (Part C, Section 5):
 
 | Criterion | Required | Result | Met? |
 |---|---|---|---|
-| Test cases passing | ≥ 90% | 75 / 80 = **93.75%** of planned STP cases (PORT-01 counted with its CI evidence) | **Yes** |
+| Test cases passing | ≥ 90% | 75 / 80 = **93.75%** of planned STP cases | **Yes** |
 | High-priority requirements | 100% Pass | **18 / 20** High FRs verified; FR-005 and FR-014 PARTIAL (UI system tests, DEF-07) | **No** |
 | Open Critical/High defects | none | **1 open High (DEF-07)**; 0 Critical. DEF-01 and DEF-02 (High) are closed | **No** |
 | Backend line coverage | ≥ 80% | 96.37% | Yes |
