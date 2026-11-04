@@ -96,6 +96,7 @@ def dashboard_asset(request, asset="index.html"):
         "index.html": "text/html; charset=utf-8",
         "dashboard.css": "text/css; charset=utf-8",
         "dashboard.js": "text/javascript; charset=utf-8",
+        "favicon.svg": "image/svg+xml",
     }
     # The URLconf supplies a fixed asset name; the result data is always fetched with JWT.
     directory = Path(__file__).with_name("dashboard")

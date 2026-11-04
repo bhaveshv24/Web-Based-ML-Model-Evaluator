@@ -6,6 +6,7 @@ import hashlib
 from collections.abc import Mapping
 from pathlib import PurePath
 
+from accounts.throttles import UploadRateThrottle
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.files.base import ContentFile
 from rest_framework import status
@@ -70,6 +71,24 @@ def _text_field(data: Mapping, name: str, *, required: bool) -> str | None:
     return value or None
 
 
+# Room for multipart boundaries, part headers and the optional target_column form field.
+MULTIPART_OVERHEAD_BYTES = 1024 * 1024
+
+
+def _reject_oversize_body(request, limit: int) -> None:
+    """ST-SEC-11: answer 413 from the declared Content-Length, before the body is parsed.
+
+    Without this the whole request body is spooled to a temporary file first. A missing or
+    understated Content-Length still ends in the per-file size check below.
+    """
+    try:
+        declared = int(request.META.get("CONTENT_LENGTH") or 0)
+    except ValueError:
+        declared = 0
+    if declared > limit + MULTIPART_OVERHEAD_BYTES:
+        raise PayloadTooLarge()
+
+
 def _uploaded_file(request):
     upload = request.FILES.get("file")
     if upload is None:
@@ -123,8 +142,10 @@ def report_payload(report: CompatibilityReport) -> dict:
 
 class ModelUploadView(APIView):
     parser_classes = [MultiPartParser]
+    throttle_classes = [UploadRateThrottle]
 
     def post(self, request):
+        _reject_oversize_body(request, MODEL_LIMIT_BYTES)
         upload = _uploaded_file(request)
         # Reject by declared size first so oversize bodies are never read or hashed.
         if upload.size > MODEL_LIMIT_BYTES:
@@ -152,8 +173,10 @@ class ModelDetailView(APIView):
 
 class DatasetUploadView(APIView):
     parser_classes = [MultiPartParser]
+    throttle_classes = [UploadRateThrottle]
 
     def post(self, request):
+        _reject_oversize_body(request, DATASET_LIMIT_BYTES)
         upload = _uploaded_file(request)
         if upload.size > DATASET_LIMIT_BYTES:
             raise PayloadTooLarge("Dataset exceeds 50 MB.")
