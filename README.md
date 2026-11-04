@@ -122,6 +122,13 @@ Both Celery processes and `runserver` need the same environment. Without Docker 
 
 Then: upload a model and a dataset, `POST /api/v1/compatibility-reports` until it returns `PASSED`, `POST /api/v1/evaluations`, and poll `/status` until it reaches a terminal state.
 
+## Results, comparisons and reports (MLE-13 to MLE-16)
+
+Open `http://localhost:8000/results` after starting the API. Sign in, open a completed evaluation
+from the list, or select two to five runs on the same dataset and task and choose **Compare selected**.
+Both result views can download JSON and PDF. The [chart and export contracts and Sprint 2
+evidence](docs/SPRINT_2_EVIDENCE.md) describe the endpoints and verification steps.
+
 ## Run the tests
 
 ```bash
@@ -156,6 +163,11 @@ The Compose topology:
 - `api -> PostgreSQL` for persistence, and `api -> Redis` to queue jobs.
 - `worker` (Celery) runs evaluations and model inspection. It reaches Docker only through `docker-proxy`, on the internal `sandbox-control` network.
 - `beat` runs the reaper every minute.
+
+Fresh media volumes are initialized with ownership for the unprivileged application user.
+If an existing volume was created by an older image and uploads fail with a permissions error,
+repair its root ownership once with
+`docker compose run --rm --no-deps --user root api chown 10002:10002 /app/media`.
 
 The API container never gets Docker access. Secrets are read from `.env`, which is ignored by Git and must never be committed. `api` applies migrations at start-up (`python manage.py migrate`).
 

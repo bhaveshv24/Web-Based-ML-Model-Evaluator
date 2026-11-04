@@ -7,6 +7,9 @@ dependencies = [
   "djangorestframework>=3.15,<3.16",
   "djangorestframework-simplejwt>=5.3,<5.4",
   "celery>=5.4,<5.5",
+  # Kombu 5.7 can leave a Celery 5.4 Redis worker stuck during shutdown.
+  "kombu>=5.6,<5.7",
+  "reportlab>=4.2,<4.3",
 ]
 
 [project.optional-dependencies]
@@ -15,10 +18,11 @@ dev = [
   "pytest-cov>=5.0",
   "pytest-django>=4.9",
   "ruff>=0.6",
+  "pypdf>=6,<7",
   # M3 tests: Docker SDK types for the sandbox policy, real models for the runner and
   # scikit-learn cross-checks of the trusted metric engine, Redis for the async E2E test.
   "docker>=7.1,<8",
-  "redis>=5.0,<6",
+  "redis>=6.1,<7",
   "scikit-learn>=1.5,<1.6",
   "pandas>=2.2,<2.3",
   "onnxruntime>=1.19,<1.20",
@@ -27,13 +31,8 @@ dev = [
   "skl2onnx>=1.20,<1.21",
 ]
 runtime = [
-  "celery>=5.4,<5.5",
-  "redis>=5.0,<6",
+  "redis>=6.1,<7",
   "psycopg[binary]>=3.2,<3.3",
-  "pandas>=2.2,<2.3",
-  "scikit-learn>=1.5,<1.6",
-  "onnxruntime>=1.19,<1.20",
-  "reportlab>=4.2,<4.3",
   "docker>=7.1,<8",
 ]
 
@@ -59,3 +58,6 @@ extend-exclude = ["**/migrations/*.py"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
 
+
+[tool.setuptools.package-data]
+"backend.benchmarking" = ["dashboard/*"]

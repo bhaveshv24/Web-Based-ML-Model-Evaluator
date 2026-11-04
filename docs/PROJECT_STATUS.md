@@ -19,7 +19,9 @@ At audit time the default branch contained only `Team13_SRS_SAD_STP.pdf`, with o
 
 ## Remaining release work
 
-Celery jobs, the hardened execution sandbox, React UI, ReportLab export, full security/performance suites and final evidence remain scheduled in the Jira backlog. No unexecuted test is represented as passed.
+The full React workflow, release security and performance validation, and final evidence remain
+scheduled in Sprint 3. Sprint 2 results and the local verification record are tracked in
+[SPRINT_2_EVIDENCE.md](SPRINT_2_EVIDENCE.md).
 
 
 ## Known limitations (tracked)

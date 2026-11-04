@@ -162,6 +162,8 @@ def test_history_date_filter_and_invalid_filter():
     response = client.get("/api/v1/evaluations", {"from": start.isoformat()})
     assert [item["id"] for item in response.data["results"]] == [str(evaluation.id)]
     assert client.get("/api/v1/evaluations?status=NOT_REAL").status_code == 400
+    invalid_date = client.get("/api/v1/evaluations", {"from": "2026-02-30T00:00:00Z"})
+    assert invalid_date.status_code == 400
 
 
 def test_history_page_size_is_at_most_twenty():
