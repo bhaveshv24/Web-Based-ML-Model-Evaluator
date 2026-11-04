@@ -52,7 +52,10 @@ class EvaluationListView(generics.ListAPIView):
         for parameter, lookup in (("from", "created_at__gte"), ("to", "created_at__lte")):
             raw_value = self.request.query_params.get(parameter)
             if raw_value:
-                value = parse_datetime(raw_value)
+                try:
+                    value = parse_datetime(raw_value)
+                except ValueError:
+                    value = None
                 if value is None:
                     raise ValidationError({parameter: ["Use an ISO-8601 date-time."]})
                 queryset = queryset.filter(**{lookup: value})

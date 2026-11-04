@@ -16,6 +16,7 @@ jobs:
           --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 10
     env:
       REDIS_URL: redis://localhost:6379/0
+      REQUIRE_REDIS_TESTS: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -55,5 +56,11 @@ jobs:
             echo "Docker security tests were skipped; failing." >&2
             exit 1
           fi
+      - name: Upload containment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandbox-containment-log
+          path: docker-tests.log
       - name: No sandbox containers left behind
         run: test -z "$(docker ps -aq --filter label=ml-evaluator.job)"

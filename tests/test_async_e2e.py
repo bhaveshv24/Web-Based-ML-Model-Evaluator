@@ -7,6 +7,7 @@ and lifecycle; real containment is covered by tests/test_sandbox_docker.py.
 """
 
 import io
+import os
 import secrets
 import time
 import uuid
@@ -28,24 +29,43 @@ pd = pytest.importorskip("pandas")
 
 
 @pytest.fixture
-def worker(settings, tmp_path):
-    url = settings.REDIS_URL.rsplit("/", 1)[0] + "/15"  # dedicated test database
+def worker(settings, tmp_path, monkeypatch):
+    url = settings.REDIS_URL
+    prefix = f"mle-test-{uuid.uuid4().hex}:"
+    connection = redis.Redis.from_url(url, socket_connect_timeout=1)
     try:
-        redis.Redis.from_url(url, socket_connect_timeout=1).ping()
+        connection.ping()
     except Exception:  # noqa: BLE001
+        if os.environ.get("REQUIRE_REDIS_TESTS") == "1":
+            pytest.fail("Redis integration tests are required but Redis is not reachable")
         pytest.skip("Redis is not reachable")
-    redis.Redis.from_url(url).flushdb()
     settings.MEDIA_ROOT = tmp_path / "media"
     settings.SANDBOX_WORK_DIR = tmp_path / "jobs"
     settings.SANDBOX_HOST_WORK_DIR = tmp_path / "jobs"
     settings.SANDBOX_RUNNER_CLASS = "sandbox_doubles.TrustedSubprocessRunner"
     settings.SANDBOX_INSPECTION_ENABLED = True
-    celery_app.conf.update(broker_url=url, result_backend=url, task_always_eager=False)
+    options = {
+        "broker_url": url,
+        "result_backend": url,
+        "task_always_eager": False,
+        "broker_transport_options": {"global_keyprefix": prefix},
+        "result_backend_transport_options": {"global_keyprefix": prefix},
+    }
+    for key, value in options.items():
+        monkeypatch.setitem(celery_app.conf, key, value)
     from celery.contrib.testing.worker import start_worker
 
-    with start_worker(celery_app, pool="threads", concurrency=3, perform_ping_check=False):
-        yield
-    redis.Redis.from_url(url).flushdb()
+    try:
+        with start_worker(
+            celery_app, pool="threads", concurrency=3, perform_ping_check=False,
+            shutdown_timeout=30,
+        ):
+            yield
+    finally:
+        keys = list(connection.scan_iter(match=f"{prefix}*"))
+        if keys:
+            connection.delete(*keys)
+        connection.close()
 
 
 def client_for_new_user():
