@@ -34,3 +34,6 @@ extend-exclude = ["**/migrations/*.py"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
 
+[tool.setuptools.packages.find]
+include = ["backend*"]
+
