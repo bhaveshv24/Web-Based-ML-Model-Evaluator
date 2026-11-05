@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Inspect model evaluation results, compare runs, and export reports.">
+  <title>Evaluation results | Model Evaluator</title>
+  <link rel="stylesheet" href="/results/dashboard.css">
+  <script type="module" src="/results/dashboard.js"></script>
+</head>
+<body>
+  <header><div class="shell masthead">
+    <a href="/results">Model Evaluator</a>
+    <button id="logout" type="button" hidden>Sign out</button>
+  </div></header>
+  <main class="shell">
+    <h1>Evaluation results</h1>
+    <p>Inspect completed runs, compare models, and download reports.</p>
+    <noscript>Enable JavaScript to sign in and view your evaluation results.</noscript>
+    <p id="notice" role="status" aria-live="polite"></p>
+    <form id="login">
+      <h2>Sign in</h2>
+      <label>Email <input name="email" type="email" autocomplete="username" required></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+      <button class="primary">Sign in</button>
+    </form>
+    <section id="history" hidden aria-labelledby="history-title">
+      <div class="section-head">
+        <div><h2 id="history-title">Completed runs</h2><p id="selection"></p></div>
+        <button class="primary" id="compare" type="button" disabled>Compare selected</button>
+      </div>
+      <div id="runs" class="scroll"></div>
+      <nav aria-label="Evaluation pages">
+        <button id="previous" type="button">Previous</button>
+        <span id="page"></span>
+        <button id="next" type="button">Next</button>
+      </nav>
+    </section>
+    <section id="result" hidden aria-labelledby="result-title">
+      <div class="section-head">
+        <h2 id="result-title" tabindex="-1"></h2>
+        <div class="actions" id="downloads"></div>
+      </div>
+      <div id="content"></div>
+    </section>
+  </main>
+</body>
+</html>

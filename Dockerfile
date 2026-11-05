@@ -1,10 +1,13 @@
 FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app/backend
 
-RUN addgroup --system app && adduser --system --ingroup app app
+# Fixed UID so the host-side sandbox job directory can be owned by the worker user.
+RUN addgroup --system --gid 10002 app && adduser --system --uid 10002 --ingroup app app
 WORKDIR /app
+RUN install -d -o app -g app -m 0750 /app/media
 
 COPY pyproject.toml README.md ./
 COPY backend ./backend
