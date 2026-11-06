@@ -11,7 +11,7 @@ from accounts.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from ingestion import compatibility
 from ingestion.inspection import ModelInspection
-from ingestion.models import Dataset, ModelArtifact
+from ingestion.models import CompatibilityReport, Dataset, ModelArtifact
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import AccessToken
 
@@ -123,6 +123,18 @@ def test_model_is_private_to_owner():
     assert other.get(f"/api/v1/models/{model_id}").status_code == 404
 
 
+def test_model_id_sql_payload_is_not_interpreted_as_a_query():
+    owner, _ = make_client("injection@pes.edu")
+    _, dataset_id = _ids(owner)
+    response = owner.post(
+        "/api/v1/compatibility-reports",
+        {"model_id": "' OR '1'='1", "dataset_id": dataset_id},
+        format="json",
+    )
+    assert response.status_code == 404
+    assert not CompatibilityReport.objects.exists()
+
+
 # ---------------------------------------------------------------- MLE-6 (FR-009..011)
 def test_csv_is_parsed_and_target_is_suggested():
     client, _ = make_client()
@@ -153,6 +165,18 @@ def test_target_can_be_overridden_after_upload_and_is_revalidated():
     assert Dataset.objects.get(id=dataset_id).target_column == "a"
     missing = client.patch(f"/api/v1/datasets/{dataset_id}", {}, format="json")
     assert missing.status_code == 400
+
+
+def test_sql_payload_target_is_rejected_without_changing_dataset():
+    client, _ = make_client("target-injection@pes.edu")
+    dataset_id = upload_csv(client).json()["id"]
+    response = client.patch(
+        f"/api/v1/datasets/{dataset_id}",
+        {"target_column": "' OR 1=1 --"},
+        format="json",
+    )
+    assert response.status_code == 400
+    assert Dataset.objects.get(id=dataset_id).target_column == "species"
 
 
 @pytest.mark.parametrize(
