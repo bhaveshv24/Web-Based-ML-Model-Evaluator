@@ -44,12 +44,12 @@ in the RTM.
 
 | Measure | Result |
 |---|---|
-| Automated regression (pytest, non-Docker) | **335 passed, 0 failed, 6 xfailed** (strict xfails documenting DEF-05/DEF-06) |
+| Automated regression (pytest, non-Docker) | **380 passed, 0 failed, 7 xfailed** on 6 Nov (strict xfails documenting DEF-05, DEF-06, DEF-09). 4 Nov: 335 passed, 6 xfailed |
 | Real-Docker containment suite (Linux Docker host) | **9 / 9 passed** |
-| Backend line coverage | **96.37%** (gate 80%) |
+| Backend line coverage | **97.34%** on 6 Nov, 96.37% on 4 Nov (gate 80%) |
 | Lint / migration check | ruff clean; no missing migrations |
 | Live system cases (Compose stack) | **15 / 15 passed** |
-| Browser cases (`/results`) | **Chrome 7 / 7, Firefox 7 / 7 passed** (Chrome after DEF-13 fix). Edge not tested |
+| Browser cases (`/results`) | **Chrome 7 / 7, Firefox 7 / 7, Edge 7 / 7 passed** on macOS (Chrome after the DEF-13 fix; Edge on its second attempt, see the execution report §3.9) |
 | STP planned cases (80) | **75 passed, 4 failed, 1 blocked → 93.75%** (≥ 90% required) |
 
 Per STP module: M1 14/16, M2 14/15, M3 14/15, M4 13/13, security 13/13, non-functional 7/8.
@@ -92,6 +92,7 @@ FR-022 and FR-024 are therefore **VERIFIED** in the browser (ST-REP-01..03 pass)
 | Oversize upload | ST-SEC-11 (live, 200 MB) | 413 after 0.05 s with 5.9 MB sent; API memory 120.4 → 120.7 MiB; nothing stored (DEF-08 fixed; `system-results.json`) |
 | Sandbox containment | IT-EXE-04, ST-SEC-07, ST-SEC-08, ST-EXE-02, cross-job (real Docker) | No network or DNS, non-root, read-only root, no labels or secrets visible, memory and PID exhaustion contained, timeout kills child processes, no cross-job visibility |
 | Audit | ST-SEC-13 | Failed login and 403 rows with user/email, IP, event, time; admin actions and retention purges audited |
+| Secrets, CORS, cookies, scan configuration | `test_tsmp21_sec009.py` (13 cases) | 12 pass: secret key from the environment, placeholders only in `.env.example`, Compose secrets from the environment, `.env` untracked, DEBUG off and secure cookies, no CORS grant to another origin, CI scans configured. **1 strict xfail: HTTPS settings absent (DEF-09)** |
 | Dependencies / static analysis / secrets | ST-SEC-12 | After DEF-01: pip-audit clean for project and sandbox dependencies; Bandit no medium or high findings; gitleaks: no secrets in 52 commits on all refs (`gitleaks-history.log`); `.env` ignored and not tracked |
 | Configuration | ST-SEC-12 review | CORS restrictive by default (no CORS headers sent). **No HTTPS/TLS configuration, and the development server is used (DEF-09, open)** |
 
@@ -123,16 +124,25 @@ simultaneous jobs need `WORKER_CONCURRENCY=5` and enough host memory (1 GB per s
   upload → validate → run → view in the browser. Only the results part of that path exists in
   the UI (DEF-07), and no participants were available. Design check: SAD 8 plans 4 primary
   screens (Register, Login, New Evaluation, Dashboard). The current build cannot be measured
-  against that plan.
+  against that plan. Checked again on 6 November: no frontend exists on any branch or pull
+  request. **Prepared for execution:** `docs/TSMP-21_USABILITY_PROTOCOL.md` contains the
+  unchanged STP acceptance rule, a screen-counting rule and assistance rule fixed in advance,
+  entry criteria, five scenarios, an observation sheet with SUS, CSV results and issue
+  templates, and a participant-kit generator. No session has been run and no result is
+  claimed.
 - **Results UI heuristics (supplementary):** no horizontal overflow at the minimum 1280×720
   viewport. Errors appear as short human-readable notices (`#notice`, `aria-live`). Charts have
   ARIA labels. The browser console was clean after the favicon fix (DEF-13).
 - **PORT-01 / NFR-008:** a fresh `docker compose down -v && up` on macOS (Colima) served the API
   in 8 s and passed every live case. On Ubuntu x86_64 (CI `compose-smoke`, run 41863894224) the API was
   ready in 6 s and 3/3 smoke cases passed, including a sandboxed evaluation. Browsers: all 7 `/results` cases pass in
-  Chrome 157 and in Firefox 155 (Playwright's Gecko build, run 6 November 2026,
-  `docs/evidence/tsmp-21/browser-firefox/`). **Windows (Docker Desktop) and Microsoft Edge were not
-  tested**: no Windows host was available and Edge is not installed. NFR-008 is therefore PARTIAL.
+  Chrome 157, Firefox 155 (Playwright's Gecko build) and Microsoft Edge 157, all on macOS
+  (`browser-firefox/`, `browser-msedge/`, 6 November 2026). **Windows (Docker Desktop) was not
+  tested**: no Windows host was available, and GitHub's Windows runners cannot run the Linux
+  containers. NFR-008 is therefore PARTIAL. For the Windows run, a teammate can use
+  `scripts/validation/portability_check.py --fresh --up --smoke`, which works on any OS and
+  writes a PASS/FAIL JSON file. CI job `tooling-cross-os` checks that the validation tools run on
+  Windows and macOS. It does not test the application on those systems.
 - **Note for macOS developers:** the real-Docker test suite must run from a Linux container on
   the Docker host (`scripts/validation/run_docker_suite_linux.sh`), because the host's `/tmp`
   is not shared with the Docker VM.
@@ -149,7 +159,9 @@ simultaneous jobs need `WORKER_CONCURRENCY=5` and enough host memory (1 GB per s
 | DEF-10 | Low | No SonarQube quality gate (NFR-007) | Course infrastructure |
 
 **Other limitations.**
-- NFR-004 (availability) needs an operating window.
+- NFR-004 (availability) needs an operating window. The repository has no availability
+  monitoring or uptime records. `scripts/validation/availability_probe.py` (tested) measures
+  availability over the window, excluding declared maintenance, once the team defines it.
 - OWASP ZAP baseline, Postman/Newman and `npm audit` (no frontend) from the STP toolset were
   not run. Their aims are covered by the pytest security matrix and the live system cases.
 - `test-cases.xlsx` (STP 14) is replaced by the Markdown execution report.
@@ -163,7 +175,7 @@ Against the STP release exit criteria (Part C, Section 5):
 | Test cases passing | ≥ 90% | 75 / 80 = **93.75%** of planned STP cases | **Yes** |
 | High-priority requirements | 100% Pass | **18 / 20** High FRs verified; FR-005 and FR-014 PARTIAL (UI system tests, DEF-07) | **No** |
 | Open Critical/High defects | none | **1 open High (DEF-07)**; 0 Critical. DEF-01 and DEF-02 (High) are closed | **No** |
-| Backend line coverage | ≥ 80% | 96.37% | Yes |
+| Backend line coverage | ≥ 80% | 97.34% (6 Nov) | Yes |
 | SonarQube gate | passed | not configured (DEF-10) | No |
 | ST-SEC-01..13 | all Pass or accepted risk | 13 / 13 Pass; DEF-09 is a documented configuration risk | Yes |
 | Actual result and Pass/Fail recorded | every executed case | yes, every case | Yes |

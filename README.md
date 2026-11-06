@@ -199,4 +199,7 @@ Framework floors were raised for TSMP-21 (DEF-01, ST-SEC-12) to Django 5.2 LTS (
 - [Test execution report](docs/TSMP-21_TEST_EXECUTION_REPORT.md) and [defect register](docs/TSMP-21_DEFECT_REGISTER.md)
 - [Requirements traceability matrix](docs/TSMP-22_REQUIREMENTS_TRACEABILITY_MATRIX.md) and [validation report](docs/TSMP-22_VALIDATION_REPORT.md)
 - [Progress and remaining blockers](docs/TSMP_PROGRESS.md)
+- [USA-01 usability study protocol](docs/TSMP-21_USABILITY_PROTOCOL.md) (prepared, not executed)
+- `python scripts/validation/check_rtm.py` checks that the RTM, defect register and reports cite only files, tests and defects that exist
+- `python scripts/validation/portability_check.py --up --smoke` runs PORT-01 on any OS; `scripts/validation/availability_probe.py` measures NFR-004
 - Reproducible scripts are in `scripts/validation/`. Raw evidence is in `docs/evidence/tsmp-21/`.

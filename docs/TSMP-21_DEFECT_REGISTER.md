@@ -141,6 +141,9 @@ Branch for every fix: `feature/TSMP-21-22-validation`. Retest commands are in
 - **Why not fixed in TSMP-21:** building the SPA is the MLE-17 story owned by other members, not
   a defect fix. The task rules also forbid rebuilding or replacing teammates' work. This is the
   main release blocker.
+- **Status check (6 Nov):** still no frontend on any branch or pull request. Ready for retest:
+  the UI cases in `results_dashboard.mjs`, and the USA-01 protocol, scenarios and templates in
+  `docs/TSMP-21_USABILITY_PROTOCOL.md`.
 
 ### DEF-08 - Oversize upload read in full before 413 (Low, Closed)
 
@@ -170,12 +173,16 @@ Branch for every fix: `feature/TSMP-21-22-validation`. Retest commands are in
 - **Recommendation:** run gunicorn behind an HTTPS reverse proxy (STP staging environment) and
   enable the Django HTTPS settings through the environment. This is a deployment change that
   affects every module's runtime, so it was not made unilaterally.
+- **Tracking (6 Nov):** strict xfail `test_tsmp21_sec009.py::test_production_settings_enforce_https`
+  (expects `SECURE_SSL_REDIRECT`, HSTS and `SECURE_PROXY_SSL_HEADER` when `DEBUG=0`). It fails as
+  XPASS once fixed. The other SEC-009 clauses (secrets from the environment, restrictive CORS,
+  dependency scans) are now covered by 12 passing tests in the same file.
 
 ### DEF-10 - No SonarQube quality gate (Low, Open)
 
 - NFR-007 requires a SonarQube gate with no blocker or critical issues. No SonarQube project is
-  configured. Partial substitutes now run in CI: ruff, an 80% coverage gate (actual 96%), and
-  Bandit with no medium or high findings. The coverage XML is already uploaded and can be used
+  configured. Partial substitutes now run in CI: ruff, an 80% coverage gate (actual 97.34% on
+  6 Nov), Bandit with no medium or high findings, and a gitleaks history scan. The coverage XML is already uploaded and can be used
   by SonarQube.
 
 ### DEF-11 - Broken documentation pointer (Low, Closed)

@@ -11,11 +11,11 @@ branch `feature/TSMP-21-22-validation`, based on `main` at `714c789`.
 | STP planned cases (Part C §9: 80 cases) | **75 PASS, 4 FAIL, 1 BLOCKED (not executed)** |
 | Pass rate, all planned cases | **93.75%** (75 / 80; blocked counts as not passed) |
 | Pass rate, executed cases | 94.9% (75 / 79) |
-| Automated pytest regression | 335 passed, 0 failed, 6 strict xfail (DEF-05, DEF-06) |
+| Automated pytest regression | **6 Nov: 380 passed, 0 failed, 7 strict xfail** (DEF-05, DEF-06, DEF-09). 46 test cases added on 6 Nov: 45 pass, 1 strict xfail (§3.10). 4 Nov: 335 passed, 6 strict xfail |
 | Real-Docker containment suite | 9 / 9 passed (Linux Docker host) |
 | Live system cases on the Compose stack | 15 / 15 passed on the final code (§3.7) |
-| Browser cases on `/results` | Chrome 7 / 7 passed after the DEF-13 fix; Firefox 7 / 7 passed (§3.4, §3.8, §3.9). Edge not tested |
-| Backend line coverage | 96.37% (gate 80%) |
+| Browser cases on `/results` | Chrome 7 / 7 passed after the DEF-13 fix; Firefox 7 / 7 and Edge 7 / 7 passed on macOS (§3.4, §3.8, §3.9) |
+| Backend line coverage | 97.34% on 6 Nov, 96.37% on 4 Nov (gate 80%) |
 | Defects found | 13 (0 Critical, 3 High, 5 Medium, 5 Low). 7 closed with regression tests and retest; 6 open |
 | Open High/Critical | **1 High open: DEF-07** (MLE-17 React SPA not implemented) |
 
@@ -159,7 +159,7 @@ any retest; first-run failures are noted in the Actual column.
 | PERF-03 | NFR-011 | Validate 50 MB CSV | ≤ 20 s | 52,428,716 bytes (50.00 MiB), 457,242 rows: 201 in **0.88 s**. First attempt generated only 36 MiB (test-data error, discarded and rerun) | PASS | `SYS:PERF-03` |
 | PERF-04 | NFR-003 | 5 jobs, 3 workers | All finish; equal to baseline | 5/5 SUCCEEDED; 5/5 metrics equal to single-run baseline; at most 3 running at once; 3.5 s wall; 0 containers left | PASS | `SYS:PERF-04` |
 | REL-01 | NFR-006 | Kill worker mid-job, restart | FAILED within 5 min; no orphan | FAILED (`WORKER_LOST`) 192 s after the crash; 0 orphan containers | PASS | `SYS:REL-01` |
-| USA-01 | NFR-005 | Five first-time users | ≤ 5 primary screens | **Not executed.** No browser workflow for upload/validate/run (DEF-07) and no participants | **BLOCKED** | - |
+| USA-01 | NFR-005 | Five first-time users | ≤ 5 primary screens | **Not executed.** No browser workflow for upload/validate/run (DEF-07) and no participants. The protocol, scenarios, observation sheet and results templates are ready (`docs/TSMP-21_USABILITY_PROTOCOL.md`) | **BLOCKED** | - |
 | PORT-01 | NFR-008 | Fresh `docker compose up` on two OSes | Reachable; smoke passes | macOS 26.6.2 arm64 (Colima): `down -v` + `up` → API in 8 s; 15/15 live cases pass. Ubuntu x86_64 (CI `compose-smoke`): API in 6 s; 3/3 smoke cases including a sandboxed evaluation | PASS | `port01-macos.log`, `port01-linux-ci-compose-smoke.json`, CI run 41863894224 |
 | RET-01 | NFR-010 | Age artifacts to 31 days, run purge | Files and DB references removed | **First attempt impossible: no retention job (DEF-02).** After fix: aged files and rows removed (API 404), fresh upload kept | PASS (after fix) | `SYS:RET-01`; `test_tsmp21_retention.py` |
 
@@ -216,19 +216,42 @@ were executed in the sandbox by `seed_results.py`. The browser was Firefox 155.0
 It is Playwright's patched Firefox build, the same Gecko engine as release Firefox, not a
 separately installed Firefox. Results: `docs/evidence/tsmp-21/browser-firefox/`.
 
-| Case | Chrome 157 (4 Nov) | Firefox 155 (6 Nov) | Firefox actual result |
-|---|---|---|---|
-| ST-AUTH-01(UI sign-in) | PASS | PASS | Signed in; 4 completed runs listed |
-| ST-REP-01 | PASS | PASS | 9 metric cards; 3×3 confusion matrix; ROC class switch AUC 1 → 0.97 |
-| ST-REP-02 | PASS | PASS | Predicted-vs-actual, residual plot and histogram (820 marks) |
-| ST-REP-03 | PASS | PASS | Mixed selection disables Compare; 3-model table with 8 best cells; JSON (3 evaluations) and PDF (`%PDF-`) downloaded |
-| UI-LAYOUT-1280 | PASS | PASS | 0 px overflow at 1280×720 |
-| ST-AUTH-01(UI sign-out) | PASS | PASS | 0 protected nodes after sign-out; history hidden after reload |
-| UI-CONSOLE | PASS (retest) | PASS | 0 console errors; no failed resources |
+| Case | Chrome 157 (4 Nov) | Firefox 155 (6 Nov) | Edge 157 (6 Nov) | Firefox actual result |
+|---|---|---|---|---|
+| ST-AUTH-01(UI sign-in) | PASS | PASS | PASS | Signed in; 4 completed runs listed |
+| ST-REP-01 | PASS | PASS | PASS | 9 metric cards; 3×3 confusion matrix; ROC class switch AUC 1 → 0.97 |
+| ST-REP-02 | PASS | PASS | PASS | Predicted-vs-actual, residual plot and histogram (820 marks) |
+| ST-REP-03 | PASS | PASS | PASS | Mixed selection disables Compare; 3-model table with 8 best cells; JSON (3 evaluations) and PDF (`%PDF-`) downloaded |
+| UI-LAYOUT-1280 | PASS | PASS | PASS | 0 px overflow at 1280×720 |
+| ST-AUTH-01(UI sign-out) | PASS | PASS | PASS | 0 protected nodes after sign-out; history hidden after reload |
+| UI-CONSOLE | PASS (retest) | PASS | PASS | 0 console errors; no failed resources |
 
-**Microsoft Edge was not tested.** It is not installed on the test machine, and no Windows host
-was available. Edge uses the same Chromium engine as Chrome, but NFR-008 names Edge
-explicitly, so it stays untested. The script supports `BROWSER=msedge` once Edge is installed.
+**Microsoft Edge** 157.0.4341.42 (official macOS build, installed 6 November with Homebrew cask
+`microsoft-edge`) was run with `BROWSER=msedge`, headless, against a second freshly seeded
+account. Results: `docs/evidence/tsmp-21/browser-msedge/`. **Attempt 1 failed in the harness
+before any check ran**: the first screenshot timed out after 30 s on Edge's first launch after
+installation (`browser-msedge/attempt1.log`, `attempt1-error.png`). Attempt 2, a few minutes
+later, ran all 7 cases with no change to the product or the script: 7/7 PASS, with the same
+observations as Firefox (PDF 11,867 bytes). Edge was tested on macOS only. Edge on Windows was
+not tested.
+
+### 3.10 Regression tests added on 6 November 2026
+
+Chosen from the coverage report of the 4 November run (83 missed lines). Each test executes a
+branch that no earlier test reached and that guards a stated requirement. Final run: 380 passed,
+7 xfailed (`pytest-core-2026-11-06.log`, `junit-core-2026-11-06.xml`); 61 lines missed.
+No product code was changed.
+
+| File | Tests (cases) | Requirement | What is verified | Status |
+|---|---|---|---|---|
+| `test_tsmp21_regression.py` | 12 tests (16 cases) | FR-001, FR-003, FR-004, FR-007..FR-011, SEC-004, SEC-006 | Letters-only and digits-only passwords rejected; manager requires and normalizes email; superuser is ADMIN; logout with a garbage or access token → 401 `INVALID_TOKEN`; unknown, inactive and duplicate workspace members → 400; validator 100 MB + 1 byte → `MODEL_SIZE`; ONNX prefix cut mid-field still accepted; non-numeric Content-Length falls through to the file checks; row limit boundary; empty and BOM-only CSV → `DATASET_HEADER`; owner reads dataset detail; blank target override → 400; audit write failure is logged and never raised | 16 PASS |
+| `test_tsmp21_sec009.py` | 10 tests (13 cases) | SEC-009 | Secret key read from the environment, random per process otherwise; `.env.example` placeholders only; Compose takes every secret from the environment and refuses to start without a key; `.env` ignored and not tracked; DEBUG off and secure cookies by default; no CORS app or middleware, and no `Access-Control-*` header on cross-origin OPTIONS or POST; CI scans both dependency sets and runs Bandit | 12 PASS, **1 strict xfail: HTTPS settings absent (DEF-09)** |
+| `test_tsmp22_rtm_checker.py` | 2 tests (8 cases) | TSMP-22 | The committed RTM, register and reports are consistent; 7 deliberate breaks (unknown test, missing source, missing row, defect status, totals, evidence, defect ID) are each reported | 8 PASS |
+| `test_tsmp21_validation_tools.py` | 7 tests (9 cases) | NFR-004, NFR-008 (tools) | Availability arithmetic and 99% target; maintenance exclusion; strict window parsing; a sample is up only with `/results` 200 and API 401; unreachable stack is down; portability WARN vs FAIL rule; `.env` parsing | 9 PASS |
+
+One test assumption was wrong on the first run and was corrected: `validate_csv_bytes` still
+returns a summary when it reports `DATASET_ROWS`, and the upload view rejects whenever any issue
+exists. This is the designed behaviour, not a defect.
 
 ## 4. Non-functional tests
 
@@ -255,7 +278,7 @@ queue.
 | [41863894224](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/41863894224) | `bb0f254` (with docs and evidence) | success | success | success | success |
 | [41868670661](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/41868670661) | `10224fc` (CI and PORT-01 evidence; latest) | success | success | success | success |
 
-Run 41868670661 (4 November 2026, 16:34-16:37 UTC) is the latest run on the branch. `core-tests`:
+Run 41868670661 (4 November 2026, 16:34-16:37 UTC) was the last run of 4 November. `core-tests`:
 ruff clean; 335 passed, 9 skipped (Docker), 6 xfailed; coverage 96.37%. `sandbox-tests`: 9 passed.
 `security-scan`: no known vulnerabilities in the project or sandbox requirements. `compose-smoke`:
 3/3 passed.
@@ -305,15 +328,26 @@ LOAD_ACCOUNTS=/tmp/accounts.txt locust -f scripts/validation/perf/locustfile.py 
 python scripts/validation/browser/seed_results.py --out /tmp/browser.env
 cd scripts/validation/browser && npm install
 set -a; . /tmp/browser.env; set +a; node results_dashboard.mjs
-# Firefox (writes to docs/evidence/tsmp-21/browser-firefox/); BROWSER=msedge needs Edge installed
+# Firefox and Edge (write to docs/evidence/tsmp-21/browser-<name>/)
 npx playwright-core install firefox && BROWSER=firefox node results_dashboard.mjs
+BROWSER=msedge node results_dashboard.mjs   # needs Microsoft Edge installed
+
+# 7. PORT-01 on any OS (Windows, macOS, Linux); --fresh deletes local data first
+python scripts/validation/portability_check.py --fresh --up --smoke --out port01-<os>.json
+
+# 8. NFR-004 availability over the agreed operating window
+python scripts/validation/availability_probe.py --duration 2h --interval 15 --out nfr004-<date>.json
+
+# 9. Documentation consistency (RTM, defect register, reports)
+python scripts/validation/check_rtm.py
 ```
 
 ## 7. Evidence index (`docs/evidence/tsmp-21/`)
 
 | File | Content |
 |---|---|
-| `pytest-core.log`, `junit-core.xml` | Final regression run: 335 passed, 6 xfailed, 96.37% coverage. `coverage.xml` is not committed (`.gitignore` excludes it). The coverage figure is in `pytest-core.log`, and CI uploads `coverage.xml` as the `coverage-xml` artifact of `core-tests` (run 41868670661; GitHub keeps it until 2 February 2027) |
+| `pytest-core-2026-11-06.log`, `junit-core-2026-11-06.xml` | Latest regression run (6 Nov): 380 passed, 7 xfailed, 97.34% coverage, with the coverage report of missed lines |
+| `pytest-core.log`, `junit-core.xml` | Regression run of 4 Nov: 335 passed, 6 xfailed, 96.37% coverage. `coverage.xml` is not committed (`.gitignore` excludes it). The coverage figure is in `pytest-core.log`, and CI uploads `coverage.xml` as the `coverage-xml` artifact of `core-tests` (run 41868670661; GitHub keeps it until 2 February 2027) |
 | `docker-suite-linux.log` | Containment suite, 9 passed, Linux 6.8 |
 | `ruff.log`, `makemigrations.log` | Lint and migration checks |
 | `pip-audit-env.log`, `pip-audit-sandbox.log`, `bandit.log` | ST-SEC-12 **first run** (before DEF-01), kept as evidence of the defect |
@@ -324,6 +358,8 @@ npx playwright-core install firefox && BROWSER=firefox node results_dashboard.mj
 | `port01-macos.log`, `port01-linux-ci-compose-smoke.json` | PORT-01 on macOS (local) and Ubuntu (CI artifact) |
 | `browser-results.json`, `screenshots/01..07-*.png`, `browser-comparison-*.{json,pdf}` | Chrome browser cases and the downloaded comparison reports |
 | `browser-firefox/` (same file layout) | Firefox browser cases (§3.9) |
+| `browser-msedge/` (same file layout, plus `attempt1.log`, `attempt1-error.png`) | Edge browser cases and the failed first attempt (§3.9) |
+| `port01-macos-portability-check.json` | `portability_check.py --up --smoke` on macOS, 6 Nov (existing stack, not a fresh install): all required checks and 3/3 smoke PASS |
 
 Screenshots are produced by the browser script against the live stack. No screenshot was edited
 or produced by hand.
@@ -332,10 +368,12 @@ or produced by hand.
 
 - One host. Load and functional runs share the machine, and Locust ran on the same host as the
   stack.
-- Windows (Docker Desktop) and Edge were not tested (NFR-008 PARTIAL). No Windows machine or VM
-  was available, and Edge is not installed. Firefox was tested on 6 November (§3.9).
+- Windows (Docker Desktop) was not tested (NFR-008 PARTIAL). No Windows machine or VM was
+  available. GitHub's Windows runners cannot run Linux containers, so CI cannot substitute.
+  Firefox and Edge were tested on macOS on 6 November (§3.9).
 - The macOS Docker VM does not share the host `/tmp`. The containment suite was therefore run
   from a Linux container on the Docker host (`--pid=host` so IT-EXE-05 sees the host process
   table). CI runs it natively on Ubuntu.
 - OWASP ZAP, Postman/Newman and SonarQube from the STP tool list were not run.
-- USA-01 needs five human participants and the MLE-17 UI.
+- USA-01 needs five human participants and the MLE-17 UI. Its protocol is prepared, not run.
+- NFR-004 needs a defined operating window. The probe exists, but no measurement has been taken.

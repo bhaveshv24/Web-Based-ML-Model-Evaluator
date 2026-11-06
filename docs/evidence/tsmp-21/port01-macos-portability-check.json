@@ -1,0 +1,141 @@
+{
+  "host": {
+    "os": "Darwin",
+    "os_release": "25.6.0",
+    "os_version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:36 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T6030",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "machine": "arm64",
+    "python": "3.11.14",
+    "executed_at": "2026-11-06T01:42:11+00:00"
+  },
+  "mode": {
+    "up": true,
+    "fresh": false,
+    "smoke": true
+  },
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "docker CLI on PATH",
+      "status": "PASS",
+      "actual": "/opt/homebrew/bin/docker"
+    },
+    {
+      "check": "docker client",
+      "status": "PASS",
+      "actual": "29.9.2"
+    },
+    {
+      "check": "docker daemon reachable",
+      "status": "PASS",
+      "actual": "29.5.2 linux/arm64"
+    },
+    {
+      "check": "docker compose v2",
+      "status": "PASS",
+      "actual": "5.6.1"
+    },
+    {
+      "check": ".env present",
+      "status": "PASS",
+      "actual": ".env"
+    },
+    {
+      "check": "DJANGO_SECRET_KEY set and not a placeholder",
+      "status": "PASS",
+      "actual": "set"
+    },
+    {
+      "check": "POSTGRES_PASSWORD set and not a placeholder",
+      "status": "PASS",
+      "actual": "set"
+    },
+    {
+      "check": "SANDBOX_HOST_WORK_DIR exists on the Docker host",
+      "status": "WARN",
+      "actual": "/var/lib/ml-evaluator/jobs (not found from this shell)"
+    },
+    {
+      "check": "compose file valid",
+      "status": "PASS",
+      "actual": "valid"
+    },
+    {
+      "check": "sandbox image built",
+      "status": "PASS",
+      "actual": "linux/arm64"
+    },
+    {
+      "check": "port 8000 free or served by this API",
+      "status": "PASS",
+      "actual": "served by this API"
+    },
+    {
+      "check": "sandbox image build",
+      "status": "PASS",
+      "actual": "built"
+    },
+    {
+      "check": "docker compose up -d --build",
+      "status": "PASS",
+      "actual": "returned after 17 s (includes image builds)"
+    },
+    {
+      "check": "API reachable (anonymous request answered 401)",
+      "status": "PASS",
+      "actual": "0 s after compose up returned"
+    },
+    {
+      "check": "/results served",
+      "status": "PASS",
+      "actual": "HTTP 200"
+    },
+    {
+      "check": "smoke ST-AUTH-01(API)",
+      "status": "PASS",
+      "actual": "weak pw=400, role=USER, refresh=200, reuse old refresh=401, logout=204, refresh after logout=401, anonymous history=401"
+    },
+    {
+      "check": "smoke ST-ING-01(API)",
+      "status": "PASS",
+      "actual": "iris rows=150, suggested=species; iris pair=PASSED; wine pair=FAILED checks=[{\"code\": \"TARGET_EXCLUDED\", \"status\": \"PASSED\", \"message\": \"Target column is excluded from the feature set\", \"expected\": \"'"
+    },
+    {
+      "check": "smoke ST-EXE-01(API)",
+      "status": "PASS",
+      "actual": "compat=PASSED; POST=202 QUEUED in 55 ms; final=SUCCEEDED duration=1.098 s; accuracy=1.0; confusion 3x3; ROC classes=['setosa', 'versicolor', 'virginica']; sandbox_image=ml-evaluator-sandbox:1.0"
+    }
+  ],
+  "smoke_results": [
+    {
+      "id": "ST-AUTH-01(API)",
+      "requirement": "FR-001..003",
+      "description": "Register, login, refresh, logout over HTTP",
+      "expected": "201/200; rotated refresh; after logout refresh=401 and anonymous history=401",
+      "actual": "weak pw=400, role=USER, refresh=200, reuse old refresh=401, logout=204, refresh after logout=401, anonymous history=401",
+      "status": "PASS",
+      "seconds": 0.6,
+      "executed_at": "2026-11-06T01:42:31+00:00"
+    },
+    {
+      "id": "ST-ING-01(API)",
+      "requirement": "FR-008..013",
+      "description": "Upload model+CSV, pick target, validate (pass and fail)",
+      "expected": "PASSED for rf_iris+iris; FAILED for rf_iris+wine naming expected 4 vs actual 13",
+      "actual": "iris rows=150, suggested=species; iris pair=PASSED; wine pair=FAILED checks=[{\"code\": \"TARGET_EXCLUDED\", \"status\": \"PASSED\", \"message\": \"Target column is excluded from the feature set\", \"expected\": \"'cultivar' not in features\", \"actual\": [\"alcohol\", \"malic_acid\", \"ash\", \"alcalinity_of_ash\", \"magnesium\", \"total_phenols\", \"flavanoids\", \"nonflavanoid_phenols\", \"proanthocyanins",
+      "status": "PASS",
+      "seconds": 2.6,
+      "executed_at": "2026-11-06T01:42:34+00:00"
+    },
+    {
+      "id": "ST-EXE-01(API)",
+      "requirement": "FR-014..021, NFR-002",
+      "description": "Upload, validate, run in real sandbox, read results and charts",
+      "expected": "202 QUEUED <1 s; SUCCEEDED; metrics and charts stored; total within NFR-002",
+      "actual": "compat=PASSED; POST=202 QUEUED in 55 ms; final=SUCCEEDED duration=1.098 s; accuracy=1.0; confusion 3x3; ROC classes=['setosa', 'versicolor', 'virginica']; sandbox_image=ml-evaluator-sandbox:1.0",
+      "status": "PASS",
+      "seconds": 2.4,
+      "executed_at": "2026-11-06T01:42:37+00:00"
+    }
+  ]
+}
