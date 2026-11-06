@@ -79,7 +79,7 @@ def docs_copy(tmp_path, monkeypatch):
             "TSMP-21_TEST_EXECUTION_REPORT.md",
             "`gitleaks-history.log`",
             "`gitleaks-missing.log`",
-            "evidence file not found: gitleaks-missing.log",
+            "evidence file not found in the repository: gitleaks-missing.log",
         ),
         (
             "TSMP-21_TEST_EXECUTION_REPORT.md",
@@ -103,3 +103,15 @@ def test_broken_documents_are_reported(docs_copy, capsys, document, old, new, ex
     output = capsys.readouterr().out
     assert expected in output, output
     assert output.splitlines()[-1].startswith("FAIL")
+
+
+def test_a_gitignored_local_file_does_not_count_as_evidence(monkeypatch, capsys):
+    # Regression: coverage.xml existed locally but is gitignored, so CI could not find it.
+    tracked = check_rtm.repository_files()
+    assert tracked is not None and "docs/evidence/tsmp-21/gitleaks-history.log" in tracked
+    without = tracked - {"docs/evidence/tsmp-21/gitleaks-history.log"}
+    monkeypatch.setattr(check_rtm, "repository_files", lambda: without)
+    assert check_rtm.main() == 1
+    assert (
+        "evidence file not found in the repository: gitleaks-history.log" in capsys.readouterr().out
+    )

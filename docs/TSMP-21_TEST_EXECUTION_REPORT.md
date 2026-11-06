@@ -11,7 +11,7 @@ branch `feature/TSMP-21-22-validation`, based on `main` at `714c789`.
 | STP planned cases (Part C §9: 80 cases) | **75 PASS, 4 FAIL, 1 BLOCKED (not executed)** |
 | Pass rate, all planned cases | **93.75%** (75 / 80; blocked counts as not passed) |
 | Pass rate, executed cases | 94.9% (75 / 79) |
-| Automated pytest regression | **6 Nov: 380 passed, 0 failed, 7 strict xfail** (DEF-05, DEF-06, DEF-09). 46 test cases added on 6 Nov: 45 pass, 1 strict xfail (§3.10). 4 Nov: 335 passed, 6 strict xfail |
+| Automated pytest regression | **6 Nov: 381 passed, 0 failed, 7 strict xfail** (DEF-05, DEF-06, DEF-09). 47 test cases added on 6 Nov: 46 pass, 1 strict xfail (§3.10). 4 Nov: 335 passed, 6 strict xfail |
 | Real-Docker containment suite | 9 / 9 passed (Linux Docker host) |
 | Live system cases on the Compose stack | 15 / 15 passed on the final code (§3.7) |
 | Browser cases on `/results` | Chrome 7 / 7 passed after the DEF-13 fix; Firefox 7 / 7 and Edge 7 / 7 passed on macOS (§3.4, §3.8, §3.9) |
@@ -238,7 +238,7 @@ not tested.
 ### 3.10 Regression tests added on 6 November 2026
 
 Chosen from the coverage report of the 4 November run (83 missed lines). Each test executes a
-branch that no earlier test reached and that guards a stated requirement. Final run: 380 passed,
+branch that no earlier test reached and that guards a stated requirement. Final run: 381 passed,
 7 xfailed (`pytest-core-2026-11-06.log`, `junit-core-2026-11-06.xml`); 61 lines missed.
 No product code was changed.
 
@@ -246,7 +246,7 @@ No product code was changed.
 |---|---|---|---|---|
 | `test_tsmp21_regression.py` | 12 tests (16 cases) | FR-001, FR-003, FR-004, FR-007..FR-011, SEC-004, SEC-006 | Letters-only and digits-only passwords rejected; manager requires and normalizes email; superuser is ADMIN; logout with a garbage or access token → 401 `INVALID_TOKEN`; unknown, inactive and duplicate workspace members → 400; validator 100 MB + 1 byte → `MODEL_SIZE`; ONNX prefix cut mid-field still accepted; non-numeric Content-Length falls through to the file checks; row limit boundary; empty and BOM-only CSV → `DATASET_HEADER`; owner reads dataset detail; blank target override → 400; audit write failure is logged and never raised | 16 PASS |
 | `test_tsmp21_sec009.py` | 10 tests (13 cases) | SEC-009 | Secret key read from the environment, random per process otherwise; `.env.example` placeholders only; Compose takes every secret from the environment and refuses to start without a key; `.env` ignored and not tracked; DEBUG off and secure cookies by default; no CORS app or middleware, and no `Access-Control-*` header on cross-origin OPTIONS or POST; CI scans both dependency sets and runs Bandit | 12 PASS, **1 strict xfail: HTTPS settings absent (DEF-09)** |
-| `test_tsmp22_rtm_checker.py` | 2 tests (8 cases) | TSMP-22 | The committed RTM, register and reports are consistent; 7 deliberate breaks (unknown test, missing source, missing row, defect status, totals, evidence, defect ID) are each reported | 8 PASS |
+| `test_tsmp22_rtm_checker.py` | 3 tests (9 cases) | TSMP-22 | The committed RTM, register and reports are consistent; 7 deliberate breaks (unknown test, missing source, missing row, defect status, totals, evidence, defect ID) are each reported; a gitignored local file does not count as evidence | 9 PASS |
 | `test_tsmp21_validation_tools.py` | 7 tests (9 cases) | NFR-004, NFR-008 (tools) | Availability arithmetic and 99% target; maintenance exclusion; strict window parsing; a sample is up only with `/results` 200 and API 401; unreachable stack is down; portability WARN vs FAIL rule; `.env` parsing | 9 PASS |
 
 One test assumption was wrong on the first run and was corrected: `validate_csv_bytes` still
@@ -346,7 +346,7 @@ python scripts/validation/check_rtm.py
 
 | File | Content |
 |---|---|
-| `pytest-core-2026-11-06.log`, `junit-core-2026-11-06.xml` | Latest regression run (6 Nov): 380 passed, 7 xfailed, 97.34% coverage, with the coverage report of missed lines |
+| `pytest-core-2026-11-06.log`, `junit-core-2026-11-06.xml` | Latest regression run (6 Nov): 381 passed, 7 xfailed, 97.34% coverage, with the coverage report of missed lines |
 | `pytest-core.log`, `junit-core.xml` | Regression run of 4 Nov: 335 passed, 6 xfailed, 96.37% coverage. `coverage.xml` is not committed (`.gitignore` excludes it). The coverage figure is in `pytest-core.log`, and CI uploads `coverage.xml` as the `coverage-xml` artifact of `core-tests` (run 41868670661; GitHub keeps it until 2 February 2027) |
 | `docker-suite-linux.log` | Containment suite, 9 passed, Linux 6.8 |
 | `ruff.log`, `makemigrations.log` | Lint and migration checks |

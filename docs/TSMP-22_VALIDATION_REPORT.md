@@ -44,7 +44,7 @@ in the RTM.
 
 | Measure | Result |
 |---|---|
-| Automated regression (pytest, non-Docker) | **380 passed, 0 failed, 7 xfailed** on 6 Nov (strict xfails documenting DEF-05, DEF-06, DEF-09). 4 Nov: 335 passed, 6 xfailed |
+| Automated regression (pytest, non-Docker) | **381 passed, 0 failed, 7 xfailed** on 6 Nov (strict xfails documenting DEF-05, DEF-06, DEF-09). 4 Nov: 335 passed, 6 xfailed |
 | Real-Docker containment suite (Linux Docker host) | **9 / 9 passed** |
 | Backend line coverage | **97.34%** on 6 Nov, 96.37% on 4 Nov (gate 80%) |
 | Lint / migration check | ruff clean; no missing migrations |

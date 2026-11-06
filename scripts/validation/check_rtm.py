@@ -19,6 +19,7 @@ Standard library only.
 from __future__ import annotations
 
 import re
+import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -195,7 +196,34 @@ def check_defects(register: str, rtm: str, problems: list[str]) -> int:
     return len(defects)
 
 
+# Cited on purpose but never committed: the reports say where to get them.
+NOT_COMMITTED = {"coverage.xml": "CI artifact `coverage-xml` of core-tests"}
+
+
+def repository_files() -> set[str] | None:
+    """Tracked and new (not ignored) files, so a gitignored local file never counts as evidence."""
+    try:
+        out = subprocess.run(
+            ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return None  # not a Git checkout: fall back to the file system
+    return {line for line in out.splitlines() if line}
+
+
 def check_evidence(problems: list[str]) -> int:
+    files = repository_files()
+
+    def present(path: Path) -> bool:
+        if files is None:
+            return path.exists()
+        rel = path.relative_to(ROOT).as_posix()
+        return rel in files or any(f.startswith(rel + "/") for f in files)
+
     names = set()
     for path in REPORTS:
         for name in EVIDENCE_NAME.findall(read(path)):
@@ -204,9 +232,12 @@ def check_evidence(problems: list[str]) -> int:
                 continue
             names.add((path.name, name))
     for doc, name in sorted(names):
+        if Path(name).name in NOT_COMMITTED:
+            continue
         candidates = [EVIDENCE / name, ROOT / name, DOCS / name]
-        if not any(c.exists() for c in candidates) and not list(EVIDENCE.rglob(Path(name).name)):
-            problems.append(f"{doc}: evidence file not found: {name}")
+        candidates += list(EVIDENCE.rglob(Path(name).name))
+        if not any(present(c) for c in candidates):
+            problems.append(f"{doc}: evidence file not found in the repository: {name}")
     return len(names)
 
 
