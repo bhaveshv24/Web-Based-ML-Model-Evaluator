@@ -1,0 +1,6 @@
+# ST-SEC-12 secret scan of the full Git history (2026-11-06T01:13:09Z), HEAD 10224fc, all refs
+# docker run --rm -v $PWD:/repo:ro zricethezav/gitleaks:v8.18.4 detect --source /repo --log-opts=--all --redact --no-banner
+1:13AM INF 52 commits scanned.
+1:13AM INF scan completed in 255ms
+1:13AM INF no leaks found
+# exit code 0

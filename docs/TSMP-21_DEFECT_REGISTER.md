@@ -53,7 +53,8 @@ Branch for every fix: `feature/TSMP-21-22-validation`. Retest commands are in
 - **Retest:** project and sandbox scans report no known vulnerabilities for project
   dependencies. The only remaining entries are for `setuptools` in the local virtual
   environment, which is a build tool and not a project dependency (CI upgrades it before
-  scanning). Full suite: 326 passed, 6 xfailed. All API contracts are unchanged.
+  scanning). Full suite at the time of the fix: 326 passed, 6 xfailed (the final regression run is 335 passed,
+  6 xfailed). All API contracts are unchanged.
   Status: **Retest Pass → Closed.**
 
 ### DEF-02 - No retention purge (High, Closed)
@@ -152,8 +153,10 @@ Branch for every fix: `feature/TSMP-21-22-validation`. Retest commands are in
 - **Regression tests:** `test_st_sec_11_oversize_body_is_rejected_from_content_length_before_parsing`
   (models and datasets; asserts the parser is never called) and
   `test_st_sec_11_body_at_the_limit_is_still_parsed_normally`.
-- **Retest (live):** 413 after 0.05 s with 6.4 MB sent, compared with 0.55 s and 209.7 MB before.
-  API memory 106.9 → 107.1 MiB. Status: **Retest Pass → Closed.**
+- **Retest (live):** 413 after 0.05 s with 5.9 MB sent, compared with 0.55 s and 209.7 MB before.
+  API memory 120.4 → 120.7 MiB; no file over 100 MB stored. Source: `ST-SEC-11` in
+  `docs/evidence/tsmp-21/system-results.json` (executed 2026-11-04T15:55:52Z on the final code).
+  Status: **Retest Pass → Closed.**
 
 ### DEF-09 - Development server and no HTTPS configuration in Compose (Medium, Open)
 

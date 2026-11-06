@@ -49,12 +49,14 @@ in the RTM.
 | Backend line coverage | **96.37%** (gate 80%) |
 | Lint / migration check | ruff clean; no missing migrations |
 | Live system cases (Compose stack) | **15 / 15 passed** |
-| Browser cases (Chrome, `/results`) | **7 / 7 passed** (after DEF-13 fix) |
+| Browser cases (`/results`) | **Chrome 7 / 7, Firefox 7 / 7 passed** (Chrome after DEF-13 fix). Edge not tested |
 | STP planned cases (80) | **75 passed, 4 failed, 1 blocked → 93.75%** (≥ 90% required) |
 
 Per STP module: M1 14/16, M2 14/15, M3 14/15, M4 13/13, security 13/13, non-functional 7/8.
-CI run [41863894224](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/41863894224):
-all four jobs (core-tests, sandbox-tests, security-scan, compose-smoke) succeeded.
+CI runs [41863894224](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/41863894224)
+and [41868670661](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/41868670661)
+(latest, `10224fc`): all four jobs (core-tests, sandbox-tests, security-scan, compose-smoke)
+succeeded. Run 41868670661 reproduced 335 passed, 6 xfailed and 96.37% coverage.
 All 4 failures and the 1 blocked case come from the missing React SPA (DEF-07).
 
 ## 3. System and browser validation
@@ -83,14 +85,14 @@ FR-022 and FR-024 are therefore **VERIFIED** in the browser (ST-REP-01..03 pass)
 | Password storage | ST-SEC-01 | PBKDF2-SHA256, salted, more than 100k iterations; no plaintext in the row |
 | RBAC / privilege escalation | ST-SEC-02 (6 cases), STP 11.1 matrix | USER → 403 on every evaluator/admin function; evaluator → 403 on admin. Deviations DEF-05 (evaluator cannot open member evaluation detail; more restrictive than spec) and DEF-06 (ADMIN treated as superset; no data disclosed) |
 | Tokens | ST-SEC-03, ST-SEC-04 | 15-minute lifetime; expired, tampered-role, `alg=none`, refresh-as-access, malformed and missing tokens → 401 |
-| Injection | ST-SEC-05 (16 + 2 cases) | Filter, date, page and target-column injections → 400/404 with no SQL text and no data leak |
+| Injection | ST-SEC-05 (17 test cases) | Filter, date, page and target-column injections → 400/404 with no SQL text and no data leak |
 | Path traversal | ST-SEC-06 (4 names) | Stored as `models/<uuid>.pkl` inside the media root only |
 | IDOR | ST-SEC-09 (16 endpoints) | 404 for every object of another user; no change to their data |
 | Rate limiting | ST-SEC-10 (live), SEC-007 uploads | 6th failed login → 429; per-user upload limit → 429 (DEF-03 fixed) |
-| Oversize upload | ST-SEC-11 (live, 200 MB) | 413 after 0.05 s with 6.4 MB read; memory stable (DEF-08 fixed) |
+| Oversize upload | ST-SEC-11 (live, 200 MB) | 413 after 0.05 s with 5.9 MB sent; API memory 120.4 → 120.7 MiB; nothing stored (DEF-08 fixed; `system-results.json`) |
 | Sandbox containment | IT-EXE-04, ST-SEC-07, ST-SEC-08, ST-EXE-02, cross-job (real Docker) | No network or DNS, non-root, read-only root, no labels or secrets visible, memory and PID exhaustion contained, timeout kills child processes, no cross-job visibility |
 | Audit | ST-SEC-13 | Failed login and 403 rows with user/email, IP, event, time; admin actions and retention purges audited |
-| Dependencies / static analysis / secrets | ST-SEC-12 | After DEF-01: pip-audit clean for project and sandbox dependencies; Bandit no medium or high findings; no secrets in Git history; `.env` ignored |
+| Dependencies / static analysis / secrets | ST-SEC-12 | After DEF-01: pip-audit clean for project and sandbox dependencies; Bandit no medium or high findings; gitleaks: no secrets in 52 commits on all refs (`gitleaks-history.log`); `.env` ignored and not tracked |
 | Configuration | ST-SEC-12 review | CORS restrictive by default (no CORS headers sent). **No HTTPS/TLS configuration, and the development server is used (DEF-09, open)** |
 
 No Critical security defect was found. Hostile-model containment held in every test.
@@ -127,8 +129,10 @@ simultaneous jobs need `WORKER_CONCURRENCY=5` and enough host memory (1 GB per s
   ARIA labels. The browser console was clean after the favicon fix (DEF-13).
 - **PORT-01 / NFR-008:** a fresh `docker compose down -v && up` on macOS (Colima) served the API
   in 8 s and passed every live case. On Ubuntu x86_64 (CI `compose-smoke`, run 41863894224) the API was
-  ready in 6 s and 3/3 smoke cases passed, including a sandboxed evaluation. **Windows (Docker Desktop) was not tested. Firefox and
-  Edge were not tested**; only Chrome was. NFR-008 is therefore PARTIAL.
+  ready in 6 s and 3/3 smoke cases passed, including a sandboxed evaluation. Browsers: all 7 `/results` cases pass in
+  Chrome 157 and in Firefox 155 (Playwright's Gecko build, run 6 November 2026,
+  `docs/evidence/tsmp-21/browser-firefox/`). **Windows (Docker Desktop) and Microsoft Edge were not
+  tested**: no Windows host was available and Edge is not installed. NFR-008 is therefore PARTIAL.
 - **Note for macOS developers:** the real-Docker test suite must run from a Linux container on
   the Docker host (`scripts/validation/run_docker_suite_linux.sh`), because the host's `/tmp`
   is not shared with the Docker VM.

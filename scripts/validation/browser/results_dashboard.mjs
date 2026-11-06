@@ -1,19 +1,33 @@
 // TSMP-21 browser system tests for the /results dashboard (ST-AUTH-01 sign-in/out part,
-// ST-REP-01, ST-REP-02, ST-REP-03), driven through the locally installed Google Chrome.
+// ST-REP-01, ST-REP-02, ST-REP-03), driven through a real browser.
 //
 //   cd scripts/validation/browser && npm install
 //   BASE_URL=http://localhost:8000 EMAIL=... PASSWORD=... node results_dashboard.mjs
 //
+// BROWSER selects the engine: "chrome" (default, the installed Google Chrome), "msedge" (the
+// installed Microsoft Edge) or "firefox" (Playwright's Firefox build, installed with
+// `npx playwright-core install firefox`). Chrome writes to docs/evidence/tsmp-21/ as before;
+// any other browser writes to docs/evidence/tsmp-21/browser-<BROWSER>/ so the Chrome evidence
+// is never overwritten.
+//
 // The account must own at least three SUCCEEDED classification evaluations on one dataset
-// and one SUCCEEDED regression evaluation. Screenshots and a JSON result file are written
-// to docs/evidence/tsmp-21/. Every check records its actual observation and PASS/FAIL.
+// and one SUCCEEDED regression evaluation. Every check records its actual observation and PASS/FAIL.
 import {mkdirSync, readFileSync, writeFileSync} from "node:fs";
 import {dirname, join} from "node:path";
 import {fileURLToPath} from "node:url";
-import {chromium} from "playwright-core";
+import {chromium, firefox} from "playwright-core";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "../../..");
-const evidence = join(root, "docs/evidence/tsmp-21");
+const engine = process.env.BROWSER ?? "chrome";
+const launchers = {
+  chrome: () => chromium.launch({channel: "chrome", headless: true}),
+  msedge: () => chromium.launch({channel: "msedge", headless: true}),
+  firefox: () => firefox.launch({headless: true}),
+};
+const names = {chrome: "Google Chrome", msedge: "Microsoft Edge", firefox: "Firefox (Playwright build)"};
+if (!launchers[engine]) throw new Error(`BROWSER must be one of ${Object.keys(launchers)}`);
+const evidence = engine === "chrome" ? join(root, "docs/evidence/tsmp-21")
+  : join(root, "docs/evidence/tsmp-21", `browser-${engine}`);
 const shots = join(evidence, "screenshots");
 mkdirSync(shots, {recursive: true});
 const base = process.env.BASE_URL ?? "http://localhost:8000";
@@ -33,7 +47,7 @@ async function capture(page, name) {
   return `screenshots/${file}`;
 }
 
-const browser = await chromium.launch({channel: "chrome", headless: true});
+const browser = await launchers[engine]();
 const context = await browser.newContext({viewport: {width: 1280, height: 720},
   acceptDownloads: true});
 const page = await context.newPage();
@@ -161,7 +175,7 @@ try {
 } finally {
   await browser.close();
   writeFileSync(join(evidence, "browser-results.json"), JSON.stringify(
-    {environment: {browser: `Google Chrome ${version} (headless)`, platform: process.platform,
+    {environment: {browser: `${names[engine]} ${version} (headless)`, platform: process.platform,
       arch: process.arch, viewport: "1280x720", base}, results}, null, 2) + "\n");
 }
 process.exit(results.every((r) => r.status === "PASS") ? 0 : 1);

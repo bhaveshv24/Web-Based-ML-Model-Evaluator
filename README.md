@@ -198,4 +198,5 @@ Framework floors were raised for TSMP-21 (DEF-01, ST-SEC-12) to Django 5.2 LTS (
 - [Repository audit](docs/TSMP-21-22_REPOSITORY_AUDIT.md)
 - [Test execution report](docs/TSMP-21_TEST_EXECUTION_REPORT.md) and [defect register](docs/TSMP-21_DEFECT_REGISTER.md)
 - [Requirements traceability matrix](docs/TSMP-22_REQUIREMENTS_TRACEABILITY_MATRIX.md) and [validation report](docs/TSMP-22_VALIDATION_REPORT.md)
+- [Progress and remaining blockers](docs/TSMP_PROGRESS.md)
 - Reproducible scripts are in `scripts/validation/`. Raw evidence is in `docs/evidence/tsmp-21/`.

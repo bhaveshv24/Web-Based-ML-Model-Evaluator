@@ -13,8 +13,8 @@ branch `feature/TSMP-21-22-validation`, based on `main` at `714c789`.
 | Pass rate, executed cases | 94.9% (75 / 79) |
 | Automated pytest regression | 335 passed, 0 failed, 6 strict xfail (DEF-05, DEF-06) |
 | Real-Docker containment suite | 9 / 9 passed (Linux Docker host) |
-| Live system cases on the Compose stack | 15 / 15 passed on the final code (§3.5) |
-| Browser cases on `/results` | 7 / 7 passed after the DEF-13 fix (§3.6) |
+| Live system cases on the Compose stack | 15 / 15 passed on the final code (§3.7) |
+| Browser cases on `/results` | Chrome 7 / 7 passed after the DEF-13 fix; Firefox 7 / 7 passed (§3.4, §3.8, §3.9). Edge not tested |
 | Backend line coverage | 96.37% (gate 80%) |
 | Defects found | 13 (0 Critical, 3 High, 5 Medium, 5 Low). 7 closed with regression tests and retest; 6 open |
 | Open High/Critical | **1 High open: DEF-07** (MLE-17 React SPA not implemented) |
@@ -147,7 +147,7 @@ any retest; first-run failures are noted in the Actual column.
 | ST-SEC-09 | SEC-008, FR-004 | User A on user B's ids | 404 each; no data | 404 on 16 endpoints (evaluation detail/status/charts/reports/delete, model, dataset get/patch, compatibility get/create, evaluation create, comparison create/get/reports); B's data unchanged | PASS | `::test_st_sec_09_user_a_gets_404_for_every_object_of_user_b` |
 | ST-SEC-10 | SEC-007 | 6 failed logins in a minute | 6th → 429 | Live: [401×5, 429] | PASS | `SYS:ST-SEC-10(live)`; `test_auth_history_workspaces.py::test_login_is_limited_to_five_attempts_per_ip_and_email` |
 | ST-SEC-11 | SEC-004 | 200 MB upload | 413 early; memory stable | **First run: 413 after 0.55 s, but all 209.7 MB were read first (DEF-08).** Retest: 413 after 0.05 s with 5.9 MB sent; API memory 120.4 → 120.7 MiB; nothing stored | PASS (retest) | `SYS:ST-SEC-11`; `::test_st_sec_11_*` |
-| ST-SEC-12 | SEC-009 | pip-audit, npm audit, Bandit, SonarQube | No critical findings; no secrets | **First run FAIL:** 19 advisory entries in Django/DRF/SimpleJWT/setuptools (DEF-01). Retest: project and sandbox dependencies clean; Bandit 0 medium/high (1 Low false positive); no secrets in Git history; `.env` ignored. npm audit not applicable (no frontend). SonarQube not configured (DEF-10, NFR-007) | PASS (retest) | `pip-audit-env.log`, `pip-audit-sandbox.log`, `bandit.log`; CI `security-scan` |
+| ST-SEC-12 | SEC-009 | pip-audit, npm audit, Bandit, SonarQube | No critical findings; no secrets | **First run FAIL:** 19 advisory entries in Django/DRF/SimpleJWT/setuptools (DEF-01). Retest: project and sandbox dependencies clean; Bandit 0 medium/high (1 Low false positive); gitleaks found no secrets in 52 commits on all refs; `.env` ignored and not tracked. npm audit not applicable (no frontend). SonarQube not configured (DEF-10, NFR-007) | PASS (retest) | `pip-audit-env.log`, `pip-audit-sandbox.log`, `bandit.log`, `pip-audit-retest.log`, `bandit-retest-ll.log`, `gitleaks-history.log`; CI `security-scan` |
 | ST-SEC-13 | SEC-006 | Failed login and a 403 | Audit rows with user, IP, event, time | `LOGIN_FAILED` (email, 203.0.113.7, time) and `AUTHORIZATION_DENIED` (user, 203.0.113.8, path, time) | PASS | `::test_st_sec_13_failed_login_and_403_are_audited_with_user_ip_event_and_time` |
 
 ### 3.6 Non-functional tests (8 cases: 7 pass, 1 blocked)
@@ -208,25 +208,57 @@ The driver was changed to use a fresh account per case, and the three cases were
 
 Strict-xfail cases are reported as FAIL here. They are not part of the 80 STP cases.
 
+### 3.9 Cross-browser run of the `/results` cases (NFR-008)
+
+Executed 6 November 2026 against the same Compose stack (final code) with
+`BROWSER=firefox node results_dashboard.mjs`, using a freshly seeded account whose four runs
+were executed in the sandbox by `seed_results.py`. The browser was Firefox 155.0 (Playwright's Gecko build, headless, macOS arm64).
+It is Playwright's patched Firefox build, the same Gecko engine as release Firefox, not a
+separately installed Firefox. Results: `docs/evidence/tsmp-21/browser-firefox/`.
+
+| Case | Chrome 157 (4 Nov) | Firefox 155 (6 Nov) | Firefox actual result |
+|---|---|---|---|
+| ST-AUTH-01(UI sign-in) | PASS | PASS | Signed in; 4 completed runs listed |
+| ST-REP-01 | PASS | PASS | 9 metric cards; 3×3 confusion matrix; ROC class switch AUC 1 → 0.97 |
+| ST-REP-02 | PASS | PASS | Predicted-vs-actual, residual plot and histogram (820 marks) |
+| ST-REP-03 | PASS | PASS | Mixed selection disables Compare; 3-model table with 8 best cells; JSON (3 evaluations) and PDF (`%PDF-`) downloaded |
+| UI-LAYOUT-1280 | PASS | PASS | 0 px overflow at 1280×720 |
+| ST-AUTH-01(UI sign-out) | PASS | PASS | 0 protected nodes after sign-out; history hidden after reload |
+| UI-CONSOLE | PASS (retest) | PASS | 0 console errors; no failed resources |
+
+**Microsoft Edge was not tested.** It is not installed on the test machine, and no Windows host
+was available. Edge uses the same Chromium engine as Chrome, but NFR-008 names Edge
+explicitly, so it stays untested. The script supports `BROWSER=msedge` once Edge is installed.
+
 ## 4. Non-functional tests
 
 PERF-01 load profile: each of the 50 simulated users signs in with its own seeded account and
 then runs history (weight 4), status (4), charts (2) and a re-login (1), waiting 1-3 s between
 requests. The 50 accounts and their completed evaluations were seeded directly in the database
 (`scripts/validation/perf/seed_load_users.py`), so no sandbox work ran during the measurement,
-as NFR-001 excludes evaluation requests. The 39 throttled logins are the SEC-007 login limit of
+as NFR-001 excludes evaluation requests. Request totals: Locust's final console summary
+(`perf01-console.log`) counts 7,377 requests. The aggregated row of `perf01_stats.csv` counts
+7,370. Both show 39 failures and an aggregate p95 of 120 ms. The report quotes the console
+figure, and the PASS verdict is the same with either. The 39 throttled logins are the SEC-007 login limit of
 5/min per IP and email. Random task choice occasionally made a user log in more than 5 times
 within a minute. They count as errors in the 0.53% error rate.
 
 ## 5. CI runs
 
-All four jobs passed on both pushes of branch `feature/TSMP-21-22-validation`. GitHub Actions
-was reporting degraded performance, so both runs waited about 20 minutes in the queue.
+All four jobs passed on all three pushes of branch `feature/TSMP-21-22-validation`. GitHub
+Actions was reporting degraded performance, so the first two runs waited about 20 minutes in the
+queue.
 
 | Run | Commit | core-tests | sandbox-tests | security-scan | compose-smoke |
 |---|---|---|---|---|---|
 | [41863340528](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/41863340528) | `e0b96b3` (code and tooling) | success | success | success | success |
 | [41863894224](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/41863894224) | `bb0f254` (with docs and evidence) | success | success | success | success |
+| [41868670661](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/41868670661) | `10224fc` (CI and PORT-01 evidence; latest) | success | success | success | success |
+
+Run 41868670661 (4 November 2026, 16:34-16:37 UTC) is the latest run on the branch. `core-tests`:
+ruff clean; 335 passed, 9 skipped (Docker), 6 xfailed; coverage 96.37%. `sandbox-tests`: 9 passed.
+`security-scan`: no known vulnerabilities in the project or sandbox requirements. `compose-smoke`:
+3/3 passed.
 
 - `core-tests`: ruff, migration check, full suite with Redis, coverage gate.
 - `sandbox-tests`: the real-Docker containment suite on Ubuntu, with the skip guard and the
@@ -273,21 +305,25 @@ LOAD_ACCOUNTS=/tmp/accounts.txt locust -f scripts/validation/perf/locustfile.py 
 python scripts/validation/browser/seed_results.py --out /tmp/browser.env
 cd scripts/validation/browser && npm install
 set -a; . /tmp/browser.env; set +a; node results_dashboard.mjs
+# Firefox (writes to docs/evidence/tsmp-21/browser-firefox/); BROWSER=msedge needs Edge installed
+npx playwright-core install firefox && BROWSER=firefox node results_dashboard.mjs
 ```
 
 ## 7. Evidence index (`docs/evidence/tsmp-21/`)
 
 | File | Content |
 |---|---|
-| `pytest-core.log`, `junit-core.xml`, `coverage.xml` | Final regression run: 335 passed, 6 xfailed, 96.37% |
+| `pytest-core.log`, `junit-core.xml` | Final regression run: 335 passed, 6 xfailed, 96.37% coverage. `coverage.xml` is not committed (`.gitignore` excludes it). The coverage figure is in `pytest-core.log`, and CI uploads `coverage.xml` as the `coverage-xml` artifact of `core-tests` (run 41868670661; GitHub keeps it until 2 February 2027) |
 | `docker-suite-linux.log` | Containment suite, 9 passed, Linux 6.8 |
 | `ruff.log`, `makemigrations.log` | Lint and migration checks |
 | `pip-audit-env.log`, `pip-audit-sandbox.log`, `bandit.log` | ST-SEC-12 **first run** (before DEF-01), kept as evidence of the defect |
 | `pip-audit-retest.log`, `bandit-retest-ll.log` | ST-SEC-12 retest after the DEF-01 fix |
+| `gitleaks-history.log` | ST-SEC-12 secret scan of the full Git history (all refs), run 6 November 2026 |
 | `system-results.json`, `system-tests-run1.log`, `system-tests-run2.log` | Live cases with actual result and status |
 | `perf01_*.csv`, `perf01-report.html`, `perf01-console.log` | PERF-01 Locust output |
 | `port01-macos.log`, `port01-linux-ci-compose-smoke.json` | PORT-01 on macOS (local) and Ubuntu (CI artifact) |
-| `browser-results.json`, `screenshots/01..07-*.png`, `browser-comparison-*.{json,pdf}` | Browser cases and the downloaded comparison reports |
+| `browser-results.json`, `screenshots/01..07-*.png`, `browser-comparison-*.{json,pdf}` | Chrome browser cases and the downloaded comparison reports |
+| `browser-firefox/` (same file layout) | Firefox browser cases (§3.9) |
 
 Screenshots are produced by the browser script against the live stack. No screenshot was edited
 or produced by hand.
@@ -296,7 +332,8 @@ or produced by hand.
 
 - One host. Load and functional runs share the machine, and Locust ran on the same host as the
   stack.
-- Windows (Docker Desktop), Firefox and Edge were not tested (NFR-008 PARTIAL).
+- Windows (Docker Desktop) and Edge were not tested (NFR-008 PARTIAL). No Windows machine or VM
+  was available, and Edge is not installed. Firefox was tested on 6 November (§3.9).
 - The macOS Docker VM does not share the host `/tmp`. The containment suite was therefore run
   from a Linux container on the Docker host (`--pid=host` so IT-EXE-05 sees the host process
   table). CI runs it natively on Ubuntu.

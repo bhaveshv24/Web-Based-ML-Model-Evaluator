@@ -42,7 +42,9 @@ Vite, Tailwind, Recharts) are not present.
 | Test suite + coverage | `REQUIRE_REDIS_TESTS=1 pytest --cov=backend --cov-fail-under=80` | **264 passed, 9 skipped** (Docker), coverage **96.17%** |
 | Docker containment suite | `scripts/validation/run_docker_suite_linux.sh` (Linux container on the Docker host) | **9 passed** |
 
-Log: `docs/evidence/tsmp-21/pytest-core.log` (baseline run). On macOS the Docker suite cannot
+The baseline log was not kept: `docs/evidence/tsmp-21/pytest-core.log` was later overwritten by
+the final regression run (335 passed, 6 xfailed). The baseline figures above are as recorded on
+4 November 2026. To reproduce them, run the same commands on `714c789`. On macOS the Docker suite cannot
 run directly, because the host's `/tmp` is not shared with the Docker VM (8 of 9 cases fail with
 sandbox exit code 3, input missing). This is the documented macOS bind-mount limitation, not a
 product defect. The suite was therefore run from a Linux container on the Docker host.
