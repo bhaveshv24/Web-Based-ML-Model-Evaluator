@@ -129,6 +129,23 @@ from the list, or select two to five runs on the same dataset and task and choos
 Both result views can download JSON and PDF. The [chart and export contracts and Sprint 2
 evidence](docs/SPRINT_2_EVIDENCE.md) describe the endpoints and verification steps.
 
+## React workflow (TSMP-17)
+
+The React/Vite client in `frontend/` provides registration/login, model and dataset upload, target
+selection, compatibility reports, task override, evaluation status polling, results, history,
+comparisons, evaluator workspaces and JSON/PDF downloads. Start Django using the local workflow
+above, then start the frontend in another PowerShell window:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173`; Vite proxies `/api` requests to Django on port 8000. See
+[`docs/TSMP_18_SECURITY_MATRIX.md`](docs/TSMP_18_SECURITY_MATRIX.md) for the authorization and
+input-security evidence matrix.
+
 ## Run the tests
 
 ```bash

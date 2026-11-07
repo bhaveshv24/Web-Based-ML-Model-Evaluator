@@ -41,3 +41,17 @@ Implemented on branch `TSMP-9-12-sandboxed-evaluation`; see the README section "
 - 120 s enforced timeout with container kill/removal, idempotent cleanup, reaper for crashed workers, sanitized error catalog and audit events.
 
 Evidence status: the containment suite `tests/test_sandbox_docker.py` needs a Docker host. It was **not executed on the development machine (no Docker)**. It runs in the CI job `sandbox-tests` with `REQUIRE_DOCKER_TESTS=1`, and this increment is not complete until that job passes.
+
+## TSMP-17 / TSMP-18 implementation update - 6 November 2026
+
+- Extended the existing React Router app with model and CSV upload, target selection,
+  compatibility reporting, task override, queued evaluation polling, result metrics/charts,
+  private history, run comparison, report downloads, and role-gated workspace actions.
+- Added the TSMP-18 role/action and input-security matrix at
+  [TSMP_18_SECURITY_MATRIX.md](TSMP_18_SECURITY_MATRIX.md), plus tests for SQL-like compatibility
+  IDs and target values.
+- Verification: `npm run lint`, `npm run build`, `ruff check tests/test_ingestion_api.py`, and
+  `manage.py check` pass; the focused auth, ingestion and reporting suites pass (89 tests, with
+  one ReportLab deprecation warning). This host has no Docker CLI, so the full browser path through
+  sandbox inspection/evaluation and its screenshots remain to be captured on a Docker-enabled
+  machine. Record CI and browser evidence before closing the Jira tickets.
