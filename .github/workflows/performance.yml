@@ -35,7 +35,8 @@ jobs:
       - name: Check frontend and API
         run: |
           for attempt in $(seq 1 90); do
-            if curl --fail --silent http://127.0.0.1:5173/login >/dev/null; then break; fi
+            status="$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:5173/api/v1/evaluations || true)"
+            if [ "$status" = 401 ]; then break; fi
             sleep 2
           done
           curl --fail http://127.0.0.1:5173/login >/dev/null
