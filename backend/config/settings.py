@@ -113,6 +113,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "evaluations.reap_stale_evaluations",
         "schedule": 60.0,
     },
+    "purge-expired-files": {
+        "task": "evaluations.purge_expired_files",
+        "schedule": 86400.0,
+    },
 }
 
 # FR-019 / BR-03: hard execution limit of the untrusted model run, in seconds.

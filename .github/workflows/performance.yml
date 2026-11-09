@@ -1,0 +1,73 @@
+name: Sprint 3 performance and portability
+
+on:
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'docker-compose.yml'
+      - 'Dockerfile'
+      - 'scripts/performance/**'
+      - '.github/workflows/performance.yml'
+  workflow_dispatch:
+
+jobs:
+  deployed-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PERF_PASSWORD: PerformanceTest123!
+      PERF_BASE_URL: http://127.0.0.1:5173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Configure disposable stack
+        run: |
+          cp .env.example .env
+          printf '\nDJANGO_SECRET_KEY=%s\nPOSTGRES_PASSWORD=%s\nSANDBOX_HOST_WORK_DIR=%s/sandbox-jobs\nWORKER_CONCURRENCY=5\n' \
+            "$(openssl rand -hex 32)" "$(openssl rand -hex 24)" "$GITHUB_WORKSPACE" >> .env
+          docker compose config --quiet
+      - name: Start Linux Compose stack
+        run: docker compose up --build -d
+      - name: Check frontend and API
+        run: |
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent http://127.0.0.1:5173/login >/dev/null; then break; fi
+            sleep 2
+          done
+          curl --fail http://127.0.0.1:5173/login >/dev/null
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:5173/api/v1/evaluations)" = 401
+      - name: Install benchmark dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]' locust
+      - name: Seed load accounts
+        run: docker compose exec -T -e PERF_PASSWORD api python scripts/performance/seed_load.py
+      - name: Validate exact 50 MiB CSV
+        run: PYTHONPATH=backend python scripts/performance/csv_50mb.py | tee perf-csv.json
+      - name: Reference and five-job sandbox evaluations
+        run: python scripts/performance/evaluations.py | tee perf-evaluations.json
+      - name: Verify crashed-worker cleanup
+        run: python scripts/performance/crash_cleanup.py | tee perf-recovery.json
+      - name: Run 50-user five-minute API load
+        run: locust -f scripts/performance/locustfile.py --headless -u 50 -r 10 -t 5m --host "$PERF_BASE_URL" --csv perf-load --only-summary
+      - name: Enforce latency and error targets
+        run: python scripts/performance/check_load.py perf-load_stats.csv | tee perf-load-summary.json
+      - name: Upload measured evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sprint-3-performance
+          path: |
+            perf-csv.json
+            perf-evaluations.json
+            perf-recovery.json
+            perf-load*.csv
+            perf-load-summary.json
+      - name: Stack diagnostics on failure
+        if: failure()
+        run: docker compose ps && docker compose logs --tail=100
+      - name: Stop disposable stack
+        if: always()
+        run: docker compose down -v --remove-orphans
