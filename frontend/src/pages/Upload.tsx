@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { logout } from "../api/auth";
+import { useNavigate } from "react-router-dom";
 import { errorMessage } from "../api/errors";
-import { api, currentRole } from "../api/client";
+import { api } from "../api/client";
 import { checkCompatibility, type CompatibilityReport, type Dataset, type ModelArtifact, updateTarget, uploadDataset, uploadModel } from "../api/ingestion";
 import { createEvaluation } from "../api/evaluations";
 
@@ -88,7 +87,7 @@ export default function Upload() {
       <div className="mx-auto min-w-0 max-w-3xl space-y-6 [overflow-wrap:anywhere]">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div><p className="text-xs uppercase tracking-[.18em] text-slate-500">Model evaluator</p><h1 className="text-3xl font-bold">New evaluation</h1></div>
-          <div className="flex gap-3"><Link className="rounded border bg-white px-3 py-2" to="/history">History</Link>{["EVALUATOR", "ADMIN"].includes(currentRole() ?? "") && <Link className="rounded border bg-white px-3 py-2" to="/workspace">Workspace</Link>}<button className="rounded border bg-white px-3 py-2" onClick={async () => { try { await logout(); } finally { navigate("/login"); } }}>Log out</button></div>
+
         </header>
         {error && <p role="alert" className="rounded bg-red-50 p-3 text-sm text-red-700">{error}</p>}
         {notice && <p role="status" className="rounded bg-green-50 p-3 text-sm text-green-800">{notice}</p>}
