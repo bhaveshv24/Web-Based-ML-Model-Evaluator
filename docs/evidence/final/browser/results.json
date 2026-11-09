@@ -1,0 +1,74 @@
+{
+  "executed_at": "2026-11-09T11:24:58.726Z",
+  "browser": "chrome",
+  "base_url": "http://localhost:5173",
+  "results": [
+    {
+      "id": "ST-AUTH-01-register",
+      "description": "Register and sign in through React",
+      "status": "PASS",
+      "screenshot": "ST-AUTH-01-register.png"
+    },
+    {
+      "id": "ST-ING-01",
+      "description": "Upload model and CSV, then validate compatibility",
+      "status": "PASS",
+      "screenshot": "ST-ING-01.png"
+    },
+    {
+      "id": "ST-EXE-01",
+      "description": "Run inference in a real sandbox and render classification",
+      "status": "PASS",
+      "screenshot": "ST-EXE-01.png"
+    },
+    {
+      "id": "ST-REP-exports",
+      "description": "Download parseable JSON and PDF from the React result",
+      "status": "PASS",
+      "screenshot": "ST-REP-exports.png"
+    },
+    {
+      "id": "ST-REP-comparison",
+      "description": "Refresh session, compare two compatible evaluations and export",
+      "status": "PASS",
+      "screenshot": "ST-REP-comparison.png"
+    },
+    {
+      "id": "ST-AUTH-02",
+      "description": "Filter history, cancel deletion, delete and preserve remaining shared run",
+      "status": "PASS",
+      "screenshot": "ST-AUTH-02.png"
+    },
+    {
+      "id": "ST-ING-negative",
+      "description": "Reject unsupported upload and incompatible dataset",
+      "status": "PASS",
+      "screenshot": "ST-ING-negative.png"
+    },
+    {
+      "id": "UI-responsive",
+      "description": "375-pixel workflow has no horizontal overflow",
+      "status": "PASS",
+      "screenshot": "UI-responsive.png"
+    },
+    {
+      "id": "ST-AUTH-01-logout",
+      "description": "Sign out and block protected history",
+      "status": "PASS",
+      "screenshot": "ST-AUTH-01-logout.png"
+    },
+    {
+      "id": "UI-evaluator",
+      "description": "evaluator controls and role-specific API access",
+      "status": "PASS",
+      "screenshot": "UI-evaluator.png"
+    },
+    {
+      "id": "UI-admin",
+      "description": "admin controls and role-specific API access",
+      "status": "PASS",
+      "screenshot": "UI-admin.png"
+    }
+  ],
+  "browser_errors": []
+}

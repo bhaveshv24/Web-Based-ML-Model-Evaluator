@@ -1,0 +1,9 @@
+........................................................................ [ 59%]
+.................................................                        [100%]
+=============================== warnings summary ===============================
+tests/test_sandbox_runner_script.py::test_scikit_learn_predictions_and_probabilities[model.joblib]
+  /private/tmp/mle-merge-venv/lib/python3.11/site-packages/sklearn/linear_model/_logistic.py:455: DeprecationWarning: scipy.optimize: The `disp` and `iprint` options of the L-BFGS-B solver are deprecated and will be removed in SciPy 1.18.0.
+    opt_res = optimize.minimize(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+121 passed, 1 warning in 10.41s

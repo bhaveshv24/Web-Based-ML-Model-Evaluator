@@ -2,7 +2,7 @@
 ## Team 13 final report
 PES University, Bengaluru | UE24CS341A Software Engineering | Semester V
 
-Prepared by Bhavesh Velluru on 9 November 2026. Review version 1.0. Implementation baseline `3f11b12` (PR #33 merged). This report consolidates the submitted baseline and the implementation available at that commit. Release acceptance remains conditional on the outstanding validation below. A separate project ID was absent from the supplied cover sheet; Team 13 is used as the submission identifier.
+Prepared by Bhavesh Velluru on 9 November 2026. Review version 1.1. Final implementation and evidence are identified by `docs/evidence/final/source-manifest.json`. This report consolidates the submitted baseline and the implementation available at that commit. Release acceptance remains conditional on the outstanding validation below. A separate project ID was absent from the supplied cover sheet; Team 13 is used as the submission identifier.
 
 ## 1. Synopsis and ownership
 Students, researchers and teaching assistants repeatedly write scripts to load trained models, validate CSV inputs, compute metrics and compare runs. This application supplies a common workflow with isolated inference, trusted scoring and exportable results. The stakeholders are ML engineering students, researchers and course evaluators.
@@ -50,7 +50,7 @@ Inference receives only staged model and feature inputs. Ground-truth labels and
 The principal API groups are `/api/v1/auth`, `/models`, `/datasets`, `/compatibility-reports`, `/evaluations`, `/comparisons` and `/workspaces`. Uploads are validated before queuing. A successful compatibility result is required to create an evaluation. The queue returns 202 and a status URL; completed results provide metrics/charts and report downloads. Error responses use sanitized codes and preserve ownership checks.
 
 ## 5. Implementation and product workflow
-The React routes in `frontend/src/App.tsx` include registration, login, upload, evaluation results, history and workspace. The separate Django `/results` dashboard provides classification/regression charts, comparison and downloads. These are distinct browser surfaces; the final demo should show the transition explicitly.
+The React routes in `frontend/src/App.tsx` include registration, login, upload, evaluation results, history and workspace. React now provides classification/regression charts, compatible comparison, downloads, history filters/deletion and role-specific controls in the same session. The earlier Django `/results` dashboard remains available.
 
 1. Register or sign in, then upload a supported trained model and CSV.
 2. Choose the target and inspect compatibility results. Invalid or mismatched inputs receive an explanation.
@@ -65,23 +65,23 @@ Comparison minimizes MAE/MSE/RMSE and maximizes other scored scalar metrics. Exa
 | --- | --- | --- |
 | Sprint 2 | 273 tests passed; 96.17% backend coverage | Historical run in SPRINT_2_EVIDENCE.md |
 | 6 November validation | 381 passed; 7 strict xfails; 97.34% coverage | Historical execution report; contains missing-UI findings |
-| 9 November merge verification at f16df83 | 385 passed; 9 Docker skips; 7 strict xfails; 97.34% backend line coverage | Local Python 3.11, Redis available, Docker daemon unavailable |
+| 9 November final regression | 416 passed; zero failures, skips or expected failures; 97.36% backend line coverage | Local Python 3.11 with Redis and real Docker; raw JUnit in docs/evidence/final |
 | Updated CI | Core, security, sandbox, Compose and cross-OS tooling checks | All captured checks succeeded, including the deployed performance workflow; see evidence index for exact runs |
-| Branch coverage | Final measurement pending Part 3 | No branch percentage claimed here |
+| Branch coverage | 92.67% (493/532 destinations) | Same final branch-enabled full-suite run |
 
-The seven expected failures retain known specification gaps concerning evaluator access, ADMIN role behavior and HTTPS settings. Expected failures and infrastructure skips require explicit treatment in the final test record. The merged React UI needs reruns of the original system cases and five-participant usability study. Windows tooling checks exercise scripts, while full portability needs the actual Compose deployment on the required hosts.
+The former expected failures are resolved through evaluator access fixes, HTTPS configuration and the documented ADMIN hierarchy. Final regression has no expected failures or infrastructure skips. The merged React workflow passed its final 11-scenario browser run. The five-participant usability study still needs real participants. Windows tooling checks exercise scripts, while full portability needs the actual Compose deployment on the required hosts.
 
-The Part 3 package will contain updated cases, unit results, system validation, code coverage and branch coverage in `docs/`. Use one final commit, expected/actual outcomes and reproducible evidence links. See [test execution report](TSMP-21_TEST_EXECUTION_REPORT.md) and [defect register](TSMP-21_DEFECT_REGISTER.md).
+The Part 3 package now contains updated cases and the four reports in `docs/`. See UNIT_TEST_REPORT.md, SYSTEM_VALIDATION_REPORT.md, CODE_COVERAGE_REPORT.md and BRANCH_COVERAGE_REPORT.md. Use one final commit, expected/actual outcomes and reproducible evidence links. See [test execution report](TSMP-21_TEST_EXECUTION_REPORT.md) and [defect register](TSMP-21_DEFECT_REGISTER.md).
 
 ## 7. Validation, limitations and open decisions
-The 6 November report counted 41 verified, 5 partial, 1 unverified and 1 unimplemented requirement. This is a dated baseline, not the acceptance count for the merged build. The new frontend removes the earlier absence of source but still needs test evidence before the four failed UI cases and usability case can be closed.
+The 6 November report counted 41 verified, 5 partial, 1 unverified and 1 unimplemented requirement. This is a dated baseline, not the acceptance count for the merged build. The new frontend and final browser run resolve the four earlier UI case failures. The human usability case remains separate and blocked pending participants.
 
-Remaining decisions include evaluator access to workspace-member results (DEF-05), ADMIN role policy (DEF-06), deployed HTTPS (DEF-09), the SonarQube gate (DEF-10), and when shared uploads should be removed following evaluation deletion (DEF-12). DEF-07 needs retest against the new UI. Availability requires a defined observation window. Acceptance of deviations must be recorded by the team/course reviewer.
+Evaluator access, React controls, shared-upload deletion and HTTPS configuration have been implemented and tested. The retained ADMIN hierarchy is explained in FINAL_SRS_SAD_STP_UPDATE.md. Final measured SonarQube, performance, availability and outstanding environment/human evidence are recorded in FINAL_SUBMISSION_CHECKLIST.md. Acceptance of deviations must be recorded by the team/course reviewer.
 
 The project is ready for final validation and demonstration preparation. Release acceptance requires the STP conditions to be evaluated on the final build, including High-priority requirements, the overall pass rate, open High/Critical defects and quality/security gates.
 
 ## 8. Screenshots and demo evidence
-The captioned [demo evidence index](TSMP-23_DEMO_EVIDENCE.md) links seven existing product captures, PRs, source documents and CI runs. Those captures show the earlier `/results` dashboard. They are dated evidence of that surface. New React workflow captures and the final recording remain team actions listed in that index.
+The captioned [demo evidence index](TSMP-23_DEMO_EVIDENCE.md) links seven existing product captures, PRs, source documents and CI runs. Those captures show the earlier `/results` dashboard. They are dated evidence of that surface. New React workflow captures are in docs/evidence/final/browser; the final narrated recording remains a team action.
 
 ## 9. Maintenance
 The [maintenance plan](TSMP-23_MAINTENANCE_PLAN.md) defines corrective, adaptive, perfective and preventive work, owner responsibilities, regression checks, backup/recovery, retention and rollback.

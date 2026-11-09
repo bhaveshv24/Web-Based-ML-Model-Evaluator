@@ -1,0 +1,14 @@
+{
+  "case": "PERF-01",
+  "requests": 7575,
+  "failures": 0,
+  "error_rate": 0.0,
+  "p95_ms": 140.0,
+  "route_p95_ms": {
+    "charts": 26.0,
+    "history": 24.0,
+    "login": 180.0,
+    "status": 25.0
+  },
+  "passed": true
+}

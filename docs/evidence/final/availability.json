@@ -1,0 +1,471 @@
+{
+  "requirement": "NFR-004",
+  "base_url": "http://localhost:8000",
+  "window": {
+    "start": "2026-11-09T11:19:00+00:00",
+    "end": "2026-11-09T11:24:00+00:00",
+    "interval_seconds": 10.0,
+    "maintenance": []
+  },
+  "summary": {
+    "samples_total": 30,
+    "samples_in_maintenance": 0,
+    "samples_counted": 30,
+    "samples_up": 30,
+    "availability": 1.0,
+    "target": 0.99,
+    "meets_target": true
+  },
+  "samples": [
+    {
+      "at": "2026-11-09T11:19:00+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 12.5
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 5.5
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:19:10+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 7.3
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.9
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:19:20+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 3.8
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.8
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:19:30+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 3.7
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 2.7
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:19:40+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 10.8
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 4.1
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:19:50+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 4.6
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 5.8
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:20:00+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 5.7
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.2
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:20:10+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 4.1
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.0
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:20:20+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 14.2
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 5.3
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:20:30+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 9.0
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 4.2
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:20:40+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 6.1
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 2.0
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:20:50+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 4.3
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.2
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:21:00+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 3.9
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 2.9
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:21:10+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 4.9
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 2.1
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:21:20+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 4.0
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 2.9
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:21:30+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 3.8
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 2.4
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:21:40+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 5.1
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.4
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:21:50+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 6.9
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.5
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:22:00+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 4.3
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 2.2
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:22:10+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 5.4
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.1
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:22:20+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 8.7
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.3
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:22:30+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 6.8
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 2.6
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:22:40+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 4.0
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.0
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:22:50+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 5.2
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 5.0
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:23:00+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 7.6
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 4.4
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:23:10+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 10.8
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.1
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:23:20+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 6.0
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 2.9
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:23:30+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 5.6
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 3.4
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:23:40+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 21.3
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 17.7
+        }
+      }
+    },
+    {
+      "at": "2026-11-09T11:23:50+00:00",
+      "up": true,
+      "maintenance": false,
+      "checks": {
+        "/results": {
+          "status": 200,
+          "ms": 22.4
+        },
+        "/api/v1/evaluations": {
+          "status": 401,
+          "ms": 27.9
+        }
+      }
+    }
+  ]
+}

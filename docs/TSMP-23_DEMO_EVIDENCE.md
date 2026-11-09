@@ -97,3 +97,19 @@ If an evaluation takes longer than the allotted demo time, show its actual statu
 - Execute five-participant usability and outstanding environment/availability checks, recording actual outcomes.
 - Add final Part 3 report links and commit after those reports are generated. Reconcile dated TSMP-21/22 conclusions before release acceptance.
 - Review the reconstructed retrospectives, risk owners and proposed maintenance targets with the team.
+
+## Final integrated React evidence - 9 November 2026
+
+Current verification is in [the System Validation Report](SYSTEM_VALIDATION_REPORT.md),
+[the four final report links and checklist](FINAL_SUBMISSION_CHECKLIST.md), and
+[the source/design amendment](FINAL_SRS_SAD_STP_UPDATE.md).
+
+- Figure 8. [React upload and compatibility](evidence/final/browser/ST-ING-01.png).
+- Figure 9. [Completed real sandbox evaluation and charts](evidence/final/browser/ST-EXE-01.png).
+- Figure 10. [React comparison and report export](evidence/final/browser/ST-REP-comparison.png).
+- Figure 11. [Phone-width validation flow](evidence/final/browser/UI-responsive.png).
+
+The earlier figures remain historical dashboard evidence. Use the current React flow
+for the final demonstration. Updated test cases and all four required reports are now
+in docs. Actual sprint video links, narrated final recording and team/participant review
+remain team evidence listed in the final checklist.

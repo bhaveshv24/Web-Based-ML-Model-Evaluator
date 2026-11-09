@@ -1,0 +1,15 @@
+
+> frontend@0.0.0 test
+> node --experimental-strip-types --test tests/*.test.mjs
+
+✔ concurrent page requests rotate a refresh token once (52.660167ms)
+✔ an in-flight refresh cannot restore a signed-out session (0.857583ms)
+✔ expired refresh ends the session and returns the unauthorized response (0.292083ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 195.571667

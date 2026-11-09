@@ -1,0 +1,103 @@
+........................................................................ [ 17%]
+........................................................................ [ 34%]
+........................................................................ [ 51%]
+........................................................................ [ 69%]
+........................................................................ [ 86%]
+........................................................                 [100%]
+=============================== warnings summary ===============================
+tests/test_sandbox_docker.py::test_it_exe_02_scikit_learn_model_end_to_end
+tests/test_sandbox_runner_script.py::test_scikit_learn_predictions_and_probabilities[model.joblib]
+  /private/tmp/mle-merge-venv/lib/python3.11/site-packages/sklearn/linear_model/_logistic.py:455: DeprecationWarning: scipy.optimize: The `disp` and `iprint` options of the L-BFGS-B solver are deprecated and will be removed in SciPy 1.18.0.
+    opt_res = optimize.minimize(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.11.17-final-0 _______________
+
+Name                                                                                     Stmts   Miss Branch BrPart  Cover   Missing
+------------------------------------------------------------------------------------------------------------------------------------
+backend/accounts/__init__.py                                                                 0      0      0      0   100%
+backend/accounts/apps.py                                                                     4      0      0      0   100%
+backend/accounts/managers.py                                                                16      0      2      0   100%
+backend/accounts/migrations/0001_initial.py                                                  9      0      0      0   100%
+backend/accounts/migrations/__init__.py                                                      0      0      0      0   100%
+backend/accounts/models.py                                                                  30      0      0      0   100%
+backend/accounts/permissions.py                                                             18      0      4      0   100%
+backend/accounts/serializers.py                                                             52      0      4      0   100%
+backend/accounts/throttles.py                                                                9      0      0      0   100%
+backend/accounts/urls.py                                                                     3      0      0      0   100%
+backend/accounts/views.py                                                                   74      0      8      0   100%
+backend/benchmarking/__init__.py                                                             0      0      0      0   100%
+backend/benchmarking/comparison.py                                                          38      0     16      0   100%
+backend/benchmarking/pdf.py                                                                 91      1     40      1    98%   22
+backend/benchmarking/reports.py                                                             19      1      4      1    91%   56
+backend/benchmarking/urls.py                                                                 4      0      0      0   100%
+backend/benchmarking/views.py                                                               63      0      6      0   100%
+backend/config/__init__.py                                                                   2      0      0      0   100%
+backend/config/celery.py                                                                     6      0      0      0   100%
+backend/config/exceptions.py                                                                23      2     14      2    89%   14, 20
+backend/config/settings.py                                                                  68      1      2      1    97%   44
+backend/config/urls.py                                                                       4      0      0      0   100%
+backend/config/wsgi.py                                                                       4      4      0      0     0%   3-8
+backend/evaluations/__init__.py                                                              0      0      0      0   100%
+backend/evaluations/apps.py                                                                  6      0      0      0   100%
+backend/evaluations/audit.py                                                                12      0      0      0   100%
+backend/evaluations/errors.py                                                               33      0      2      0   100%
+backend/evaluations/executor.py                                                            118      7     24      3    93%   98-99, 125, 138, 171-173, 203->211
+backend/evaluations/inputs.py                                                               76      5     22      1    94%   32, 50-51, 79, 91
+backend/evaluations/metrics/__init__.py                                                      4      0      0      0   100%
+backend/evaluations/metrics/classification.py                                               30      0      8      0   100%
+backend/evaluations/metrics/engine.py                                                       87      3     22      3    94%   71, 113, 119
+backend/evaluations/metrics/predictions.py                                                  79      0     44      0   100%
+backend/evaluations/metrics/regression.py                                                   15      1      2      1    88%   8
+backend/evaluations/metrics/roc.py                                                          29      1     12      1    95%   16
+backend/evaluations/migrations/0001_initial.py                                               8      0      0      0   100%
+backend/evaluations/migrations/0002_evaluation_lifecycle.py                                  6      0      0      0   100%
+backend/evaluations/migrations/0003_comparison.py                                            7      0      0      0   100%
+backend/evaluations/migrations/0004_evaluationartifact_created_at_report_created_at.py      10      1      4      1    86%   12
+backend/evaluations/migrations/__init__.py                                                   0      0      0      0   100%
+backend/evaluations/models.py                                                               66      1      2      0    99%   81
+backend/evaluations/reaper.py                                                               40      2     12      2    92%   40->39, 49->48, 70-71
+backend/evaluations/retention.py                                                             4      0      0      0   100%
+backend/evaluations/sandbox/__init__.py                                                      7      0      0      0   100%
+backend/evaluations/sandbox/base.py                                                         55      1      8      0    98%   79
+backend/evaluations/sandbox/docker_runner.py                                               139     10     32      2    92%   150-151, 155-160, 255-256, 261, 283->276
+backend/evaluations/sandbox/workspace.py                                                   133     13     38      8    88%   56, 60, 70, 72, 87, 118, 141-142, 145, 149-150, 167-168, 171->161
+backend/evaluations/security.py                                                              8      0      0      0   100%
+backend/evaluations/serializers.py                                                          25      0      0      0   100%
+backend/evaluations/services.py                                                             78      1     14      1    98%   181
+backend/evaluations/signals.py                                                              10      0      2      1    92%   13->exit
+backend/evaluations/task_detection.py                                                       83      4     36      4    93%   28, 33, 71, 73
+backend/evaluations/tasks.py                                                                26      2      0      0    92%   63-64
+backend/evaluations/urls.py                                                                  3      0      0      0   100%
+backend/evaluations/views.py                                                                97      0     30      0   100%
+backend/ingestion/__init__.py                                                                0      0      0      0   100%
+backend/ingestion/apps.py                                                                    6      0      0      0   100%
+backend/ingestion/compatibility.py                                                          31      0      6      0   100%
+backend/ingestion/inspection.py                                                             28      0      4      0   100%
+backend/ingestion/management/__init__.py                                                     0      0      0      0   100%
+backend/ingestion/management/commands/__init__.py                                            0      0      0      0   100%
+backend/ingestion/management/commands/purge_expired.py                                       7      0      0      0   100%
+backend/ingestion/migrations/0001_initial.py                                                 9      0      0      0   100%
+backend/ingestion/migrations/__init__.py                                                     0      0      0      0   100%
+backend/ingestion/models.py                                                                 46      0      0      0   100%
+backend/ingestion/retention.py                                                              33      0     12      0   100%
+backend/ingestion/signals.py                                                                10      0      2      1    92%   13->exit
+backend/ingestion/tasks.py                                                                   5      0      0      0   100%
+backend/ingestion/urls.py                                                                    3      0      0      0   100%
+backend/ingestion/validators.py                                                            140      1     68      2    99%   89->79, 93
+backend/ingestion/views.py                                                                 137      1     24      1    99%   47
+backend/workspaces/__init__.py                                                               0      0      0      0   100%
+backend/workspaces/apps.py                                                                   4      0      0      0   100%
+backend/workspaces/migrations/0001_initial.py                                                8      0      0      0   100%
+backend/workspaces/migrations/__init__.py                                                    0      0      0      0   100%
+backend/workspaces/models.py                                                                17      0      0      0   100%
+backend/workspaces/serializers.py                                                           29      0      2      0   100%
+backend/workspaces/urls.py                                                                   3      0      0      0   100%
+backend/workspaces/views.py                                                                 37      0      0      0   100%
+------------------------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                                     2384     63    532     37    97%
+Coverage XML written to file docs/evidence/final/coverage.xml
+Coverage JSON written to file /tmp/mle-finalization/coverage.json
+Required test coverage of 80% reached. Total coverage: 96.50%
+416 passed, 2 warnings in 72.66s (0:01:12)

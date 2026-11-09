@@ -1,5 +1,7 @@
 # TSMP-21 (MLE-21) - Test execution report
 
+Historical execution snapshot from 4-6 November. Current results and dispositions are in [SYSTEM_VALIDATION_REPORT.md](SYSTEM_VALIDATION_REPORT.md).
+
 Full regression, security, performance, reliability, usability, portability and retention
 execution for the Web-Based ML Model Evaluator. Executed 4 November 2026 by Ayush M Shetty on
 branch `feature/TSMP-21-22-validation`, based on `main` at `714c789`.

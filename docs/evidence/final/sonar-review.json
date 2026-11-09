@@ -1,0 +1,16 @@
+{
+  "reviewed_findings": [
+    {
+      "rule": "python:S4502",
+      "file": "backend/config/settings.py",
+      "original_message": "Make sure disabling CSRF protection is safe here.",
+      "resolution": "Enabled Django CSRF middleware; bearer-only API views retain their standard DRF behavior."
+    },
+    {
+      "rule": "python:S5443",
+      "file": "backend/evaluations/sandbox/docker_runner.py",
+      "original_message": "Make sure publicly writable directories are used safely here.",
+      "resolution": "Replaced the generic /tmp mount with dedicated /sandbox-tmp, mode 0700 and matching UID/GID. Effective tmpfs and working directory are verified after Docker create. Policy-tamper and real containment tests cover the hardened boundary. No Sonar rule suppression is used."
+    }
+  ]
+}

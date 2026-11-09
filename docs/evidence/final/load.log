@@ -1,0 +1,27 @@
+[2026-11-09 16:48:23,429] BhaveshVellurus-MacBook-Air/INFO/locust.main: Starting Locust 2.47.0
+[2026-11-09 16:48:23,432] BhaveshVellurus-MacBook-Air/INFO/locust.main: Run time limit set to 310 seconds
+[2026-11-09 16:48:23,432] BhaveshVellurus-MacBook-Air/INFO/locust.runners: Ramping to 50 users at a rate of 10.00 per second
+[2026-11-09 16:48:27,440] BhaveshVellurus-MacBook-Air/INFO/locust.runners: All users spawned: {"EvaluatorUser": 50} (50 total users)
+[2026-11-09 16:48:27,441] BhaveshVellurus-MacBook-Air/INFO/locust.runners: Resetting stats
+
+[2026-11-09 16:53:32,030] BhaveshVellurus-MacBook-Air/INFO/locust.main: --run-time limit reached, shutting down
+[2026-11-09 16:53:32,091] BhaveshVellurus-MacBook-Air/INFO/locust.main: Shutting down (exit code 0)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      charts                                                                          1280     0(0.00%) |     15       8      86     14 |    4.20        0.00
+GET      history                                                                         3209     0(0.00%) |     14       8     164     13 |   10.53        0.00
+POST     login                                                                            547     0(0.00%) |    155     136     431    150 |    1.80        0.00
+GET      status                                                                          2559     0(0.00%) |     15       9     158     14 |    8.40        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      7595     0(0.00%) |     25       8     431     14 |   24.93        0.00
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      charts                                                                                 14     16     17     18     21     26     31     35     73     86     86   1280
+GET      history                                                                                13     15     16     17     20     24     30     36     89    160    160   3209
+POST     login                                                                                 150    150    160    160    170    180    230    300    430    430    430    547
+GET      status                                                                                 14     16     17     18     21     25     31     35    110    160    160   2559
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                             14     16     18     19     28    140    160    170    270    430    430   7595
+

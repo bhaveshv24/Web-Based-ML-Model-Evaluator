@@ -1,0 +1,45 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+browserType.launch: Failed to launch the browser process.
+Browser logs:
+
+<launching> /Users/bvell/Library/Caches/ms-playwright/firefox-1543/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/1l/xq3m44b14lx_6mmt27mzhd0w0000gn/T/playwright_firefoxdev_profile-czFbyd -juggler-pipe -silent
+<launched> pid=39733
+[pid=39733][err] *** You are running in headless mode.
+[pid=39733][err] Could not find profile folder.
+[pid=39733] <process did exit: exitCode=1, signal=null>
+[pid=39733] starting temporary directories cleanup
+Call log:
+[2m  - <launching> /Users/bvell/Library/Caches/ms-playwright/firefox-1543/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/1l/xq3m44b14lx_6mmt27mzhd0w0000gn/T/playwright_firefoxdev_profile-czFbyd -juggler-pipe -silent[22m
+[2m  - <launched> pid=39733[22m
+[2m  - [pid=39733][err] *** You are running in headless mode.[22m
+[2m  - [pid=39733][err] Could not find profile folder.[22m
+[2m  - [pid=39733] <process did exit: exitCode=1, signal=null>[22m
+[2m  - [pid=39733] starting temporary directories cleanup[22m
+[2m  - [pid=39733] <gracefully close start>[22m
+[2m  - [pid=39733] <kill>[22m
+[2m  - [pid=39733] <skipped force kill spawnedProcess.killed=false processClosed=true>[22m
+[2m  - [pid=39733] finished temporary directories cleanup[22m
+[2m  - [pid=39733] <gracefully close end>[22m
+
+    at /Users/bvell/Documents/GitHub/Web-Based-ML-Model-Evaluator/scripts/validation/browser/final_workflow.mjs:16:19
+    at async node:internal/modules/esm/loader:650:26 {
+  log: [
+    '  - <launching> /Users/bvell/Library/Caches/ms-playwright/firefox-1543/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/1l/xq3m44b14lx_6mmt27mzhd0w0000gn/T/playwright_firefoxdev_profile-czFbyd -juggler-pipe -silent',
+    '  - <launched> pid=39733',
+    '  - [pid=39733][err] *** You are running in headless mode.',
+    '  - [pid=39733][err] Could not find profile folder.',
+    '  - [pid=39733] <process did exit: exitCode=1, signal=null>',
+    '  - [pid=39733] starting temporary directories cleanup',
+    '  - [pid=39733] <gracefully close start>',
+    '  - [pid=39733] <kill>',
+    '  - [pid=39733] <skipped force kill spawnedProcess.killed=false processClosed=true>',
+    '  - [pid=39733] finished temporary directories cleanup',
+    '  - [pid=39733] <gracefully close end>'
+  ],
+  name: 'Error'
+}
+
+Node.js v26.7.0

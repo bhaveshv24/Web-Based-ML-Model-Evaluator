@@ -1,0 +1,8 @@
+{
+  "deployment": "compose.https.yml; Caddy -> Nginx -> Django",
+  "host": "localhost:8443",
+  "certificate_verification": "curl --cacert using local Caddy CA; verification enabled",
+  "unauthenticated_status": 401,
+  "hsts": true,
+  "ssl_redirect_test": "tests/test_tsmp21_sec009.py::test_production_settings_enforce_https"
+}

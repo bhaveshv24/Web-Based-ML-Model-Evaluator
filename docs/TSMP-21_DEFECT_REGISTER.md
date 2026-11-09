@@ -16,18 +16,33 @@ Branch for every fix: `feature/TSMP-21-22-validation`. Retest commands are in
 | DEF-02 | High | P1 | NFR-010 | RET-01 | No retention purge for uploads and reports | **Closed** |
 | DEF-03 | Medium | P2 | SEC-007 | ST-SEC-10 (extended) | Uploads not rate limited per user | **Closed** |
 | DEF-04 | Medium | P2 | SEC-002, FR-004, BR-08 (UC-12, API-23) | ST-SEC-02 | No admin activate/deactivate endpoint | **Closed** |
-| DEF-05 | Medium | P2 | SEC-008, BR-05, FR-007 | STP 11.1 matrix | Evaluator cannot open a workspace member's evaluation, charts or reports | **Open** |
-| DEF-06 | Low | P3 | FR-004, SEC-002 | STP 11.1 matrix | ADMIN gets evaluator/user functions where the matrix expects 403 | **Open** (team decision) |
-| DEF-07 | High | P1 | UI-01..UI-08, NFR-005; system tests for FR-001..007, FR-008..013, FR-014..021 | ST-AUTH-01/02, ST-ING-01, ST-EXE-01, USA-01 | MLE-17 React single-page application not implemented | **Open** (blocker, outside TSMP-21 scope) |
+| DEF-05 | Medium | P2 | SEC-008, BR-05, FR-007 | STP 11.1 matrix | Evaluator cannot open a workspace member's evaluation, charts or reports | **Closed** |
+| DEF-06 | Low | P3 | FR-004, SEC-002 | STP 11.1 matrix | ADMIN gets evaluator/user functions where the matrix expects 403 | **Closed** |
+| DEF-07 | High | P1 | UI-01..UI-08, NFR-005; system tests for FR-001..007, FR-008..013, FR-014..021 | ST-AUTH-01/02, ST-ING-01, ST-EXE-01, USA-01 | MLE-17 React single-page application not implemented | **Closed** |
 | DEF-08 | Low | P3 | SEC-004 | ST-SEC-11 | Oversize upload is read in full before the 413 | **Closed** |
-| DEF-09 | Medium | P2 | SEC-009, NFR-008 | ST-SEC-12 (configuration review) | Compose serves the API with Django's development server, without TLS or HTTPS settings | **Open** |
-| DEF-10 | Low | P3 | NFR-007 | CI quality gate | SonarQube quality gate not configured | **Open** |
+| DEF-09 | Medium | P2 | SEC-009, NFR-008 | ST-SEC-12 (configuration review) | Compose serves the API with Django's development server, without TLS or HTTPS settings | **Closed** |
+| DEF-10 | Low | P3 | NFR-007 | CI quality gate | SonarQube quality gate not configured | **Closed** |
 | DEF-11 | Low | P4 | NFR-008 (installation docs) | PORT-01 | `.env.example` points to a document that does not exist | **Closed** |
-| DEF-12 | Medium | P2 | FR-006, NFR-010 | IT-AUTH-09 (extended) | Deleting an evaluation keeps its uploaded model and dataset until retention | **Open** (team decision) |
+| DEF-12 | Medium | P2 | FR-006, NFR-010 | IT-AUTH-09 (extended) | Deleting an evaluation keeps its uploaded model and dataset until retention | **Closed** |
 | DEF-13 | Low | P4 | UI-05 (UI quality) | UI-CONSOLE | `/results` declares no icon, so the browser logs a 404 for `/favicon.ico` | **Closed** |
 
-13 defects: 0 Critical, 3 High, 5 Medium, 5 Low. 7 closed, 6 open.
-**High: 3 found, 2 closed, 1 open (DEF-07).**
+13 defects: 0 Critical, 3 High, 5 Medium, 5 Low. Final disposition: 13 closed.
+**High: 3 found, 3 closed, 0 open.**
+
+## Final dispositions - 9 November 2026
+
+The status table above is current. Historical descriptions below preserve the discovery
+context and earlier results; open-status wording there describes that earlier snapshot.
+
+- DEF-05 closes with workspace evaluator read-only access, membership-revocation and owner-only deletion checks.
+- DEF-06 closes through the explicitly documented ADMIN hierarchy in FINAL_SRS_SAD_STP_UPDATE.md.
+- DEF-07 closes with implemented React routes and the passing final browser flow. The five-person usability study is still a separate evidence task.
+- DEF-09 closes with Gunicorn and the tested Caddy/Nginx HTTPS override, certificate verification, redirect and HSTS settings.
+- DEF-10 closes with the actual SonarQube gate and CI job, including the configured blocker/critical conditions.
+- DEF-12 closes with last-reference upload deletion and commit/rollback-safe file removal.
+
+See SYSTEM_VALIDATION_REPORT.md and docs/evidence/final for the measured results. Participant,
+Windows and video evidence are tracked in FINAL_SUBMISSION_CHECKLIST.md.
 
 ## Details
 

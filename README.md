@@ -234,6 +234,8 @@ vulnerabilities after the upgrades and no high-severity Bandit findings.
 ## Final submission documents (TSMP-23 / TSMP-24)
 
 - [Final report](docs/TSMP-23_FINAL_REPORT.md) and [PDF](docs/Team13_FinalReport.pdf)
+- [Updated combined SRS/SAD/STP](docs/Team13_SRS_SAD_STP_Final.pdf)
+- [Final checklist and all four testing reports](docs/FINAL_SUBMISSION_CHECKLIST.md)
 - [Maintenance plan](docs/TSMP-23_MAINTENANCE_PLAN.md) and [PDF](docs/Team13_MaintenancePlan.pdf)
 - [Demo runbook and captioned evidence](docs/TSMP-23_DEMO_EVIDENCE.md) and [13-slide presentation](docs/Team13_FinalPresentation.pptx)
 - [Risk register](docs/TSMP-24_RISK_REGISTER.md)
@@ -241,3 +243,26 @@ vulnerabilities after the upgrades and no high-severity Bandit findings.
 
 These documents identify the implementation baseline and dated validation evidence. Final
 Part 3 results and team review decisions should be added before release acceptance.
+
+## Final application and validation
+
+Open **http://localhost:5173** after `docker compose up --build -d`. The website uses the
+API, database and queue behind that browser interface. Docker also isolates each uploaded
+model during inspection and inference. React now provides results, comparison and exports
+on the same browser session, along with history filtering/deletion, workspace sharing and
+ADMIN account/audit controls.
+
+For an HTTPS deployment, set `APP_DOMAIN` to your public hostname, include it in
+`DJANGO_ALLOWED_HOSTS`, configure DNS, then run
+`docker compose -f docker-compose.yml -f compose.https.yml up --build -d` with Compose 2.24.4+.
+This publishes Caddy on 80/443 and keeps API/frontend ports internal. Caddy provisions the
+certificate and the supplied configuration enables Django's HTTPS redirect and HSTS.
+
+The [final SRS/SAD/STP update](docs/FINAL_SRS_SAD_STP_UPDATE.md) explains the implemented
+role hierarchy and design changes. Final reports and the requirements checklist are linked
+from `docs/FINAL_SUBMISSION_CHECKLIST.md`. Reproduce automated checks with
+`python -m pip install -e '.[dev,runtime]'`, `ruff check backend tests sandbox scripts`,
+`REQUIRE_DOCKER_TESTS=1 REQUIRE_REDIS_TESTS=1 pytest --cov=backend --cov-branch`, and
+`npm --prefix frontend ci && npm --prefix frontend test && npm --prefix frontend run build`.
+The Docker sandbox image and Redis must be available for the required-infrastructure run.
+CI includes the frontend checks, coverage artifacts and an isolated SonarQube analysis.

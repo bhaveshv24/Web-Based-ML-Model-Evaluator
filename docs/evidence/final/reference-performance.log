@@ -1,0 +1,33 @@
+{
+  "cases": [
+    "PERF-02",
+    "PERF-04"
+  ],
+  "rows": 10000,
+  "features": 50,
+  "model_bytes": 20973095,
+  "baseline_durations_seconds": [
+    3.507,
+    1.741,
+    2.227,
+    1.465,
+    2.364
+  ],
+  "concurrent_durations_seconds": [
+    5.462,
+    6.559,
+    6.383,
+    6.266,
+    6.316
+  ],
+  "max_simultaneously_running": 5,
+  "accuracies": [
+    0.9,
+    0.7,
+    0.5,
+    0.3,
+    0.1
+  ],
+  "matched_single_run_baselines": true,
+  "passed": true
+}

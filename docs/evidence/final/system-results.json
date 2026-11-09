@@ -1,0 +1,162 @@
+{
+  "environment": {
+    "base_url": "http://localhost:8000",
+    "client_os": "Darwin 27.2.0 arm64",
+    "python": "3.11.17",
+    "scikit_learn": "1.5.2",
+    "docker": "29.9.2 linux/arm64",
+    "git_commit": "ad3c31a"
+  },
+  "results": [
+    {
+      "id": "ST-AUTH-01(API)",
+      "requirement": "FR-001..003",
+      "description": "Register, login, refresh, logout over HTTP",
+      "expected": "201/200; rotated refresh; after logout refresh=401 and anonymous history=401",
+      "actual": "weak pw=400, role=USER, refresh=200, reuse old refresh=401, logout=204, refresh after logout=401, anonymous history=401",
+      "status": "PASS",
+      "seconds": 0.3,
+      "executed_at": "2026-11-09T10:41:24+00:00"
+    },
+    {
+      "id": "ST-ING-01(API)",
+      "requirement": "FR-008..013",
+      "description": "Upload model+CSV, pick target, validate (pass and fail)",
+      "expected": "PASSED for rf_iris+iris; FAILED for rf_iris+wine naming expected 4 vs actual 13",
+      "actual": "iris rows=150, suggested=species; iris pair=PASSED; wine pair=FAILED checks=[{\"code\": \"TARGET_EXCLUDED\", \"status\": \"PASSED\", \"message\": \"Target column is excluded from the feature set\", \"expected\": \"'cultivar' not in features\", \"actual\": [\"alcohol\", \"malic_acid\", \"ash\", \"alcalinity_of_ash\", \"magnesium\", \"total_phenols\", \"flavanoids\", \"nonflavanoid_phenols\", \"proanthocyanins",
+      "status": "PASS",
+      "seconds": 2.5,
+      "executed_at": "2026-11-09T10:41:27+00:00"
+    },
+    {
+      "id": "ST-ING-02",
+      "requirement": "FR-008, FR-009",
+      "description": "Unauthenticated upload of model and dataset",
+      "expected": "401 for both; no file written",
+      "actual": "models=401, datasets=401, media files 4 -> 4",
+      "status": "PASS",
+      "seconds": 0.2,
+      "executed_at": "2026-11-09T10:41:27+00:00"
+    },
+    {
+      "id": "ST-EXE-01(API)",
+      "requirement": "FR-014..021, NFR-002",
+      "description": "Upload, validate, run in real sandbox, read results and charts",
+      "expected": "202 QUEUED <1 s; SUCCEEDED; metrics and charts stored; total within NFR-002",
+      "actual": "compat=PASSED; POST=202 QUEUED in 38 ms; final=SUCCEEDED duration=1.186 s; accuracy=1.0; confusion 3x3; ROC classes=['setosa', 'versicolor', 'virginica']; sandbox_image=ml-evaluator-sandbox:1.0",
+      "status": "PASS",
+      "seconds": 3.4,
+      "executed_at": "2026-11-09T10:41:31+00:00"
+    },
+    {
+      "id": "IT-EXE-03(live)",
+      "requirement": "FR-016, FR-018",
+      "description": "ONNX regression model through the deployed stack",
+      "expected": "SUCCEEDED; MAE, MSE, RMSE, R-squared stored",
+      "actual": "status=SUCCEEDED task=REGRESSION metrics={'r2': 0.9991, 'mae': 3.9203, 'mse': 23.1813, 'rmse': 4.8147}",
+      "status": "PASS",
+      "seconds": 1.8,
+      "executed_at": "2026-11-09T10:41:33+00:00"
+    },
+    {
+      "id": "IT-EXE-06(live)",
+      "requirement": "FR-020, SEC-010",
+      "description": "Truncated model file",
+      "expected": "Rejected (FAILED) with a sanitized message: no stack trace or path",
+      "actual": "compatibility=FAILED checks={\"id\": \"514238e2-fab5-4171-8fad-33a3f5afd425\", \"model_id\": \"25c80465-eaf2-4cdd-8718-aca64e6353e5\", \"dataset_id\": \"63e702a4-53b2-48a5-8f57-8b20573ff5d7\", \"result\": \"FAILED\", \"checks\": [{\"code\": \"TARGET_EXCLUDED\", \"status\": \"PASSED\", \"message\": \"Target column is leaks=[]",
+      "status": "PASS",
+      "seconds": 0.7,
+      "executed_at": "2026-11-09T10:41:34+00:00"
+    },
+    {
+      "id": "ST-REP-03(API)",
+      "requirement": "FR-023..026",
+      "description": "Compare 3 evaluations, download PDF and JSON",
+      "expected": "201 with best_per_metric; JSON and PDF 200 and parseable; mixed task 400",
+      "actual": "comparison=201; best accuracy -> ab4f95ca-f7b5-4a5e-b6c6-25c88ed3cba0; json=200 evaluations=3; pdf=200 11868 bytes, 7 pages; mixed-task compare=404",
+      "status": "PASS",
+      "seconds": 10.4,
+      "executed_at": "2026-11-09T10:41:45+00:00"
+    },
+    {
+      "id": "ST-SEC-10(live)",
+      "requirement": "SEC-007",
+      "description": "Six failed logins within one minute",
+      "expected": "6th returns 429",
+      "actual": "status codes=[401, 401, 401, 401, 401, 429]",
+      "status": "PASS",
+      "seconds": 0.7,
+      "executed_at": "2026-11-09T10:41:46+00:00"
+    },
+    {
+      "id": "ST-SEC-11",
+      "requirement": "SEC-004",
+      "description": "Upload a 200 MB model file",
+      "expected": "413 rejected early; api memory stable; nothing stored",
+      "actual": "HTTP 413 after 0.66 s; client sent 2.3 MB before the response; api memory 234.8MiB -> 252.3MiB; files >100 MB stored=0",
+      "status": "PASS",
+      "seconds": 3.4,
+      "executed_at": "2026-11-09T10:41:49+00:00"
+    },
+    {
+      "id": "PERF-02",
+      "requirement": "NFR-002",
+      "description": "Evaluate 10,000 x 50 CSV with a ~20 MB model",
+      "expected": "Job duration (started -> finished) <= 60 s",
+      "actual": "model 18.55 MB (33 trees), CSV 4.09 MB; status=SUCCEEDED; duration=1.414 s",
+      "status": "PASS",
+      "seconds": 10.0,
+      "executed_at": "2026-11-09T10:42:00+00:00"
+    },
+    {
+      "id": "PERF-03",
+      "requirement": "NFR-011",
+      "description": "Validate a 50 MB CSV",
+      "expected": "Upload + validation completes <= 20 s",
+      "actual": "52428716 bytes (50.00 MiB), HTTP 201, rows=457242, elapsed=1.61 s",
+      "status": "PASS",
+      "seconds": 4.0,
+      "executed_at": "2026-11-09T10:42:04+00:00"
+    },
+    {
+      "id": "PERF-04",
+      "requirement": "NFR-003",
+      "description": "Submit 5 jobs at once with 3 workers",
+      "expected": "All 5 SUCCEEDED; each result equals its single-run baseline",
+      "actual": "5 concurrent jobs in 2.7 s wall; statuses=['SUCCEEDED']; equal to baseline=5/5; max jobs running at once=5; no containers left=True",
+      "status": "PASS",
+      "seconds": 19.8,
+      "executed_at": "2026-11-09T10:42:24+00:00"
+    },
+    {
+      "id": "REL-01",
+      "requirement": "NFR-006",
+      "description": "Kill the worker during a RUNNING job, then restart it",
+      "expected": "Job FAILED within 5 min of the crash; no orphan sandbox container",
+      "actual": "RUNNING with 1 sandbox container(s); worker killed; restarted after 15 s; job -> FAILED (WORKER_LOST: 'The evaluation worker stopped unexpectedly.') 193 s after the crash; orphan containers at end=0 (checked up to 193 s after crash)",
+      "status": "PASS",
+      "seconds": 200.7,
+      "executed_at": "2026-11-09T10:45:45+00:00"
+    },
+    {
+      "id": "IT-EXE-05(live)",
+      "requirement": "FR-019, NFR-006, SEC-006",
+      "description": "Model that never returns, with the deployed 120 s limit",
+      "expected": "Killed at ~120 s; TIMED_OUT; container removed",
+      "actual": "status=TIMED_OUT (TIMEOUT: 'The evaluation exceeded the execution time limit and was stopped. Limit: 120 seconds.'); duration=121.052 s; sandbox containers left=0",
+      "status": "PASS",
+      "seconds": 123.2,
+      "executed_at": "2026-11-09T10:47:49+00:00"
+    },
+    {
+      "id": "RET-01",
+      "requirement": "NFR-010",
+      "description": "Age artifacts to 31 days in the deployed DB, run retention",
+      "expected": "Files and DB references removed; younger uploads kept",
+      "actual": "files before=('1', '1'); purge output 'models=1, datasets=1, reports=0, artifacts=0'; files after (old model, old dataset, young model)=('0', '0', '1'); API lookups=(404, 404, 200)",
+      "status": "PASS",
+      "seconds": 2.3,
+      "executed_at": "2026-11-09T10:47:51+00:00"
+    }
+  ]
+}

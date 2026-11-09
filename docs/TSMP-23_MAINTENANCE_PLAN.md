@@ -1,5 +1,5 @@
 # Team 13 maintenance plan
-Prepared by Bhavesh Velluru, 9 November 2026. Baseline `3f11b12`. Proposed operating responsibilities follow the approved module ownership; response targets below are team proposals for review.
+Prepared by Bhavesh Velluru, 9 November 2026. Final source hashes are in `docs/evidence/final/source-manifest.json`. Proposed operating responsibilities follow the approved module ownership; response targets below are team proposals for review.
 
 ## Maintenance responsibilities
 | Type | Trigger and work | Owner | Verification |
@@ -36,7 +36,7 @@ Backup frequency is proposed as daily for an actively used deployment and before
 | After UI changes | Main workflow, responsive layout, unauthorized paths and chart/report checks |
 
 ## Retention and privacy
-`RETENTION_DAYS` defaults to 30. The merged beat schedule invokes `ingestion.purge_expired` hourly. Active evaluations retain their inputs until they become terminal. Evaluation history keeps checksum/metric snapshots after upload expiry. Manual evaluation deletion and shared-upload lifetime remain a documented decision (DEF-12). Restrict backup access and apply the agreed deletion policy to backups as well as live files.
+`RETENTION_DAYS` defaults to 30. The merged beat schedule invokes `ingestion.purge_expired` hourly. Active evaluations retain their inputs until they become terminal. Evaluation history keeps checksum/metric snapshots after upload expiry. Deleting the last referencing evaluation now removes its uploads, while inputs shared with other runs are preserved. Physical file removal follows database commit. Restrict backup access and apply the agreed deletion policy to backups as well as live files.
 
 ## Initial maintenance backlog
-DEF-05 evaluator access, DEF-06 ADMIN policy, DEF-09 HTTPS, DEF-10 SonarQube and DEF-12 upload deletion require review. DEF-07 needs final React workflow retest. Record usability, cross-host portability and availability results, then update the validation report. Details and historical severity are retained in the defect register.
+Final code resolves evaluator access, React controls, upload deletion and HTTPS configuration. Keep the documented ADMIN hierarchy under review. Consult FINAL_SUBMISSION_CHECKLIST.md for the actual final quality results and outstanding participant, Windows/browser and video evidence. Retest these boundaries after future changes.

@@ -1,0 +1,33 @@
+building fixtures with scikit-learn 1.5.2
+== ST-AUTH-01(API): Register, login, refresh, logout over HTTP
+   PASS: weak pw=400, role=USER, refresh=200, reuse old refresh=401, logout=204, refresh after logout=401, anonymous history=401
+== ST-ING-01(API): Upload model+CSV, pick target, validate (pass and fail)
+   PASS: iris rows=150, suggested=species; iris pair=PASSED; wine pair=FAILED checks=[{"code": "TARGET_EXCLUDED", "status": "PASSED", "message": "Target column is excluded from the feature set", "expected": "'cultivar' not in features", "actual": ["alcohol", "malic_acid", "ash", "alcalinity_of_ash", "magnesium", "total_phenols", "flavanoids", "nonflavanoid_phenols", "proanthocyanins
+== ST-ING-02: Unauthenticated upload of model and dataset
+   PASS: models=401, datasets=401, media files 4 -> 4
+== ST-EXE-01(API): Upload, validate, run in real sandbox, read results and charts
+   PASS: compat=PASSED; POST=202 QUEUED in 38 ms; final=SUCCEEDED duration=1.186 s; accuracy=1.0; confusion 3x3; ROC classes=['setosa', 'versicolor', 'virginica']; sandbox_image=ml-evaluator-sandbox:1.0
+== IT-EXE-03(live): ONNX regression model through the deployed stack
+   PASS: status=SUCCEEDED task=REGRESSION metrics={'r2': 0.9991, 'mae': 3.9203, 'mse': 23.1813, 'rmse': 4.8147}
+== IT-EXE-06(live): Truncated model file
+   PASS: compatibility=FAILED checks={"id": "514238e2-fab5-4171-8fad-33a3f5afd425", "model_id": "25c80465-eaf2-4cdd-8718-aca64e6353e5", "dataset_id": "63e702a4-53b2-48a5-8f57-8b20573ff5d7", "result": "FAILED", "checks": [{"code": "TARGET_EXCLUDED", "status": "PASSED", "message": "Target column is leaks=[]
+== ST-REP-03(API): Compare 3 evaluations, download PDF and JSON
+   PASS: comparison=201; best accuracy -> ab4f95ca-f7b5-4a5e-b6c6-25c88ed3cba0; json=200 evaluations=3; pdf=200 11868 bytes, 7 pages; mixed-task compare=404
+== ST-SEC-10(live): Six failed logins within one minute
+   PASS: status codes=[401, 401, 401, 401, 401, 429]
+== ST-SEC-11: Upload a 200 MB model file
+   PASS: HTTP 413 after 0.66 s; client sent 2.3 MB before the response; api memory 234.8MiB -> 252.3MiB; files >100 MB stored=0
+== PERF-02: Evaluate 10,000 x 50 CSV with a ~20 MB model
+   PASS: model 18.55 MB (33 trees), CSV 4.09 MB; status=SUCCEEDED; duration=1.414 s
+== PERF-03: Validate a 50 MB CSV
+   PASS: 52428716 bytes (50.00 MiB), HTTP 201, rows=457242, elapsed=1.61 s
+== PERF-04: Submit 5 jobs at once with 3 workers
+   PASS: 5 concurrent jobs in 2.7 s wall; statuses=['SUCCEEDED']; equal to baseline=5/5; max jobs running at once=5; no containers left=True
+== REL-01: Kill the worker during a RUNNING job, then restart it
+   PASS: RUNNING with 1 sandbox container(s); worker killed; restarted after 15 s; job -> FAILED (WORKER_LOST: 'The evaluation worker stopped unexpectedly.') 193 s after the crash; orphan containers at end=0 (checked up to 193 s after crash)
+== IT-EXE-05(live): Model that never returns, with the deployed 120 s limit
+   PASS: status=TIMED_OUT (TIMEOUT: 'The evaluation exceeded the execution time limit and was stopped. Limit: 120 seconds.'); duration=121.052 s; sandbox containers left=0
+== RET-01: Age artifacts to 31 days in the deployed DB, run retention
+   PASS: files before=('1', '1'); purge output 'models=1, datasets=1, reports=0, artifacts=0'; files after (old model, old dataset, young model)=('0', '0', '1'); API lookups=(404, 404, 200)
+
+15/15 passed -> docs/evidence/final/system-results.json
