@@ -1,10 +1,18 @@
 services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:8080"
+    depends_on:
+      - api
+    restart: unless-stopped
+
   api:
     build: .
     env_file: .env
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?set DJANGO_SECRET_KEY in .env}
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 4 --timeout 120"
     ports:
       - "8000:8000"
     depends_on:
@@ -24,12 +32,13 @@ services:
     command: celery -A config worker --loglevel=INFO --concurrency=${WORKER_CONCURRENCY:-3}
     environment:
       SANDBOX_DOCKER_URL: tcp://docker-proxy:2375
-      # Same path inside the worker and on the Docker host, so bind mounts resolve.
-      SANDBOX_WORK_DIR: ${SANDBOX_HOST_WORK_DIR:?set SANDBOX_HOST_WORK_DIR in .env}
+      SANDBOX_WORK_DIR: /jobs
       SANDBOX_HOST_WORK_DIR: ${SANDBOX_HOST_WORK_DIR}
     volumes:
       - media:/app/media
-      - ${SANDBOX_HOST_WORK_DIR}:${SANDBOX_HOST_WORK_DIR}
+      - type: bind
+        source: ${SANDBOX_HOST_WORK_DIR:?set SANDBOX_HOST_WORK_DIR in .env}
+        target: /jobs
     depends_on:
       db:
         condition: service_healthy
@@ -37,6 +46,10 @@ services:
         condition: service_healthy
       docker-proxy:
         condition: service_started
+      sandbox:
+        condition: service_completed_successfully
+      init-sandbox-jobs:
+        condition: service_completed_successfully
     networks:
       - default
       - sandbox-control
@@ -73,11 +86,21 @@ services:
       - sandbox-control
     restart: unless-stopped
 
-  # Build-only service for the sandbox image: docker compose --profile sandbox build sandbox
+  # Build the exact image the worker starts for each job during a normal compose up.
   sandbox:
     build: ./sandbox
     image: ${SANDBOX_IMAGE:-ml-evaluator-sandbox:1.0}
-    profiles: ["sandbox"]
+    entrypoint: ["true"]
+    network_mode: none
+
+  init-sandbox-jobs:
+    image: busybox:1.36
+    user: root
+    command: ["sh", "-c", "chown 10002:10002 /jobs && chmod 0711 /jobs"]
+    volumes:
+      - type: bind
+        source: ${SANDBOX_HOST_WORK_DIR:?set SANDBOX_HOST_WORK_DIR in .env}
+        target: /jobs
     network_mode: none
 
   db:

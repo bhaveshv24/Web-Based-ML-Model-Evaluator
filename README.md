@@ -114,7 +114,7 @@ redis-server                                   # or: docker run -p 6379:6379 red
 docker build -t ml-evaluator-sandbox:1.0 sandbox/   # needs a Docker daemon
 export SANDBOX_INSPECTION_ENABLED=1 SANDBOX_WORK_DIR=/tmp/ml-evaluator-jobs
 PYTHONPATH=backend celery -A config worker --loglevel=INFO   # add --pool=threads on macOS
-PYTHONPATH=backend celery -A config beat --loglevel=INFO     # reaper, every 60 s
+PYTHONPATH=backend celery -A config beat --loglevel=INFO     # reaper and daily retention
 python manage.py runserver
 ```
 
@@ -170,16 +170,21 @@ pytest --cov=backend --cov-fail-under=80
 ```bash
 cp .env.example .env
 # Replace both placeholder secrets in .env before starting the stack.
-# Host directory for per-job sandbox inputs, owned by the worker's UID 10002 (Linux host):
-sudo install -d -m 0711 -o 10002 -g 10002 /var/lib/ml-evaluator/jobs
-docker compose --profile sandbox build sandbox   # builds ml-evaluator-sandbox:1.0
 docker compose up --build
 ```
 
 The Compose topology:
+- `frontend` serves the React app at `http://localhost:5173` and proxies `/api` to Django.
 - `api -> PostgreSQL` for persistence, and `api -> Redis` to queue jobs.
 - `worker` (Celery) runs evaluations and model inspection. It reaches Docker only through `docker-proxy`, on the internal `sandbox-control` network.
-- `beat` runs the reaper every minute.
+- `sandbox` builds the model-runner image before the worker starts; `init-sandbox-jobs` creates and owns the per-job host directory.
+- `beat` runs the reaper every minute and the 30-day file-retention task daily.
+
+On macOS and Linux, `.env.example` sets the sandbox directory to `${PWD}/sandbox-jobs`;
+run Compose from the repository root. On Windows, set `SANDBOX_HOST_WORK_DIR` in `.env`
+to an absolute path shared with Docker Desktop (for example `C:/Users/<name>/ml-evaluator-jobs`).
+The bootstrap service sets ownership and mode. The API and frontend are available after
+the one `docker compose up --build` command; no separate sandbox build is required.
 
 Fresh media volumes are initialized with ownership for the unprivileged application user.
 If an existing volume was created by an older image and uploads fail with a permissions error,
@@ -205,5 +210,8 @@ Pickle and joblib uploads are executable content. They must never be imported or
 
 ## Dependency security status
 
-`pip-audit` on the development environment (28 October 2026) reports known advisories for **Django 5.1.15, Django REST Framework 3.15.2 and SimpleJWT 5.3.1**. These pins (`Django>=5.1,<5.2`, `djangorestframework>=3.15,<3.16`, `djangorestframework-simplejwt>=5.3,<5.4`) come from the M1 foundation and predate the M3 work. The fixes need framework upgrades (Django 5.2+, DRF 3.17+, SimpleJWT 5.5+), tracked under the dependency scan (ST-SEC-12, MLE-20) rather than in MLE-9 to MLE-12. No advisories are reported for Celery, Redis, the Docker SDK, scikit-learn, pandas, ONNX Runtime, onnx 1.23 or skl2onnx 1.20, or for the sandbox image's pinned `sandbox/requirements.txt` (`pip-audit -r sandbox/requirements.txt`). The only other finding is the virtual environment's own `setuptools`, which is not a project dependency. Bandit reports no findings for `backend/` and `sandbox/`; one documented `# nosec B108` marks the container-internal `/tmp` path.
+The runtime now uses Django 5.2.19+, Django REST Framework 3.18.2+, and SimpleJWT 5.5.1+.
+The CI gate runs Ruff, Bandit high-severity checks, `pip-audit`, migrations, and the
+80% backend line-coverage threshold. The 9 November 2026 local audit found no known
+package vulnerabilities after the upgrades. Bandit found no high-severity findings.
 

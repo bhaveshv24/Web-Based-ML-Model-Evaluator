@@ -11,6 +11,7 @@ RUN install -d -o app -g app -m 0750 /app/media
 
 COPY pyproject.toml README.md ./
 COPY backend ./backend
+COPY scripts ./scripts
 COPY manage.py ./
 RUN pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir '.[runtime]'
 
