@@ -1,0 +1,9 @@
+PORT-01 fresh install on macOS 26.6.2 arm64, Colima 0.10.3, Docker 29.5.2, Docker Compose version 5.6.1
+docker compose down -v; docker compose up -d -> API answered HTTP 401 after 8s
+api: Up 2 seconds
+beat: Up 2 seconds
+db: Up 8 seconds (healthy)
+docker-proxy: Up 8 seconds
+redis: Up 8 seconds (healthy)
+worker: Up 2 seconds
+GET /results -> 200

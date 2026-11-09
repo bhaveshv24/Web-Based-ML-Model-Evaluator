@@ -26,3 +26,15 @@ class IsEvaluator(BasePermission):
         if request.user.is_authenticated and not allowed:
             _audit_denial(request, User.Role.EVALUATOR)
         return allowed
+
+
+class IsAdmin(BasePermission):
+    """ADMIN-only functions (UC-12, API-23). Denials are audited like IsEvaluator's (SEC-006)."""
+
+    message = "Admin role required."
+
+    def has_permission(self, request, view):
+        allowed = request.user.is_authenticated and request.user.role == User.Role.ADMIN
+        if request.user.is_authenticated and not allowed:
+            _audit_denial(request, User.Role.ADMIN)
+        return allowed

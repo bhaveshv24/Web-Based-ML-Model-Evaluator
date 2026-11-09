@@ -1,0 +1,127 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.14, pytest-9.2.0, pluggy-1.7.0
+django: version: 5.2.19, settings: config.settings (from ini)
+rootdir: /Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator
+configfile: pyproject.toml
+testpaths: tests
+plugins: cov-7.1.0, locust-2.47.0, platformdirs-4.13.7, django-4.14.0
+collected 350 items / 9 deselected / 341 selected
+
+tests/test_auth_history_workspaces.py ...............                    [  4%]
+tests/test_benchmarking.py ...............                               [  8%]
+tests/test_evaluation_jobs.py .......................................... [ 21%]
+...                                                                      [ 21%]
+tests/test_ingestion_api.py ............................................ [ 34%]
+.............                                                            [ 38%]
+tests/test_tsmp21_retention.py .....                                     [ 40%]
+tests/test_tsmp21_security.py ........................................xx [ 52%]
+xxx......x....................                                           [ 61%]
+tests/test_async_e2e.py .                                                [ 61%]
+tests/test_comparison_security.py ....                                   [ 62%]
+tests/test_evaluation_inputs.py ............                             [ 66%]
+tests/test_ingestion.py ................                                 [ 70%]
+tests/test_metric_engine.py ........................................     [ 82%]
+tests/test_metrics.py ....                                               [ 83%]
+tests/test_sandbox_policy.py ..........................................  [ 96%]
+tests/test_sandbox_runner_script.py .............                        [100%]
+
+=============================== warnings summary ===============================
+tests/test_sandbox_runner_script.py::test_scikit_learn_predictions_and_probabilities[model.joblib]
+  /Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/.venv/lib/python3.11/site-packages/sklearn/linear_model/_logistic.py:455: DeprecationWarning: scipy.optimize: The `disp` and `iprint` options of the L-BFGS-B solver are deprecated and will be removed in SciPy 1.18.0.
+    opt_res = optimize.minimize(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/docs/evidence/tsmp-21/junit-core.xml -
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.11.14-final-0 _______________
+
+Name                                                          Stmts   Miss  Cover
+---------------------------------------------------------------------------------
+backend/accounts/__init__.py                                      0      0   100%
+backend/accounts/apps.py                                          4      0   100%
+backend/accounts/managers.py                                     16      5    69%
+backend/accounts/migrations/0001_initial.py                       9      0   100%
+backend/accounts/migrations/__init__.py                           0      0   100%
+backend/accounts/models.py                                       30      0   100%
+backend/accounts/permissions.py                                  18      0   100%
+backend/accounts/serializers.py                                  37      1    97%
+backend/accounts/throttles.py                                     9      0   100%
+backend/accounts/urls.py                                          3      0   100%
+backend/accounts/views.py                                        61      2    97%
+backend/benchmarking/__init__.py                                  0      0   100%
+backend/benchmarking/comparison.py                               38      0   100%
+backend/benchmarking/pdf.py                                      91      1    99%
+backend/benchmarking/reports.py                                  19      1    95%
+backend/benchmarking/urls.py                                      4      0   100%
+backend/benchmarking/views.py                                    61      0   100%
+backend/config/__init__.py                                        2      0   100%
+backend/config/celery.py                                          6      0   100%
+backend/config/exceptions.py                                     23      2    91%
+backend/config/settings.py                                       63      1    98%
+backend/config/urls.py                                            4      0   100%
+backend/config/wsgi.py                                            4      4     0%
+backend/evaluations/__init__.py                                   0      0   100%
+backend/evaluations/apps.py                                       6      0   100%
+backend/evaluations/audit.py                                     12      2    83%
+backend/evaluations/errors.py                                    33      0   100%
+backend/evaluations/executor.py                                 118      7    94%
+backend/evaluations/inputs.py                                    76      5    93%
+backend/evaluations/metrics/__init__.py                           4      0   100%
+backend/evaluations/metrics/classification.py                    30      0   100%
+backend/evaluations/metrics/engine.py                            87      3    97%
+backend/evaluations/metrics/predictions.py                       79      0   100%
+backend/evaluations/metrics/regression.py                        15      1    93%
+backend/evaluations/metrics/roc.py                               29      1    97%
+backend/evaluations/migrations/0001_initial.py                    8      0   100%
+backend/evaluations/migrations/0002_evaluation_lifecycle.py       6      0   100%
+backend/evaluations/migrations/0003_comparison.py                 7      0   100%
+backend/evaluations/migrations/__init__.py                        0      0   100%
+backend/evaluations/models.py                                    64      1    98%
+backend/evaluations/reaper.py                                    40      2    95%
+backend/evaluations/sandbox/__init__.py                           7      0   100%
+backend/evaluations/sandbox/base.py                              55      1    98%
+backend/evaluations/sandbox/docker_runner.py                    136     10    93%
+backend/evaluations/sandbox/workspace.py                        133     13    90%
+backend/evaluations/security.py                                   8      0   100%
+backend/evaluations/serializers.py                               25      0   100%
+backend/evaluations/services.py                                  73      0   100%
+backend/evaluations/signals.py                                    8      0   100%
+backend/evaluations/task_detection.py                            83      4    95%
+backend/evaluations/tasks.py                                     23      2    91%
+backend/evaluations/urls.py                                       3      0   100%
+backend/evaluations/views.py                                     84      0   100%
+backend/ingestion/__init__.py                                     0      0   100%
+backend/ingestion/apps.py                                         4      0   100%
+backend/ingestion/compatibility.py                               31      0   100%
+backend/ingestion/inspection.py                                  28      0   100%
+backend/ingestion/management/__init__.py                          0      0   100%
+backend/ingestion/management/commands/__init__.py                 0      0   100%
+backend/ingestion/management/commands/purge_expired.py            7      0   100%
+backend/ingestion/migrations/0001_initial.py                      9      0   100%
+backend/ingestion/migrations/__init__.py                          0      0   100%
+backend/ingestion/models.py                                      46      0   100%
+backend/ingestion/retention.py                                   34      0   100%
+backend/ingestion/tasks.py                                        5      0   100%
+backend/ingestion/urls.py                                         3      0   100%
+backend/ingestion/validators.py                                 140      6    96%
+backend/ingestion/views.py                                      137      5    96%
+backend/workspaces/__init__.py                                    0      0   100%
+backend/workspaces/apps.py                                        4      0   100%
+backend/workspaces/migrations/0001_initial.py                     8      0   100%
+backend/workspaces/migrations/__init__.py                         0      0   100%
+backend/workspaces/models.py                                     17      0   100%
+backend/workspaces/serializers.py                                29      3    90%
+backend/workspaces/urls.py                                        3      0   100%
+backend/workspaces/views.py                                      30      0   100%
+---------------------------------------------------------------------------------
+TOTAL                                                          2289     83    96%
+Coverage XML written to file docs/evidence/tsmp-21/coverage.xml
+Required test coverage of 80% reached. Total coverage: 96.37%
+=========================== short test summary info ============================
+XFAIL tests/test_tsmp21_security.py::test_matrix_evaluator_can_open_workspace_member_evaluation[] - DEF-05: evaluator cannot open member evaluations
+XFAIL tests/test_tsmp21_security.py::test_matrix_evaluator_can_open_workspace_member_evaluation[/status] - DEF-05: evaluator cannot open member evaluations
+XFAIL tests/test_tsmp21_security.py::test_matrix_evaluator_can_open_workspace_member_evaluation[/charts] - DEF-05: evaluator cannot open member evaluations
+XFAIL tests/test_tsmp21_security.py::test_matrix_evaluator_can_open_workspace_member_evaluation[/report.json] - DEF-05: evaluator cannot open member evaluations
+XFAIL tests/test_tsmp21_security.py::test_matrix_evaluator_can_open_workspace_member_evaluation[/report.pdf] - DEF-05: evaluator cannot open member evaluations
+XFAIL tests/test_tsmp21_security.py::test_matrix_admin_gets_403_on_workspaces - DEF-06: ADMIN is allowed on evaluator functions
+=========== 335 passed, 9 deselected, 6 xfailed, 1 warning in 41.03s ===========

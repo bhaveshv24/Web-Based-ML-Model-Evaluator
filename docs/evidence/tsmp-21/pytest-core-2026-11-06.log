@@ -1,0 +1,79 @@
+# Regression run 2026-11-06T01:53:12Z on 2ef247a plus the checker fix and its regression test (committed next), macOS arm64, Python 3.11.14, Redis 7 local
+# COVERAGE_FILE=<scratch> REQUIRE_REDIS_TESTS=1 pytest -m 'not docker' --cov=backend --cov-report=term-missing -rxX
+============================= test session starts ==============================
+platform darwin -- Python 3.11.14, pytest-9.2.0, pluggy-1.7.0
+django: version: 5.2.19, settings: config.settings (from ini)
+rootdir: /Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator
+configfile: pyproject.toml
+testpaths: tests
+plugins: cov-7.1.0, locust-2.47.0, platformdirs-4.13.7, django-4.14.0
+collected 397 items / 9 deselected / 388 selected
+
+tests/test_auth_history_workspaces.py ...............                    [  3%]
+tests/test_benchmarking.py ...............                               [  7%]
+tests/test_evaluation_jobs.py .......................................... [ 18%]
+...                                                                      [ 19%]
+tests/test_ingestion_api.py ............................................ [ 30%]
+.............                                                            [ 34%]
+tests/test_tsmp21_regression.py .........                                [ 36%]
+tests/test_tsmp21_retention.py .....                                     [ 37%]
+tests/test_tsmp21_sec009.py ....                                         [ 38%]
+tests/test_tsmp21_security.py ........................................xx [ 49%]
+xxx......x....................                                           [ 57%]
+tests/test_async_e2e.py .                                                [ 57%]
+tests/test_comparison_security.py ....                                   [ 58%]
+tests/test_evaluation_inputs.py ............                             [ 61%]
+tests/test_ingestion.py ................                                 [ 65%]
+tests/test_metric_engine.py ........................................     [ 76%]
+tests/test_metrics.py ....                                               [ 77%]
+tests/test_sandbox_policy.py ..........................................  [ 87%]
+tests/test_sandbox_runner_script.py .............                        [ 91%]
+tests/test_tsmp21_regression.py .......                                  [ 93%]
+tests/test_tsmp21_sec009.py ......x..                                    [ 95%]
+tests/test_tsmp21_validation_tools.py .........                          [ 97%]
+tests/test_tsmp22_rtm_checker.py .........                               [100%]
+
+=============================== warnings summary ===============================
+tests/test_sandbox_runner_script.py::test_scikit_learn_predictions_and_probabilities[model.joblib]
+  /Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/.venv/lib/python3.11/site-packages/sklearn/linear_model/_logistic.py:455: DeprecationWarning: scipy.optimize: The `disp` and `iprint` options of the L-BFGS-B solver are deprecated and will be removed in SciPy 1.18.0.
+    opt_res = optimize.minimize(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /Users/ayushm/Documents/sem5/SE/Web-Based-ML-Model-Evaluator/docs/evidence/tsmp-21/junit-core-2026-11-06.xml -
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.11.14-final-0 _______________
+
+Name                                           Stmts   Miss  Cover   Missing
+----------------------------------------------------------------------------
+backend/benchmarking/pdf.py                       91      1    99%   22
+backend/benchmarking/reports.py                   19      1    95%   56
+backend/config/exceptions.py                      23      2    91%   14, 20
+backend/config/settings.py                        63      1    98%   43
+backend/config/wsgi.py                             4      4     0%   3-8
+backend/evaluations/executor.py                  118      7    94%   98-99, 125, 138, 171-173
+backend/evaluations/inputs.py                     76      5    93%   32, 50-51, 79, 91
+backend/evaluations/metrics/engine.py             87      3    97%   71, 113, 119
+backend/evaluations/metrics/regression.py         15      1    93%   8
+backend/evaluations/metrics/roc.py                29      1    97%   16
+backend/evaluations/models.py                     64      1    98%   80
+backend/evaluations/reaper.py                     40      2    95%   70-71
+backend/evaluations/sandbox/base.py               55      1    98%   79
+backend/evaluations/sandbox/docker_runner.py     136     10    93%   142-143, 147-152, 247-248, 253
+backend/evaluations/sandbox/workspace.py         133     13    90%   56, 60, 70, 72, 87, 118, 141-142, 145, 149-150, 167-168
+backend/evaluations/task_detection.py             83      4    95%   28, 33, 71, 73
+backend/evaluations/tasks.py                      23      2    91%   58-59
+backend/ingestion/validators.py                  140      1    99%   93
+backend/ingestion/views.py                       137      1    99%   47
+----------------------------------------------------------------------------
+TOTAL                                           2289     61    97%
+
+57 files skipped due to complete coverage.
+=========================== short test summary info ============================
+XFAIL tests/test_tsmp21_security.py::test_matrix_evaluator_can_open_workspace_member_evaluation[] - DEF-05: evaluator cannot open member evaluations
+XFAIL tests/test_tsmp21_security.py::test_matrix_evaluator_can_open_workspace_member_evaluation[/status] - DEF-05: evaluator cannot open member evaluations
+XFAIL tests/test_tsmp21_security.py::test_matrix_evaluator_can_open_workspace_member_evaluation[/charts] - DEF-05: evaluator cannot open member evaluations
+XFAIL tests/test_tsmp21_security.py::test_matrix_evaluator_can_open_workspace_member_evaluation[/report.json] - DEF-05: evaluator cannot open member evaluations
+XFAIL tests/test_tsmp21_security.py::test_matrix_evaluator_can_open_workspace_member_evaluation[/report.pdf] - DEF-05: evaluator cannot open member evaluations
+XFAIL tests/test_tsmp21_security.py::test_matrix_admin_gets_403_on_workspaces - DEF-06: ADMIN is allowed on evaluator functions
+XFAIL tests/test_tsmp21_sec009.py::test_production_settings_enforce_https - DEF-09: no HTTPS redirect, HSTS or proxy SSL header
+=========== 381 passed, 9 deselected, 7 xfailed, 1 warning in 44.52s ===========

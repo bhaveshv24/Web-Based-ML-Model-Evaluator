@@ -1,0 +1,74 @@
+{
+  "environment": {
+    "browser": "Google Chrome 157.0.8103.38 (headless)",
+    "platform": "darwin",
+    "arch": "arm64",
+    "viewport": "1280x720",
+    "base": "http://localhost:8000"
+  },
+  "results": [
+    {
+      "id": "ST-AUTH-01(UI sign-in)",
+      "requirement": "FR-002, UI-01",
+      "description": "Sign in on /results",
+      "expected": "History of completed runs shown after sign-in",
+      "actual": "signed in; 4 completed runs listed; login form hidden=true",
+      "status": "PASS",
+      "evidence": "screenshots/01-sign-in.png, screenshots/02-history.png"
+    },
+    {
+      "id": "ST-REP-01",
+      "requirement": "FR-022, UI-05",
+      "description": "Open a classification dashboard",
+      "expected": "Metric cards, confusion matrix and ROC curve render",
+      "actual": "9 metric cards (Accuracy0.96; Macro precision0.96189; Macro recall0.96...); confusion matrix 3x3; ROC classes [setosa, virginica, versicolor]; switched ROC class: \"ROC curve (AUC 1)\" -> \"ROC curve (AUC 0.97)\"; download buttons=2",
+      "status": "PASS",
+      "evidence": "screenshots/03-classification-dashboard.png"
+    },
+    {
+      "id": "ST-REP-02",
+      "requirement": "FR-022, UI-05",
+      "description": "Open a regression dashboard",
+      "expected": "Predicted-vs-actual and residual plots render",
+      "actual": "plots [Predicted vs actual, Residual plot, Residual histogram] with 820 marks; cards MAE, MSE, RMSE, R², Samples",
+      "status": "PASS",
+      "evidence": "screenshots/04-regression-dashboard.png"
+    },
+    {
+      "id": "ST-REP-03",
+      "requirement": "FR-023..027, UI-06",
+      "description": "Compare 3 runs and download PDF and JSON",
+      "expected": "Best model highlighted; both files download and open; mismatch disables Compare",
+      "actual": "mixed selection: Compare disabled=true, message \"Select runs with the same dataset and task type.\"; comparison columns [dtree_iris.pkl, logreg_iris.joblib, rf_iris.pkl], 8 best-value cells; JSON report_type=comparison with 3 evaluations; PDF 11878 bytes, header ok=true",
+      "status": "PASS",
+      "evidence": "screenshots/05-mixed-selection-blocked.png, screenshots/06-comparison.png"
+    },
+    {
+      "id": "UI-LAYOUT-1280",
+      "requirement": "SRS 2.4 (1280x720)",
+      "description": "Layout at the minimum supported viewport",
+      "expected": "No horizontal page overflow at 1280x720",
+      "actual": "horizontal overflow 0px at 1280x720",
+      "status": "PASS",
+      "evidence": "screenshots/06-comparison.png"
+    },
+    {
+      "id": "ST-AUTH-01(UI sign-out)",
+      "requirement": "FR-003, UI-01",
+      "description": "Sign out, then reload /results",
+      "expected": "Login form shown; no protected data on the page",
+      "actual": "after sign-out 0 result/history nodes remain; after reload history hidden=true",
+      "status": "PASS",
+      "evidence": "screenshots/07-signed-out.png"
+    },
+    {
+      "id": "UI-CONSOLE",
+      "requirement": "UI-01..06",
+      "description": "No browser console errors during the run",
+      "expected": "0 console errors",
+      "actual": "0 console errors ; failed resources: none",
+      "status": "PASS",
+      "evidence": null
+    }
+  ]
+}

@@ -38,8 +38,11 @@ The versioned endpoints implemented for MLE-02 through MLE-04 are:
 - `GET` or `DELETE /api/v1/evaluations/{id}` with owner-only object access
 - `GET` or `POST /api/v1/workspaces` for EVALUATOR/ADMIN accounts
 - `POST /api/v1/workspaces/{id}/members` and `GET /api/v1/workspaces/{id}/evaluations`
+- `PATCH /api/v1/admin/users/{id}` with `{"is_active": bool}` for ADMIN accounts (API-23, BR-08). Deactivation blacklists the user's refresh tokens. Users are never deleted, and admins cannot deactivate themselves.
 
 Access JWTs expire after 15 minutes. Refresh JWTs expire after seven days, rotate on refresh and are blacklisted after rotation or logout. Login is limited to five attempts per minute for each IP/email combination.
+
+Model and dataset uploads are limited per user (SEC-007, default `30/min`, `UPLOAD_RATE_LIMIT`). Uploaded models, datasets and stored reports are purged after `RETENTION_DAYS` (default 30, NFR-010) by the hourly Celery beat task `ingestion.purge_expired`, or on demand with `python manage.py purge_expired`. Evaluation history keeps its checksums and metrics.
 
 ## M2 API (MLE-5 to MLE-7)
 
@@ -210,8 +213,20 @@ Pickle and joblib uploads are executable content. They must never be imported or
 
 ## Dependency security status
 
-The runtime now uses Django 5.2.19+, Django REST Framework 3.18.2+, and SimpleJWT 5.5.1+.
-The CI gate runs Ruff, Bandit high-severity checks, `pip-audit`, migrations, and the
-80% backend line-coverage threshold. The 9 November 2026 local audit found no known
-package vulnerabilities after the upgrades. Bandit found no high-severity findings.
+The runtime uses Django 5.2.19+, Django REST Framework 3.18.2+, and SimpleJWT 5.5.1+.
+CI runs Ruff, migration checks, the RTM checker and the 80% backend line-coverage gate.
+The security-scan job checks project and sandbox dependencies with pip-audit, scans
+backend and sandbox code with Bandit at medium severity or above, and scans Git
+history with Gitleaks. The 9 November 2026 local audit recorded no known package
+vulnerabilities after the upgrades and no high-severity Bandit findings.
 
+## Validation (TSMP-21 / TSMP-22)
+
+- [Repository audit](docs/TSMP-21-22_REPOSITORY_AUDIT.md)
+- [Test execution report](docs/TSMP-21_TEST_EXECUTION_REPORT.md) and [defect register](docs/TSMP-21_DEFECT_REGISTER.md)
+- [Requirements traceability matrix](docs/TSMP-22_REQUIREMENTS_TRACEABILITY_MATRIX.md) and [validation report](docs/TSMP-22_VALIDATION_REPORT.md)
+- [Progress and remaining blockers](docs/TSMP_PROGRESS.md)
+- [USA-01 usability study protocol](docs/TSMP-21_USABILITY_PROTOCOL.md) (prepared, not executed)
+- `python scripts/validation/check_rtm.py` checks that the RTM, defect register and reports cite only files, tests and defects that exist
+- `python scripts/validation/portability_check.py --up --smoke` runs PORT-01 on any OS; `scripts/validation/availability_probe.py` measures NFR-004
+- Reproducible scripts are in `scripts/validation/`. Raw evidence is in `docs/evidence/tsmp-21/`.

@@ -3,6 +3,7 @@ name = "web-based-ml-model-evaluator"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
+  # Patched Django 5.2 LTS floor shared with main.
   "Django>=5.2.19,<5.3",
   "djangorestframework>=3.18.2,<3.19",
   "djangorestframework-simplejwt>=5.5.1,<5.6",

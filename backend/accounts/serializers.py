@@ -49,3 +49,9 @@ class RoleTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
+
+
+class UserActivationSerializer(serializers.Serializer):
+    """API-23 input: only the activation flag can be changed (BR-08)."""
+
+    is_active = serializers.BooleanField()

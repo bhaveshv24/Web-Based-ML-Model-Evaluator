@@ -75,7 +75,11 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
-    "DEFAULT_THROTTLE_RATES": {"login": "5/min"},
+    "DEFAULT_THROTTLE_RATES": {
+        "login": "5/min",
+        # SEC-007: per-user limit shared by model and dataset uploads.
+        "upload": os.environ.get("UPLOAD_RATE_LIMIT", "30/min"),
+    },
     "EXCEPTION_HANDLER": "config.exceptions.api_exception_handler",
 }
 
@@ -113,11 +117,14 @@ CELERY_BEAT_SCHEDULE = {
         "task": "evaluations.reap_stale_evaluations",
         "schedule": 60.0,
     },
-    "purge-expired-files": {
-        "task": "evaluations.purge_expired_files",
-        "schedule": 86400.0,
+    # NFR-010: hourly pass, so files are gone within an hour of reaching RETENTION_DAYS.
+    "purge-expired-uploads": {
+        "task": "ingestion.purge_expired",
+        "schedule": 3600.0,
     },
 }
+# NFR-010: uploaded models, datasets and stored reports are deleted after this many days.
+RETENTION_DAYS = int(os.environ.get("RETENTION_DAYS", "30"))
 
 # FR-019 / BR-03: hard execution limit of the untrusted model run, in seconds.
 EVALUATION_TIMEOUT_SECONDS = int(os.environ.get("EVALUATION_TIMEOUT_SECONDS", "120"))

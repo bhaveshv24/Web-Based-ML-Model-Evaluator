@@ -1,0 +1,9 @@
+{
+  "name": "tsmp21-browser-checks",
+  "private": true,
+  "type": "module",
+  "description": "TSMP-21 browser system tests for /results (drives the locally installed Google Chrome).",
+  "dependencies": {
+    "playwright-core": "1.63.0"
+  }
+}

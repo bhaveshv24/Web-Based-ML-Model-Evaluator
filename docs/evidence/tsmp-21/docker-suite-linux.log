@@ -1,0 +1,39 @@
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/aarch64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/aarch64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/aarch64-linux-gnu/perl-base /usr/lib/aarch64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8, <STDIN> line 4.)
+debconf: falling back to frontend: Teletype
+debconf: unable to initialize frontend: Teletype
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Noninteractive
+
+Python 3.11.18
+Linux 6.8.0-117-generic
+============================= test session starts ==============================
+platform linux -- Python 3.11.18, pytest-9.2.0, pluggy-1.7.0 -- /usr/local/bin/python3.11
+django: version: 5.2.19, settings: config.settings (from ini)
+rootdir: /work
+configfile: pyproject.toml
+testpaths: tests
+plugins: cov-7.1.0, django-4.14.0
+collecting ... collected 350 items / 341 deselected / 9 selected
+
+tests/test_sandbox_docker.py::test_it_exe_04_daemon_applies_the_run_policy PASSED [ 11%]
+tests/test_sandbox_docker.py::test_it_exe_02_scikit_learn_model_end_to_end PASSED [ 22%]
+tests/test_sandbox_docker.py::test_it_exe_03_onnx_regression_model_end_to_end PASSED [ 33%]
+tests/test_sandbox_docker.py::test_st_sec_07_no_network_from_the_sandbox PASSED [ 44%]
+tests/test_sandbox_docker.py::test_st_exe_02_identity_filesystem_environment_and_labels PASSED [ 55%]
+tests/test_sandbox_docker.py::test_it_exe_05_timeout_kills_the_model_and_all_its_children PASSED [ 66%]
+tests/test_sandbox_docker.py::test_st_sec_08_memory_exhaustion_is_contained PASSED [ 77%]
+tests/test_sandbox_docker.py::test_st_sec_08_process_exhaustion_is_capped_by_the_pid_limit PASSED [ 88%]
+tests/test_sandbox_docker.py::test_concurrent_jobs_cannot_see_each_others_inputs PASSED [100%]
+
+=============================== warnings summary ===============================
+tests/test_sandbox_docker.py::test_it_exe_02_scikit_learn_model_end_to_end
+  /usr/local/lib/python3.11/site-packages/sklearn/linear_model/_logistic.py:455: DeprecationWarning: scipy.optimize: The `disp` and `iprint` options of the L-BFGS-B solver are deprecated and will be removed in SciPy 1.18.0.
+    opt_res = optimize.minimize(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================ 9 passed, 341 deselected, 1 warning in 10.53s =================
+No sandbox containers left behind.

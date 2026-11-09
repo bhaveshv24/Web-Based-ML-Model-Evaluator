@@ -1,0 +1,6 @@
+Edge attempt 1, 6 November 2026, Microsoft Edge 157.0.4341.42 (headless), first launch after install.
+Result: harness error before any check was evaluated.
+  FAIL BROWSER-RUN: ERROR page.screenshot: Timeout 30000ms exceeded (taking the first screenshot, 01-sign-in).
+No product check ran, so no product result is recorded for this attempt. Screenshot of the
+page at the time of the error: attempt1-error.png.
+Attempt 2 (same account, same stack, a few minutes later): 7/7 PASS, see browser-results.json.
