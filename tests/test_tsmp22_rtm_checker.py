@@ -71,8 +71,8 @@ def docs_copy(tmp_path, monkeypatch):
         ),
         (
             "TSMP-22_VALIDATION_REPORT.md",
-            "**41 (85%)**",
-            "**42 (88%)**",
+            "**All** | **48**",
+            "**All** | **47**",
             "Validation report: 'All' row says",
         ),
         (
