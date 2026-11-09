@@ -20,5 +20,5 @@ RUN chmod 0444 /opt/runner/runner.py /opt/runner/requirements.txt && chmod 0555 
 
 # The worker also passes --user 10001:10001 and verifies it; this is the image default.
 USER 10001:10001
-WORKDIR /tmp
+WORKDIR /sandbox-tmp
 ENTRYPOINT ["python", "-I", "-B", "/opt/runner/runner.py"]
