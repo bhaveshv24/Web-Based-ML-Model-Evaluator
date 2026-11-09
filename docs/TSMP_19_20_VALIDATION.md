@@ -7,7 +7,7 @@
 | PERF-01 | NFR-001: 50 users, five minutes, p95 API latency <=500 ms, errors <1% | `scripts/performance/locustfile.py`, `check_load.py`, deployed Compose stack | Linux CI workflow; see its `sprint-3-performance` artifact |
 | PERF-02 | NFR-002: 10,000 rows x 50 features, model >=20 MiB, job <=60 s | `scripts/performance/run_evaluations.py` measures server job duration | Linux CI workflow |
 | PERF-03 | NFR-011: validate exactly 50 MiB CSV <=20 s | `scripts/performance/csv_50mb.py` | Local macOS Python 3.12: 52,428,800 bytes, 104,438 rows, 0.583 s, pass |
-| PERF-04 | NFR-003: five jobs keep distinct results | `scripts/performance/run_evaluations.py` compares each concurrent result to its single-run baseline | Linux CI workflow |
+| PERF-04 | NFR-003: five simultaneous jobs keep distinct results | `scripts/performance/run_evaluations.py` requires five observed RUNNING jobs and compares each result to its single-run baseline | Linux CI workflow |
 | REL-01 | NFR-006: stale RUNNING job and orphan container recover within five minutes | `scripts/performance/crash_cleanup.py` injects the state, SIGKILLs/restarts worker, checks row/container | Linux CI workflow |
 | PORT-01 | NFR-008: one Compose startup | `.github/workflows/performance.yml` builds and starts API, frontend, worker and sandbox, then checks browser route and auth API | Linux CI workflow; a second-OS installation still requires an actual Docker host |
 | RET-01 | NFR-010: stored files older than 30 days removed | Daily Celery task and `tests/test_retention.py` age files to 31 days, check bytes and references | 2 local integration tests passed |

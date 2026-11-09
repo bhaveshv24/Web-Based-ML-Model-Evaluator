@@ -81,16 +81,28 @@ def main():
 
     jobs = [post("/evaluations", json={"model_id": model_id, "dataset_id": dataset_id})
             for dataset_id, _ in datasets]
+    concurrent_ids = {job["id"] for job in jobs}
+    max_running = 0
+    overlap_deadline = time.monotonic() + 30
+    while time.monotonic() < overlap_deadline:
+        response = SESSION.get(BASE + "/evaluations?status=RUNNING", timeout=15)
+        response.raise_for_status()
+        running = {row["id"] for row in response.json()["results"]}
+        max_running = max(max_running, len(running & concurrent_ids))
+        if max_running == 5:
+            break
+        time.sleep(0.05)
     results = [wait(job["id"]) for job in jobs]
     accuracies = [detail["metrics_json"]["accuracy"] for _, detail in results]
     assert accuracies == [value for value, _ in baselines]
     durations = [status["duration_seconds"] for status, _ in results]
-    passed = max([seconds for _, seconds in baselines] + durations) <= 60
+    passed = max([seconds for _, seconds in baselines] + durations) <= 60 and max_running == 5
     print(json.dumps({
         "cases": ["PERF-02", "PERF-04"], "rows": 10000, "features": 50,
         "model_bytes": len(model_bytes), "baseline_durations_seconds": [
             seconds for _, seconds in baselines],
         "concurrent_durations_seconds": durations,
+        "max_simultaneously_running": max_running,
         "accuracies": accuracies, "matched_single_run_baselines": True,
         "passed": passed,
     }, indent=2))

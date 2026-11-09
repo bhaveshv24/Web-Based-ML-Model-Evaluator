@@ -54,6 +54,12 @@ class EvaluatorUser(HttpUser):
                             headers=self.headers, name="status")
 
     @task(1)
+    def charts(self):
+        if self.evaluation_id:
+            self.client.get(f"/api/v1/evaluations/{self.evaluation_id}/charts",
+                            headers=self.headers, name="charts")
+
+    @task(1)
     def refresh_login(self):
         # Keep each IP/email below the API's 5/min login throttle.
         if time.monotonic() - self.last_login >= 16:
