@@ -178,6 +178,7 @@ try {
           await page.getByRole('button', { name: 'Add member', exact: true }).click();
           await page.getByRole('status').filter({ hasText: 'member added' }).waitFor();
         }
+        await page.screenshot({ path: join(evidence, `UI-${role}-controls.png`), fullPage: true });
         await page.getByRole('button', { name: 'Sign out', exact: true }).click();
         await page.waitForURL('**/login');
       });

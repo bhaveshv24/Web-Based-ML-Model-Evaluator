@@ -169,12 +169,12 @@ jobs:
   sonarqube:
     runs-on: ubuntu-latest
     needs: core-tests
-    services:
-      sonar:
-        image: sonarqube:community@sha256:1ce197471f5f2bac347694a336862fd2c23e9f57c6edb46acebbfbe70f2c7d9c
-        ports:
-          - 9000:9000
     steps:
+      - name: Start isolated SonarQube with its kernel prerequisite
+        run: |
+          sudo sysctl -w vm.max_map_count=524288
+          docker run -d --name team13-sonarqube -p 127.0.0.1:9000:9000 \
+            sonarqube:community@sha256:1ce197471f5f2bac347694a336862fd2c23e9f57c6edb46acebbfbe70f2c7d9c
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -213,3 +213,6 @@ jobs:
         with:
           name: sonar-quality-gate
           path: sonar-quality-gate.json
+      - name: Stop isolated quality server
+        if: always()
+        run: docker rm -fv team13-sonarqube
