@@ -52,7 +52,7 @@ jobs:
       - name: Verify crashed-worker cleanup
         run: python scripts/performance/crash_cleanup.py | tee perf-recovery.json
       - name: Run 50-user five-minute API load
-        run: locust -f scripts/performance/locustfile.py --headless -u 50 -r 10 -t 5m --host "$PERF_BASE_URL" --csv perf-load --only-summary
+        run: locust -f scripts/performance/locustfile.py --headless -u 50 -r 10 -t 5m --host "$PERF_BASE_URL" --csv perf-load --only-summary --exit-code-on-error 0
       - name: Enforce latency and error targets
         run: python scripts/performance/check_load.py perf-load_stats.csv | tee perf-load-summary.json
       - name: Upload measured evidence

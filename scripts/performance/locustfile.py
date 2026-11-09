@@ -21,7 +21,7 @@ class EvaluatorUser(HttpUser):
         self.token = ""
         self.last_login = 0.0
         self.login()
-        with self.client.get("/api/v1/evaluations", headers=self.headers,
+        with self.client.get("/api/v1/evaluations?status=SUCCEEDED", headers=self.headers,
                              name="history", catch_response=True) as response:
             if response.status_code != 200 or not response.json().get("results"):
                 response.failure("seeded history missing")
