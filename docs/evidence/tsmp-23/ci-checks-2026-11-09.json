@@ -1,0 +1,111 @@
+{
+  "captured_at": "2026-11-09T10:20:04.141592+00:00",
+  "tested_commit": "f16df832af3aabf0126504f4654d3ebfa50eee4c",
+  "merge_baseline": "3f11b12",
+  "checks": [
+    {
+      "name": "tooling-cross-os (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598695842/job/129097555239",
+      "started_at": "2026-11-09T10:08:42Z",
+      "completed_at": "2026-11-09T10:08:59Z"
+    },
+    {
+      "name": "core-tests",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598695842/job/129097555140",
+      "started_at": "2026-11-09T10:08:41Z",
+      "completed_at": "2026-11-09T10:11:05Z"
+    },
+    {
+      "name": "security-scan",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598695842/job/129097555006",
+      "started_at": "2026-11-09T10:08:41Z",
+      "completed_at": "2026-11-09T10:09:27Z"
+    },
+    {
+      "name": "tooling-cross-os (macos-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598695842/job/129097554957",
+      "started_at": "2026-11-09T10:08:41Z",
+      "completed_at": "2026-11-09T10:08:50Z"
+    },
+    {
+      "name": "sandbox-tests",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598695842/job/129097554937",
+      "started_at": "2026-11-09T10:08:41Z",
+      "completed_at": "2026-11-09T10:09:58Z"
+    },
+    {
+      "name": "compose-smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598695842/job/129097554836",
+      "started_at": "2026-11-09T10:08:41Z",
+      "completed_at": "2026-11-09T10:10:51Z"
+    },
+    {
+      "name": "deployed-validation",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598695712/job/129097553961",
+      "started_at": "2026-11-09T10:08:41Z",
+      "completed_at": "2026-11-09T10:18:00Z"
+    },
+    {
+      "name": "tooling-cross-os (macos-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598690035/job/129097536216",
+      "started_at": "2026-11-09T10:08:39Z",
+      "completed_at": "2026-11-09T10:08:49Z"
+    },
+    {
+      "name": "core-tests",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598690035/job/129097535975",
+      "started_at": "2026-11-09T10:08:38Z",
+      "completed_at": "2026-11-09T10:10:52Z"
+    },
+    {
+      "name": "security-scan",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598690035/job/129097535864",
+      "started_at": "2026-11-09T10:08:39Z",
+      "completed_at": "2026-11-09T10:09:44Z"
+    },
+    {
+      "name": "compose-smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598690035/job/129097535804",
+      "started_at": "2026-11-09T10:08:38Z",
+      "completed_at": "2026-11-09T10:10:53Z"
+    },
+    {
+      "name": "tooling-cross-os (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598690035/job/129097535730",
+      "started_at": "2026-11-09T10:08:38Z",
+      "completed_at": "2026-11-09T10:08:49Z"
+    },
+    {
+      "name": "sandbox-tests",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator/actions/runs/42598690035/job/129097535531",
+      "started_at": "2026-11-09T10:08:38Z",
+      "completed_at": "2026-11-09T10:09:49Z"
+    }
+  ]
+}
