@@ -216,7 +216,7 @@ try:
     listing = sorted(os.listdir("/input"))
 except OSError:
     listing = "denied"
-script = "/tmp/run.sh"
+script = os.path.join(os.environ["TMPDIR"], "run.sh")
 with open(script, "w") as handle:
     handle.write("#!/bin/sh\\necho hi\\n")
 os.chmod(script, 0o755)
@@ -228,7 +228,8 @@ RESULT = json.dumps({{
     "uid": os.getuid(), "gid": os.getgid(),
     "cap_eff": status["CapEff"].strip(), "no_new_privs": status["NoNewPrivs"].strip(),
     "write_root": can_write("/pwned"), "write_input": can_write("/input/pwned"),
-    "write_tmp": can_write("/tmp/ok"), "tmp_exec": tmp_exec, "listing": listing,
+    "write_tmp": can_write(os.path.join(os.environ["TMPDIR"], "ok")),
+    "tmp_exec": tmp_exec, "listing": listing,
     "inputs": [n for n in ("X.csv", "model.pkl", "y.csv", "labels.csv")
                if os.path.exists("/input/" + n)],
     "header": open("/input/X.csv").readline().strip(),

@@ -1,10 +1,11 @@
 """Authentication request and response schemas."""
 
 from django.contrib.auth.password_validation import validate_password
+from django.db import IntegrityError, transaction
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import User
+from .models import AuditLog, User
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -30,7 +31,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        try:
+            with transaction.atomic():
+                return User.objects.create_user(**validated_data)
+        except IntegrityError as exc:
+            # A concurrent registration can win after validate_email has completed.
+            raise serializers.ValidationError({
+                "email": ["An account with this email exists."]
+            }) from exc
 
 
 class RoleTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -55,3 +63,17 @@ class UserActivationSerializer(serializers.Serializer):
     """API-23 input: only the activation flag can be changed (BR-08)."""
 
     is_active = serializers.BooleanField()
+
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "email", "role", "is_active", "date_joined")
+        read_only_fields = fields
+
+
+class AuditLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AuditLog
+        fields = ("id", "event", "actor_email", "user_id", "created_at", "metadata")
+        read_only_fields = fields

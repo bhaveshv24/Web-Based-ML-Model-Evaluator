@@ -2,7 +2,8 @@
 
 from collections.abc import Mapping
 
-from django.db.models import Q
+from django.db import transaction
+from django.db.models import F, Q
 from django.utils.dateparse import parse_datetime
 from ingestion.models import Dataset, ModelArtifact
 from rest_framework import generics, status
@@ -106,11 +107,33 @@ class OwnedEvaluationMixin:
     lookup_field = "id"
 
     def get_queryset(self):
-        return Evaluation.objects.filter(owner=self.request.user)
+        user = self.request.user
+        visible = Q(owner=user)
+        if (
+            user.role in {"EVALUATOR", "ADMIN"}
+            and self.request.method in {"GET", "HEAD", "OPTIONS"}
+        ):
+            visible |= Q(workspace__evaluator=user, owner__workspaces__id=F("workspace_id"))
+        return Evaluation.objects.filter(visible).distinct()
 
 
 class EvaluationDetailView(OwnedEvaluationMixin, generics.RetrieveDestroyAPIView):
     serializer_class = EvaluationDetailSerializer
+
+    def perform_destroy(self, instance):
+        # Lock inputs in the same order as submission and retention so a new job cannot
+        # start between the last-reference check and deletion of its input files.
+        with transaction.atomic():
+            model = ModelArtifact.objects.select_for_update().filter(
+                pk=instance.model_artifact_id, owner=self.request.user
+            ).first()
+            dataset = Dataset.objects.select_for_update().filter(
+                pk=instance.dataset_id, owner=self.request.user
+            ).first()
+            instance.delete()
+            for upload in (model, dataset):
+                if upload is not None and not upload.evaluations.exists():
+                    upload.delete()
 
 
 class EvaluationStatusView(OwnedEvaluationMixin, generics.RetrieveAPIView):

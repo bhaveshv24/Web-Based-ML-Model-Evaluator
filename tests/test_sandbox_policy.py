@@ -14,6 +14,7 @@ from evaluations.errors import ErrorCode, EvaluationError
 from evaluations.sandbox import SandboxCancelled, SandboxPolicy, SandboxRequest, parse_output
 from evaluations.sandbox.base import RESULT_MARKER
 from evaluations.sandbox.docker_runner import (
+    CONTAINER_TMP,
     JOB_LABEL,
     DockerSandboxRunner,
     container_config,
@@ -88,7 +89,9 @@ def test_container_config_matches_the_approved_policy():
     assert config["security_opt"] == ["no-new-privileges:true"]
     assert config["mem_limit"] == config["memswap_limit"] == 1024**3
     assert config["nano_cpus"] == 1_000_000_000 and config["pids_limit"] == 128
-    assert config["tmpfs"] == {"/tmp": f"rw,noexec,nosuid,nodev,size={64 * 1024**2}"}
+    assert config["tmpfs"] == {
+        CONTAINER_TMP: f"rw,noexec,nosuid,nodev,size={64 * 1024**2},uid=10001,gid=10001,mode=0700"
+    }
     assert config["auto_remove"] is False
     # Only the job's own directory is mounted, read-only, at /input.
     assert config["volumes"] == {str(workspace.host_path): {"bind": "/input", "mode": "ro"}}
@@ -130,6 +133,8 @@ def test_compliant_container_has_no_policy_violations():
         (lambda a: a["HostConfig"].update(PidsLimit=None), "pids"),
         (lambda a: a["HostConfig"].update(PidMode="host"), "no_host_namespaces"),
         (lambda a: a["HostConfig"].update(Devices=[{"PathOnHost": "/dev/kmsg"}]), "no_devices"),
+        (lambda a: a["HostConfig"].update(Tmpfs={}), "private_tmpfs"),
+        (lambda a: a["Config"].update(WorkingDir="/"), "working_directory"),
         (lambda a: a["Mounts"][0].update(RW=True), "mounts"),
         (
             lambda a: a["Mounts"].append(

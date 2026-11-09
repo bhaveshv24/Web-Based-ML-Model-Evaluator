@@ -1,6 +1,7 @@
 """Evaluator-only workspace operations."""
 
 from accounts.permissions import IsEvaluator
+from django.db.models import Q
 from evaluations.models import Evaluation
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -55,3 +56,14 @@ class WorkspaceEvaluationListView(OwnedWorkspaceMixin, generics.ListAPIView):
             workspace=workspace,
             owner__workspaces=workspace,
         ).select_related("owner")
+
+
+class AvailableWorkspaceListView(generics.ListAPIView):
+    """Workspaces the caller may attach to its own evaluation, including ordinary members."""
+
+    pagination_class = None
+    serializer_class = WorkspaceSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Workspace.objects.filter(Q(evaluator=user) | Q(members=user)).distinct()

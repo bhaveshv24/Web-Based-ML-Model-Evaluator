@@ -25,13 +25,13 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100">
-      <form onSubmit={submit} className="w-96 bg-white p-8 rounded-xl shadow space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
+      <form onSubmit={submit} className="w-full max-w-sm bg-white p-8 rounded-xl shadow space-y-4">
         <h1 className="text-2xl font-bold">Sign in</h1>
         {error && <p role="alert" className="text-red-600 text-sm">{error}</p>}
-        <input className="w-full border rounded p-2" type="email" placeholder="Email"
+        <input className="w-full border rounded p-2" type="email" aria-label="Email" autoComplete="username" placeholder="Email"
           value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input className="w-full border rounded p-2" type="password" placeholder="Password"
+        <input className="w-full border rounded p-2" type="password" aria-label="Password" autoComplete="current-password" placeholder="Password"
           value={password} onChange={(e) => setPassword(e.target.value)} required />
         <button disabled={busy}
           className="w-full bg-blue-600 text-white rounded p-2 disabled:opacity-50">

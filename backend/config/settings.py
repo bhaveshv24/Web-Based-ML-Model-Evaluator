@@ -32,6 +32,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
 ]
 
@@ -94,6 +95,12 @@ SIMPLE_JWT = {
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
+# Enable only behind the supplied HTTPS gateway. Local HTTP remains available for demos.
+HTTPS_ENABLED = os.environ.get("DJANGO_HTTPS", "0") == "1"
+SECURE_SSL_REDIRECT = HTTPS_ENABLED and not DEBUG
+SECURE_HSTS_SECONDS = 31536000 if SECURE_SSL_REDIRECT else 0
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https") if HTTPS_ENABLED else None
+X_FRAME_OPTIONS = "DENY"
 
 # --------------------------------------------------------------------------- M3 execution
 # Celery + Redis job queue (SAD D-01). Redis is both broker and result backend (SRS 3.2).

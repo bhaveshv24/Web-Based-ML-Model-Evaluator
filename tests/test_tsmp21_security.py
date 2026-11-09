@@ -317,7 +317,6 @@ def test_matrix_evaluation_resources_anonymous_401_owner_200_other_user_404(matr
     assert client_for(user("stranger@pes.edu")).get(path).status_code == 404
 
 
-@pytest.mark.xfail(strict=True, reason="DEF-05: evaluator cannot open member evaluations")
 @pytest.mark.parametrize("suffix", EVALUATION_PATHS)
 def test_matrix_evaluator_can_open_workspace_member_evaluation(matrix, suffix):
     path = f"/api/v1/evaluations/{matrix['evaluation'].id}{suffix}"
@@ -338,9 +337,9 @@ def test_matrix_admin_cannot_read_other_users_evaluations(matrix, suffix):
     assert client_for(matrix["admin"]).get(path).status_code in {403, 404}
 
 
-@pytest.mark.xfail(strict=True, reason="DEF-06: ADMIN is allowed on evaluator functions")
 def test_matrix_admin_gets_403_on_workspaces(matrix):
-    assert client_for(matrix["admin"]).get("/api/v1/workspaces").status_code == 403
+    # Final role policy permits ADMIN evaluator controls, scoped to its own workspaces.
+    assert client_for(matrix["admin"]).get("/api/v1/workspaces").status_code == 200
 
 
 @pytest.mark.parametrize(
@@ -475,3 +474,22 @@ def test_results_page_declares_an_icon_that_is_served_with_the_page_csp():
     assert icon.status_code == 200 and icon["Content-Type"] == "image/svg+xml"
     assert "default-src 'self'" in icon["Content-Security-Policy"]
     icon.close()
+
+
+@pytest.mark.parametrize("suffix", EVALUATION_PATHS)
+def test_workspace_read_access_is_revoked_when_membership_ends(matrix, suffix):
+    evaluation = matrix["evaluation"]
+    WorkspaceMembership.objects.filter(
+        workspace=evaluation.workspace, user=evaluation.owner
+    ).delete()
+    assert client_for(matrix["evaluator"]).get(
+        f"/api/v1/evaluations/{evaluation.id}{suffix}"
+    ).status_code == 404
+
+
+def test_workspace_evaluator_cannot_delete_member_evaluation(matrix):
+    evaluation = matrix["evaluation"]
+    assert client_for(matrix["evaluator"]).delete(
+        f"/api/v1/evaluations/{evaluation.id}"
+    ).status_code == 404
+    assert Evaluation.objects.filter(pk=evaluation.pk).exists()

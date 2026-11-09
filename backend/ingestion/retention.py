@@ -13,6 +13,7 @@ from datetime import timedelta
 
 from accounts.models import AuditLog
 from django.conf import settings
+from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
 from evaluations.models import Evaluation, EvaluationArtifact, Report
@@ -25,30 +26,27 @@ ACTIVE = (Evaluation.Status.QUEUED, Evaluation.Status.RUNNING)
 
 
 def _delete_with_file(instance) -> None:
-    if instance.file:
-        instance.file.delete(save=False)
     instance.delete()
 
 
 def purge_expired(now=None) -> dict[str, int]:
     """Delete expired uploads and stored evaluation files; return the number of each removed."""
     cutoff = (now or timezone.now()) - timedelta(days=settings.RETENTION_DAYS)
-    in_use = Evaluation.objects.filter(status__in=ACTIVE)
     counts = {"models": 0, "datasets": 0, "reports": 0, "artifacts": 0}
 
-    for model in ModelArtifact.objects.filter(created_at__lt=cutoff).exclude(
-        id__in=in_use.exclude(model_artifact=None).values("model_artifact")
-    ):
-        _delete_with_file(model)
-        counts["models"] += 1
-    for dataset in Dataset.objects.filter(created_at__lt=cutoff).exclude(
-        id__in=in_use.exclude(dataset=None).values("dataset")
-    ):
-        _delete_with_file(dataset)
-        counts["datasets"] += 1
+    for key, model_type in (("models", ModelArtifact), ("datasets", Dataset)):
+        # Recheck active references while holding the upload lock used by job submission.
+        for pk in model_type.objects.filter(created_at__lt=cutoff).values_list("pk", flat=True):
+            with transaction.atomic():
+                upload = model_type.objects.select_for_update().filter(pk=pk).first()
+                if upload is not None and not upload.evaluations.filter(status__in=ACTIVE).exists():
+                    _delete_with_file(upload)
+                    counts[key] += 1
     # Stored report/artifact rows have no timestamp of their own; they age with their
     # evaluation. post_delete signals (evaluations/signals.py) remove the files.
-    expired = Q(evaluation__created_at__lt=cutoff) & ~Q(evaluation__status__in=ACTIVE)
+    expired = (Q(created_at__lt=cutoff) | Q(evaluation__created_at__lt=cutoff)) & ~Q(
+        evaluation__status__in=ACTIVE
+    )
     for key, queryset in (
         ("reports", Report.objects.filter(expired)),
         ("artifacts", EvaluationArtifact.objects.filter(expired)),

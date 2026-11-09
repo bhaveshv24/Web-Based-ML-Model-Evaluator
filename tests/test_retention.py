@@ -12,7 +12,7 @@ from evaluations.retention import purge_expired
 from evaluations.tasks import purge_expired_files
 from ingestion.models import Dataset, ModelArtifact
 
-pytestmark = pytest.mark.django_db
+pytestmark = pytest.mark.django_db(transaction=True)
 
 
 def upload_pair(owner, prefix):

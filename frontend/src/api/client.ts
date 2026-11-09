@@ -1,9 +1,13 @@
 const BASE = "/api/v1";
 let accessToken: string | null = null;
+let refreshPromise: Promise<boolean> | null = null;
 
 export function setTokens(access: string | null, refresh?: string | null) {
   accessToken = access;
-  if (refresh === null) sessionStorage.removeItem("refresh");
+  if (refresh === null) {
+    sessionStorage.removeItem("refresh");
+    window.dispatchEvent(new Event("session-ended"));
+  }
   else if (refresh) sessionStorage.setItem("refresh", refresh);
 }
 
@@ -31,7 +35,7 @@ export class ApiError extends Error {
   }
 }
 
-async function refresh(): Promise<boolean> {
+async function performRefresh(): Promise<boolean> {
   const token = sessionStorage.getItem("refresh");
   if (!token) return false;
   const r = await fetch(`${BASE}/auth/token/refresh`, {
@@ -39,13 +43,23 @@ async function refresh(): Promise<boolean> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refresh: token }),
   });
+  // Logout or a new login may have replaced this session while the request was in flight.
+  if (sessionStorage.getItem("refresh") !== token) return false;
   if (!r.ok) {
     setTokens(null, null);
     return false;
   }
   const data = await r.json();
-  setTokens(data.access, data.refresh ?? token); // refresh tokens rotate
+  if (sessionStorage.getItem("refresh") !== token) return false;
+  setTokens(data.access, data.refresh ?? token);
   return true;
+}
+
+async function refresh(): Promise<boolean> {
+  if (!refreshPromise) {
+    refreshPromise = performRefresh().finally(() => { refreshPromise = null; });
+  }
+  return refreshPromise;
 }
 
 export async function authenticatedFetch(
@@ -53,15 +67,21 @@ export async function authenticatedFetch(
   init: RequestInit = {},
   retry = true
 ): Promise<Response> {
+  if (retry && !accessToken && sessionStorage.getItem("refresh")) await refresh();
+  const sentToken = accessToken;
   const headers = new Headers(init.headers);
-  if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
+  if (sentToken) headers.set("Authorization", `Bearer ${sentToken}`);
   // Don't set Content-Type for FormData; the browser adds the boundary itself.
   if (init.body && !(init.body instanceof FormData))
     headers.set("Content-Type", "application/json");
 
   const res = await fetch(`${BASE}${path}`, { ...init, headers });
-  if (res.status === 401 && retry && (await refresh()))
-    return authenticatedFetch(path, init, false);
+  if (res.status === 401 && retry) {
+    if ((accessToken && accessToken !== sentToken) || await refresh()) {
+      return authenticatedFetch(path, init, false);
+    }
+    setTokens(null, null);
+  }
   return res;
 }
 

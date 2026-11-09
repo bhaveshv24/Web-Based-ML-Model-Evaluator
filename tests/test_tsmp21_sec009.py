@@ -22,7 +22,7 @@ import pytest
 from rest_framework.test import APIClient
 
 ROOT = Path(__file__).resolve().parents[1]
-SETTINGS_ENV = ("DJANGO_SECRET_KEY", "DJANGO_DEBUG", "DJANGO_SETTINGS_MODULE")
+SETTINGS_ENV = ("DJANGO_SECRET_KEY", "DJANGO_DEBUG", "DJANGO_SETTINGS_MODULE", "DJANGO_HTTPS")
 SECRET_NAME = re.compile(r"SECRET|PASSWORD|TOKEN|API_KEY", re.IGNORECASE)
 
 
@@ -110,9 +110,8 @@ def test_debug_is_off_by_default_and_cookies_are_secure():
     assert development["DEBUG"] is True and not development["SESSION_COOKIE_SECURE"]
 
 
-@pytest.mark.xfail(strict=True, reason="DEF-09: no HTTPS redirect, HSTS or proxy SSL header")
 def test_production_settings_enforce_https():
-    production = load_settings(DJANGO_SECRET_KEY="x" * 50)
+    production = load_settings(DJANGO_SECRET_KEY="x" * 50, DJANGO_HTTPS="1")
     assert production["SECURE_SSL_REDIRECT"] is True
     assert production["SECURE_HSTS_SECONDS"] > 0
     assert production["SECURE_PROXY_SSL_HEADER"] is not None

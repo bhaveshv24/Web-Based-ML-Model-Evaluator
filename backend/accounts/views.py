@@ -1,7 +1,7 @@
 """Registration and JWT lifecycle endpoints."""
 
 from django.db import transaction
-from rest_framework import status
+from rest_framework import generics, status
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -15,6 +15,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .models import AuditLog, User
 from .permissions import IsAdmin
 from .serializers import (
+    AdminUserSerializer,
+    AuditLogSerializer,
     LogoutSerializer,
     RegisterSerializer,
     RoleTokenObtainPairSerializer,
@@ -61,7 +63,10 @@ class LogoutView(APIView):
         serializer = LogoutSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            RefreshToken(serializer.validated_data["refresh"]).blacklist()
+            token = RefreshToken(serializer.validated_data["refresh"])
+            if str(token["user_id"]) != str(request.user.pk):
+                raise TokenError("Refresh token does not belong to this session.")
+            token.blacklist()
         except TokenError:
             return Response(
                 {
@@ -110,3 +115,18 @@ class AdminUserView(APIView):
             {"id": str(target.pk), "email": target.email, "role": target.role,
              "is_active": target.is_active}
         )
+
+
+class AdminUserListView(generics.ListAPIView):
+    permission_classes = (IsAdmin,)
+    serializer_class = AdminUserSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get("q", "")
+        return User.objects.filter(email__icontains=query).order_by("email")
+
+
+class AdminAuditListView(generics.ListAPIView):
+    permission_classes = (IsAdmin,)
+    serializer_class = AuditLogSerializer
+    queryset = AuditLog.objects.order_by("-created_at", "-pk")

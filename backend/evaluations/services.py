@@ -172,12 +172,20 @@ def enqueue_evaluation(evaluation_id) -> None:
 
 def submit_evaluation(owner, model, dataset, *, task_type: str | None, workspace=None):
     """Create a QUEUED job for a validated pair and schedule it (FR-014)."""
-    if latest_passed_report(owner, model, dataset) is None:
-        raise SubmissionError(
-            "non_field_errors",
-            "The model-dataset pair must pass a compatibility check before evaluation.",
-        )
+    from ingestion.models import Dataset, ModelArtifact
+
     with transaction.atomic():
+        model = ModelArtifact.objects.select_for_update().filter(pk=model.pk, owner=owner).first()
+        dataset = Dataset.objects.select_for_update().filter(pk=dataset.pk, owner=owner).first()
+        if model is None or dataset is None:
+            raise SubmissionError(
+                "non_field_errors", "The uploaded inputs are no longer available."
+            )
+        if latest_passed_report(owner, model, dataset) is None:
+            raise SubmissionError(
+                "non_field_errors",
+                "The model-dataset pair must pass a compatibility check before evaluation.",
+            )
         evaluation = Evaluation.objects.create(
             owner=owner,
             workspace=workspace,

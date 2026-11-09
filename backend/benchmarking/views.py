@@ -23,6 +23,8 @@ def comparison_data(owner, ids):
     if len(evaluations) != len(set(ids)):
         raise NotFound()
     rows = [evaluations[evaluation_id] for evaluation_id in ids]
+    if len({row.target_column for row in rows}) > 1:
+        raise ValidationError({"evaluation_ids": ["Use evaluations with the same target column."]})
     try:
         winners = best_per_metric([
             EvaluationResult(
@@ -81,7 +83,7 @@ class EvaluationReportView(OwnedEvaluationMixin, generics.GenericAPIView):
         evaluation = self.get_object()
         if evaluation.status != Evaluation.Status.SUCCEEDED:
             raise EvaluationNotFinished()
-        data = report_data("evaluation", evaluation.id, request.user, {
+        data = report_data("evaluation", evaluation.id, evaluation.owner, {
             "evaluations": [evaluation_data(evaluation)],
         })
         return download(data, kwargs["extension"])

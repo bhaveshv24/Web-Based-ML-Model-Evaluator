@@ -1,0 +1,28 @@
+# Run with docker compose -f docker-compose.yml -f compose.https.yml up --build -d.
+# Set APP_DOMAIN and include it in DJANGO_ALLOWED_HOSTS. Compose 2.24.4+ is required.
+services:
+  frontend:
+    ports: !reset []
+    volumes:
+      - ./deploy/nginx-https.conf:/etc/nginx/conf.d/default.conf:ro
+  api:
+    ports: !reset []
+    environment:
+      DJANGO_HTTPS: "1"
+  gateway:
+    image: caddy:2-alpine
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?set APP_DOMAIN to the public hostname}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - frontend
+    restart: unless-stopped
+volumes:
+  caddy-data:
+  caddy-config:

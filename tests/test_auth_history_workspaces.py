@@ -56,7 +56,10 @@ def test_duplicate_email_is_rejected_without_account_details():
     assert User.objects.filter(email="duplicate@pes.edu").count() == 1
 
 
-def test_login_issues_role_token_with_required_lifetimes():
+def test_login_issues_role_token_with_required_lifetimes(monkeypatch):
+    # SimpleJWT anchors exp to the refresh timestamp; freeze the clock across token creation.
+    fixed = datetime.now(UTC)
+    monkeypatch.setattr("rest_framework_simplejwt.tokens.aware_utcnow", lambda: fixed)
     create_user(role=User.Role.EVALUATOR)
     response = APIClient().post(
         "/api/v1/auth/login",
@@ -200,6 +203,7 @@ def test_non_owner_receives_404_for_detail_and_delete():
     assert Evaluation.objects.filter(id=evaluation.id).exists()
 
 
+@pytest.mark.django_db(transaction=True)
 def test_deleting_own_evaluation_removes_rows_and_files(tmp_path):
     owner = create_user()
     evaluation = Evaluation.objects.create(

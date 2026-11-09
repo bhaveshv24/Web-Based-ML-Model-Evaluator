@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./auth/ProtectedRoute";
 
+const Admin = lazy(() => import("./pages/Admin"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Upload = lazy(() => import("./pages/Upload"));
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/upload" element={<Upload />} />
             <Route path="/evaluations/:id" element={<EvaluationResult />} />
             <Route path="/history" element={<History />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/workspace" element={<Workspace />} />
           </Route>
           <Route path="*" element={<Navigate to="/upload" replace />} />

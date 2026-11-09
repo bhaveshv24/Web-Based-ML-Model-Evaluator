@@ -14,9 +14,8 @@ password = os.environ["PERF_PASSWORD"]
 for index in range(50):
     email = f"perf-{index}@example.test"
     user, created = User.objects.get_or_create(email=email)
-    if created:
-        user.set_password(password)
-        user.save(update_fields=["password"])
+    user.set_password(password)
+    user.save(update_fields=["password"])
     if not Evaluation.objects.filter(owner=user).exists():
         Evaluation.objects.create(
             owner=user, status=Evaluation.Status.SUCCEEDED,

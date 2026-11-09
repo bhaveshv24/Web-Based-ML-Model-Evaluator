@@ -2,7 +2,7 @@
 
 Run policy: no network, read-only root filesystem, non-root user 10001, all capabilities
 dropped, no-new-privileges, Docker's default seccomp profile, memory/CPU/PID limits, a
-noexec tmpfs for /tmp, CPU-time/file-size ulimits, and a hard wall-clock timeout enforced by
+private noexec tmpfs, CPU-time/file-size ulimits, and a hard wall-clock timeout enforced by
 the worker. Only the job's own input directory (model + X, never the labels) is mounted, and
 read-only. Predictions leave the container through its bounded stdout log, so no writable
 host path is ever mounted.
@@ -40,16 +40,22 @@ RUNNER_EXIT_CODES = {
     6: ErrorCode.INVALID_PREDICTIONS,
 }
 KILLED_BY_LIMIT_EXIT_CODES = {137, 152}  # SIGKILL (memory), SIGXCPU (CPU-time ulimit)
-# Path INSIDE the container: its private, size-limited, noexec tmpfs (never the host /tmp).
-CONTAINER_TMP = "/tmp"  # nosec B108
+# Dedicated container-private workspace, owned only by the configured sandbox identity.
+CONTAINER_TMP = "/sandbox-tmp"
 SAFE_ENVIRONMENT = {
     "HOME": CONTAINER_TMP,
+    "TMPDIR": CONTAINER_TMP,
     "PYTHONDONTWRITEBYTECODE": "1",
     "PYTHONUNBUFFERED": "1",
     "OMP_NUM_THREADS": "1",
     "OPENBLAS_NUM_THREADS": "1",
     "MKL_NUM_THREADS": "1",
 }
+
+
+def tmpfs_options(policy: SandboxPolicy) -> str:
+    uid, _, gid = policy.user.partition(":")
+    return f"rw,noexec,nosuid,nodev,size={policy.tmpfs_bytes},uid={uid},gid={gid or uid},mode=0700"
 
 
 def container_config(request: SandboxRequest, policy: SandboxPolicy) -> dict:
@@ -73,7 +79,7 @@ def container_config(request: SandboxRequest, policy: SandboxPolicy) -> dict:
         "pids_limit": policy.pids_limit,
         "ipc_mode": "private",
         "init": True,
-        "tmpfs": {CONTAINER_TMP: f"rw,noexec,nosuid,nodev,size={policy.tmpfs_bytes}"},
+        "tmpfs": {CONTAINER_TMP: tmpfs_options(policy)},
         "ulimits": [
             Ulimit(name="cpu", soft=cpu_seconds, hard=cpu_seconds),
             Ulimit(name="fsize", soft=policy.tmpfs_bytes, hard=policy.tmpfs_bytes),
@@ -119,6 +125,8 @@ def policy_violations(attrs: dict, request: SandboxRequest, policy: SandboxPolic
         and host.get("IpcMode", "") in ("", "private")
         and host.get("UTSMode", "") in ("", "private"),
         "no_devices": not host.get("Devices"),
+        "private_tmpfs": host.get("Tmpfs") == {CONTAINER_TMP: tmpfs_options(policy)},
+        "working_directory": config.get("WorkingDir") == CONTAINER_TMP,
     }
     problems.extend(name for name, ok in expectations.items() if not ok)
 

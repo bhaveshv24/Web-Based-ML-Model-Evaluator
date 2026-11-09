@@ -187,3 +187,11 @@ def test_dashboard_shell_serves_only_known_assets():
         assert "object-src 'none'" in response["Content-Security-Policy"]
         response.close()
     assert client.get("/results/settings.py").status_code == 404
+
+
+def test_same_csv_with_different_target_columns_cannot_be_compared(owner, create_result):
+    response = compare(authenticated(owner), [
+        create_result(target_column="first_target"), create_result(target_column="second_target"),
+    ])
+    assert response.status_code == 400
+    assert "same target column" in str(response.json())

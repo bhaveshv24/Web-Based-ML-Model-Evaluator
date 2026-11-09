@@ -172,9 +172,11 @@ class FakeDockerClient:
             "Config": {
                 "User": kwargs.get("user", ""),
                 "NetworkDisabled": kwargs.get("network_disabled", False),
+                "WorkingDir": kwargs.get("working_dir", ""),
             },
             "HostConfig": {
                 "NetworkMode": kwargs.get("network_mode", "default"),
+                "Tmpfs": kwargs.get("tmpfs", {}),
                 "ReadonlyRootfs": kwargs.get("read_only", False),
                 "Privileged": kwargs.get("privileged", False),
                 "CapDrop": kwargs.get("cap_drop"),

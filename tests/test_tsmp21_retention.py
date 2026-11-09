@@ -14,7 +14,7 @@ from ingestion import tasks
 from ingestion.models import CompatibilityReport, Dataset, ModelArtifact
 from ingestion.retention import purge_expired
 
-pytestmark = pytest.mark.django_db
+pytestmark = pytest.mark.django_db(transaction=True)
 
 
 @pytest.fixture(autouse=True)
