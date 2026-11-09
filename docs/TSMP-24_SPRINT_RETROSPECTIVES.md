@@ -1,4 +1,7 @@
 # Team 13 sprint retrospectives
+
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
 Prepared by Bhavesh Velluru, 9 November 2026. Reconstructed from repository commits, PRs, backlog and execution reports. These are evidence-based retrospective drafts for team review; no meeting attendance, quotes or team agreement is asserted.
 
 The course delivery windows and actual merge dates differ. Preserve the real Git dates in submission evidence. The six iterations in the approved baseline were grouped into three delivery sprints in JIRA_BACKLOG.md.
@@ -21,17 +24,17 @@ Trusted metrics were cross-checked with scikit-learn. Hostile models, cleanup be
 ### Impediments and carry-over
 The evidence records a Celery/Kombu/Redis compatibility problem and root-owned media volume during startup; these were corrected and retried. The full React registration/upload workflow remained in MLE-17. The course-required Sprint 2 video needs a final link check.
 ### Proposed improvement and follow-up
-M3 should retain compatible dependency bounds and test queue shutdown. All owners should run the Compose smoke path early. M2/M4 should verify the complete browser workflow before the next release review.
+M3 should retain compatible dependency bounds and test queue shutdown. All owners should run the Compose smoke path early. Bidre (TSMP-17), with Bhavesh reviewing result/report contracts, should verify the complete browser workflow before the next release review.
 
 ## Sprint 3 - MLE-17..22
 ### Delivered and evidence
 React routes and security work merged in PR #31 (7 November). Retention and performance gates merged in PR #32 (9 November). Validation tools, defect records and RTM work merged in PR #33 (9 November, baseline 3f11b12). The integration fix reconciled four conflicts and replaced two hardcoded weak test inputs with generated values.
 ### What worked
-Independent security, Docker, Compose and cross-OS tooling checks made failures specific. The RTM checker catches broken source/test/evidence references. The 9 November local integration run passed 385 cases with 97.34% backend line coverage, 9 Docker skips and 7 expected failures.
+Earlier integration results (385 pass, 9 Docker skips, 7 expected failures) are historical. Final required-infrastructure execution passed 416 tests with no skips/expected failures, 97.36% backend lines and 92.67% branch destinations. The final Chrome flow passed 11 scenarios. RTM checks validate 48 requirement references.
 ### Impediments and carry-over
-The 6 November validation reports still describe the UI as absent. A later merge supplies the frontend, so the original UI cases and usability study need retest before statuses change. Expected failures preserve evaluator/ADMIN/HTTPS gaps. Windows Compose and availability evidence remain subject to the recorded environment and observation-window requirements. Full Part 3 report generation is the next activity.
+Evaluator access, shared-input cleanup, HTTPS and the Sonar gate were corrected and verified. ADMIN hierarchy remains an explained design deviation. Five first-time participant sessions and complete Windows/current browser evidence remain pending. Final local changes have not been pushed, so final remote CI has not run.
 ### Proposed improvement and follow-up
-Ayush and Bhavesh should reconcile the RTM and validation report against the final commit. M2/M4 should collect the original browser cases and real participant evidence. All owners should preserve exact CI runs and distinguish infrastructure skips from successful executions. Team review should resolve policy/deployment deviations and confirm final submission readiness.
+Bidre owns TSMP-17/18 workflow/security coordination, Anand TSMP-19/20 performance/platform/quality evidence, Ayush TSMP-21/22 execution/RTM, and Bhavesh TSMP-23/24 packaging/governance. Collect actual participant and platform evidence, review deviations as a team, and preserve historical dates and individual reviews. Videos are a separate team deliverable.
 
 ## Final review record
 Team review and acceptance of these reconstructed retrospectives remain to be recorded by the team. Add the actual review date, participants and decisions after that review. Use issue comments or a follow-up commit so evidence remains traceable.

@@ -1,4 +1,7 @@
 # Final submission checklist
+
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
 Team 13 | Updated 9 November 2026 | Implementation revision `3f96c54` and final source manifest
 
 This is the current audit against 01FAQs_MiniProjectDemo.pdf, 02TheCheckList.pdf and the
@@ -55,7 +58,18 @@ A release sign-off should be recorded after the team reviews the remaining parti
 platform, video and contribution evidence. No meeting, participant study, historical video,
 external review or faculty acceptance is invented by this audit.
 
-## Local delivery status
+## Publication status
 
-All final changes are kept locally on `main`. Nothing has been pushed. Remote CI and
-publication remain pending because the user explicitly requested no pushes.
+The final validation and preparation phase was kept local under the earlier no-push
+instruction. The user subsequently authorized committing and pushing the project changes
+on 9 November 2026. Captured local tests remain the evidence for the tested source; remote
+CI must be assessed against its actual published commit. The private viva guide remains
+outside the repository and is excluded from publication.
+
+## Subject-project scope decision - 9 November 2026
+
+The team stated that extra first-time participant sessions, remaining Windows/current-browser
+execution and further live-board/review evidence cannot be completed for this subject delivery.
+These entries remain limitations; they are not waived by faculty or relabeled as passing.
+The local implementation, reports and demonstration materials are prepared. Videos are
+outside this task. The private viva preparation guide is stored outside the repository.

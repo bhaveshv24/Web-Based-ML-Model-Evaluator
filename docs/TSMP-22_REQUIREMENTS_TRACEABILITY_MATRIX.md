@@ -1,5 +1,8 @@
 # TSMP-22 (MLE-22) - Requirements traceability matrix
 
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
 Requirement → architecture → design → source code → unit test → integration test → system test
 → validation result, for FR-001..027, SEC-001..010 and NFR-001..011.
 

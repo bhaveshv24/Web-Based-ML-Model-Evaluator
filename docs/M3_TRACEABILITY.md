@@ -1,5 +1,8 @@
 # M3 traceability - MLE-9 to MLE-12
 
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
 Requirement -> design -> code -> tests for the Sandboxed Model Execution and Metrics Engine (owner: Ayush M Shetty). STP IDs refer to Part C of `Team13_SRS_SAD_STP.pdf`.
 
 | Req | Jira | Design | Code | Automated tests (STP ID) |

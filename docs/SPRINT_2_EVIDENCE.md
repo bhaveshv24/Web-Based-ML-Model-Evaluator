@@ -1,5 +1,8 @@
 # Sprint 2 results and verification
 
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
 The scope is TSMP-1 through TSMP-16. The browser surface at `/results` signs in through the
 existing API and reads completed evaluations. The full upload-to-evaluation browser wizard is
 tracked separately under MLE-17.

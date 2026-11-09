@@ -1,5 +1,11 @@
 # TSMP-19 / TSMP-20 validation record
 
+Historical execution context: dated results below are preserved, not current readiness claims. Current outcomes are in FINAL_SUBMISSION_CHECKLIST.md and SYSTEM_VALIDATION_REPORT.md.
+
+
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
 ## Requirements and executable evidence
 
 | Case | Requirement | Check | Result available now |

@@ -1,5 +1,8 @@
 # TSMP-21 defect register
 
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
 Severity and lifecycle follow STP Part C, Section 12. Critical: security breach, sandbox
 escape, data loss or system unusable. High: major feature fails with no workaround. Medium:
 feature partly fails, workaround exists. Low: cosmetic or minor.
@@ -150,7 +153,7 @@ Windows and video evidence are tracked in FINAL_SUBMISSION_CHECKLIST.md.
   the upload wizard (UI-02), run status (UI-03), history filter and delete (UI-04), workspaces
   (UI-07) or the admin console (UI-08). A first-time user cannot complete
   upload → validate → run → view in a browser, so NFR-005 cannot be satisfied or measured.
-- **Root cause:** MLE-17 (owners M2 + M4 per `docs/JIRA_BACKLOG.md`) has not started. No branch,
+- **Root cause:** MLE-17 (primary owner Bidre per `docs/TEAM_OWNERSHIP.md`, with M4 report support) has not started. No branch,
   pull request or `frontend/` directory exists.
 - **Workaround:** the complete workflow works through the REST API (ST-*(API) cases pass).
 - **Why not fixed in TSMP-21:** building the SPA is the MLE-17 story owned by other members, not

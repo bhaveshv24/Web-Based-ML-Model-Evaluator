@@ -1,13 +1,16 @@
 # Team 13 maintenance plan
+
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
 Prepared by Bhavesh Velluru, 9 November 2026. Final source hashes are in `docs/evidence/final/source-manifest.json`. Proposed operating responsibilities follow the approved module ownership; response targets below are team proposals for review.
 
 ## Maintenance responsibilities
 | Type | Trigger and work | Owner | Verification |
 | --- | --- | --- | --- |
 | Corrective | Reproduce a reported fault, link requirement/test/defect, fix and retest | Affected module owner | Failing case passes and affected regression suite stays green |
-| Adaptive | Python/framework, browser, database, Redis, Docker or model-format changes | M3 for runtime, M2 for ingestion, M4 for reports/UI | Rebuild pinned images; compatibility fixtures and Compose smoke |
-| Perfective | Improve workflow, chart clarity or comparison using observed feedback | M2 + M4 | Acceptance criteria, browser tests and participant feedback |
-| Preventive | Review dependencies, secrets, orphan jobs, retention and quality findings | All; M3 coordinates runtime | CI scans, containment suite, cleanup and retention tests |
+| Adaptive | Python/framework, browser, database, Redis, Docker or model-format changes | M3 for runtime, M2 for ingestion, M4 for reports, M2 for React UI | Rebuild pinned images; compatibility fixtures and Compose smoke |
+| Perfective | Improve workflow, chart clarity or comparison using observed feedback | Bidre (UI) + Bhavesh (reports) | Acceptance criteria, browser tests and participant feedback |
+| Preventive | Review dependencies, secrets, orphan jobs, retention and quality findings | Anand coordinates TSMP-20 quality/retention; M3 handles runtime | CI scans, containment suite, cleanup and retention tests |
 
 M1 owns accounts, role policy and workspaces; M2 owns files and compatibility; M3 owns queue, inference and recovery; M4 owns charts, comparison, export and this documentation. Each change needs a reviewer from another module and an updated test/evidence reference.
 

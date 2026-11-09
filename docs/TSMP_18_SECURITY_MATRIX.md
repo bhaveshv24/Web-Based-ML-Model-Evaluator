@@ -1,5 +1,8 @@
 # TSMP-18 authorization and input-security matrix
 
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
 Scope: SEC-001..004 and SEC-007..010. This matrix maps role decisions and untrusted inputs to the
 API controls and automated test evidence. Docker-only model containment is tracked separately and
 must be verified by the `sandbox-tests` CI job.
@@ -14,7 +17,7 @@ must be verified by the `sandbox-tests` CI job.
 | Register / login | Allow | Allow | Allow | Allow | Explicit public auth views; password validation; generic failed-login message. `test_registration_rejects_weak_password_and_hashes_strong_password`, `test_wrong_password_is_generic_and_audited`. |
 | Upload / read own model and dataset | 401 | Own only | Own only | Own only | JWT + `IsAuthenticated`; owner assigned from `request.user`. `test_model_upload_requires_authentication_and_file`, `test_model_is_private_to_owner`, `test_dataset_is_private_to_owner`. |
 | Change target / create and read compatibility report | 401 | Own artifacts | Own artifacts | Own artifacts | Revalidate target against parsed CSV; object queries include owner. `test_target_can_be_overridden_after_upload_and_is_revalidated`, `test_report_inputs_are_validated_and_owner_scoped`. |
-| List/read/delete evaluation, charts, export | 401 | Own only | Own only | Own only | Owner-scoped queryset on each detail endpoint. `test_history_is_owned_newest_first_and_filterable`, `test_non_owner_receives_404_for_detail_and_delete`, report ownership cases in `test_benchmarking.py`. |
+| List/read/delete evaluation, charts, export | 401 | Own only | Own plus managed-workspace member read; own deletion | Same hierarchy as evaluator; own deletion | Membership-scoped read queryset; deletion remains owner-only. `test_history_is_owned_newest_first_and_filterable`, `test_non_owner_receives_404_for_detail_and_delete`, report ownership cases in `test_benchmarking.py`. |
 | Create workspace / add members / view workspace evaluations | 401 | **403** | Own workspace | Own workspace | `IsEvaluator` and evaluator-owner filtering. `test_user_cannot_manage_workspaces_and_denial_is_audited`, `test_evaluator_can_create_workspace_add_member_and_view_only_its_evaluations`, `test_evaluator_cannot_manage_another_evaluators_workspace`. |
 
 ## Input × risk × control × evidence

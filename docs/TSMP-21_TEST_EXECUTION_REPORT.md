@@ -1,5 +1,11 @@
 # TSMP-21 (MLE-21) - Test execution report
 
+Historical execution context: dated results below are preserved, not current readiness claims. Current outcomes are in FINAL_SUBMISSION_CHECKLIST.md and SYSTEM_VALIDATION_REPORT.md.
+
+
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
 Historical execution snapshot from 4-6 November. Current results and dispositions are in [SYSTEM_VALIDATION_REPORT.md](SYSTEM_VALIDATION_REPORT.md).
 
 Full regression, security, performance, reliability, usability, portability and retention
@@ -28,7 +34,7 @@ branch `feature/TSMP-21-22-validation`, based on `main` at `714c789`.
 | ≥ 90% of all test cases pass | **Met** (93.75%) |
 | 100% of High-priority requirements pass | **Not met**: FR-005 and FR-014 are PARTIAL. Their UI system tests fail because the screens do not exist (DEF-07) |
 | Every executed test has an actual result and Pass/Fail | **Met** (tables below; raw JSON/JUnit in `docs/evidence/tsmp-21/`) |
-| All High/Critical defects closed | **Not met**: DEF-07 (High) is open. It is outside TSMP-21's scope: the missing MLE-17 deliverable owned by M2 + M4 |
+| All High/Critical defects closed | **Not met**: DEF-07 (High) is open. It is outside TSMP-21's scope: the missing MLE-17 deliverable owned by Bidre (M2), with M4 report support |
 
 All 4 failures and the 1 blocked case have the same root cause, DEF-07. No failure was found in
 the implemented backend, sandbox or `/results` UI that is still open at High or Critical

@@ -1,0 +1,16 @@
+title = "Team 13 secret scanning"
+
+[extend]
+useDefault = true
+
+# These three JSON entries are SHA-256 file checksums, not credentials. Keep the
+# exception anchored to the full manifest-entry format; do not exclude the file
+# or allow arbitrary hexadecimal secrets elsewhere.
+[allowlist]
+description = "Known source-manifest SHA-256 records misclassified as generic API keys"
+regexTarget = "line"
+regexes = [
+  '''^\s*"frontend/src/api/auth\.ts": "[0-9a-f]{64}",?\s*$''',
+  '''^\s*"frontend/src/api/client\.ts": "[0-9a-f]{64}",?\s*$''',
+  '''^\s*"tests/test_ingestion_api\.py": "[0-9a-f]{64}",?\s*$''',
+]

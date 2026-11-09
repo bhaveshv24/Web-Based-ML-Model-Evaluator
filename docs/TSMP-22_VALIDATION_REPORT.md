@@ -1,5 +1,8 @@
 # Team 13 final validation and requirement summary
 
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
 Updated 9 November 2026. Detailed execution is in [SYSTEM_VALIDATION_REPORT.md](SYSTEM_VALIDATION_REPORT.md).
 This summary is checked against the requirement-status rows in the RTM.
 

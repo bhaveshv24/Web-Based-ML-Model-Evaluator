@@ -1,5 +1,8 @@
 # Team 13 demo and evidence index
-Prepared by Bhavesh Velluru, 9 November 2026. Implementation baseline `3f11b12`.
+
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+Prepared by Bhavesh Velluru, 9 November 2026. Final source hashes: `evidence/final/source-manifest.json`; raw outputs retain their own execution revisions.
 
 ## Repository and contribution evidence
 - [Repository and setup](../README.md)
@@ -73,7 +76,7 @@ Figure 7. Dashboard after sign-out.
 | 3:00-5:00 | 5-6 | Explain components, trust boundary and upload/evaluation sequence |
 | 5:00-9:00 | 7-9 | Live demo of valid evaluation, negative input and comparison/export |
 | 9:00-11:00 | 10 | Show actual backlog, PRs, contribution and CI evidence |
-| 11:00-13:00 | 11 | Explain testing, dated results, expected failures and remaining validation |
+| 11:00-13:00 | 11 | Explain final passing tests, historical differences and remaining human/platform evidence |
 | 13:00-14:00 | 12 | Maintenance, limitations and final acceptance actions |
 | 14:00-15:00 | 13 | Questions and contribution discussion |
 
@@ -84,7 +87,7 @@ Check frontend `http://localhost:5173`, Django `http://localhost:8000`, Redis, w
 
 ### Live sequence
 1. Register and log in using the React frontend. Open Upload, submit a supported model and CSV and choose the target. Show a compatibility report, then submit evaluation and observe status/results.
-2. Show classification metrics and the chart data produced for that run. Open the `/results` dashboard explicitly for the existing chart/comparison/export surface. Use the same account and select its completed runs.
+2. Show classification metrics and the chart data produced for that run. Use the React results/history pages for charts, comparison and exports in the same session. The earlier `/results` dashboard is an optional historical surface.
 3. Select compatible evaluations, show the winner direction and open JSON/PDF downloads. Show a mismatched selection and explain its rejection. Briefly inspect a regression dashboard.
 4. Open history and a role-appropriate workspace. Show a representative owner-isolation check from the security evidence. Keep the privacy boundary visible without exposing another real user's data.
 5. Show the actual GitHub CI run, one reviewed PR per functional area and the RTM. Explain any known policy or deployment gap from the defect register.
@@ -94,8 +97,8 @@ If an evaluation takes longer than the allotted demo time, show its actual statu
 ## Remaining team evidence
 - Record or link the required one-minute Sprint 1 and two-minute Sprint 2 videos; no tracked video was verified during this preparation.
 - Record the final demo and new React registration/upload/status/history/workspace captures after rehearsal.
-- Execute five-participant usability and outstanding environment/availability checks, recording actual outcomes.
-- Add final Part 3 report links and commit after those reports are generated. Reconcile dated TSMP-21/22 conclusions before release acceptance.
+- Execute five-participant usability and remaining platform/browser checks. Availability already passed its defined five-minute local window.
+- Final Part 3 reports and the RTM are generated and reconciled. Remote publication/CI remains pending under the no-push instruction.
 - Review the reconstructed retrospectives, risk owners and proposed maintenance targets with the team.
 
 ## Final integrated React evidence - 9 November 2026

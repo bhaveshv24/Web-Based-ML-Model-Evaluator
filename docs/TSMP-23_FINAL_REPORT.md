@@ -1,8 +1,11 @@
 # Web Based ML Model Evaluator
+
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
 ## Team 13 final report
 PES University, Bengaluru | UE24CS341A Software Engineering | Semester V
 
-Prepared by Bhavesh Velluru on 9 November 2026. Review version 1.1. Final implementation and evidence are identified by `docs/evidence/final/source-manifest.json`. This report consolidates the submitted baseline and the implementation available at that commit. Release acceptance remains conditional on the outstanding validation below. A separate project ID was absent from the supplied cover sheet; Team 13 is used as the submission identifier.
+Prepared by Bhavesh Velluru on 9 November 2026. Review version 1.2. Final implementation and evidence are identified by `docs/evidence/final/source-manifest.json`. This report consolidates the submitted baseline and the implementation available at that commit. Release acceptance remains conditional on the outstanding validation below. A separate project ID was absent from the supplied cover sheet; Team 13 is used as the submission identifier.
 
 ## 1. Synopsis and ownership
 Students, researchers and teaching assistants repeatedly write scripts to load trained models, validate CSV inputs, compute metrics and compare runs. This application supplies a common workflow with isolated inference, trusted scoring and exportable results. The stakeholders are ML engineering students, researchers and course evaluators.
@@ -16,6 +19,17 @@ Students, researchers and teaching assistants repeatedly write scripts to load t
 
 The scope supports already-trained scikit-learn pickle/joblib and ONNX models, tabular classification and regression, and CSV test data. Training, GPU inference, deep-learning frameworks and image/video/NLP pipelines are outside Version 1 scope. The approved proposal is [Team13_Synopsis.pdf](../Team13_Synopsis.pdf).
 
+### Delivery task allocation
+
+Current delivery ownership follows the two Jira screenshots supplied on 9 November 2026. Each story has one primary accountable owner. Cross-module implementation support and review do not transfer that ownership. This is a responsibility allocation, not a claim about commit authorship or historical PR review. The screenshot label "Atharva Bidre" refers to Atharva Rakesh Bidre, and "Bhavesh V" to Bhavesh Velluru. The TSMP-22 screenshot repeats [MLE-21] in its title; TSMP-22 / MLE-22 is the traceability story, not a second MLE-21.
+
+| Primary owner | Functional responsibility | TSMP / MLE tasks |
+| --- | --- | --- |
+| Atharva Anand | M1 authentication, roles, history and workspaces | 01-04, 19-20 |
+| Atharva Rakesh Bidre | M2 model/CSV ingestion and compatibility; React workflow and input-security validation | 05-08, 17-18 |
+| Ayush M Shetty | M3 asynchronous execution, sandbox and trusted metrics; regression and traceability | 09-12, 21-22 |
+| Bhavesh Velluru | M4 charts, comparison and exports; final report, maintenance, demo evidence, risks and retrospectives | 13-16, 23-24 |
+
 ## 2. Requirements and validation baseline
 The approved combined [SRS/SAD/STP](../Team13_SRS_SAD_STP.pdf) identifies 27 functional, 10 security and 11 non-functional requirements. Its requirement IDs are the primary references for this report. The shorter [SRS](../Team13_SRS.pdf) is retained as earlier context.
 
@@ -28,7 +42,7 @@ The approved combined [SRS/SAD/STP](../Team13_SRS_SAD_STP.pdf) identifies 27 fun
 | SEC-001..010 | Authentication, object access, file validation, containment, audit and configuration checks | tests/test_tsmp21_security.py; tests/test_sandbox_docker.py; tests/test_tsmp21_sec009.py |
 | NFR-001..011 | Timing, concurrency, recovery, portability, retention and quality checks | scripts/performance/; tests/test_retention.py; docs/TSMP_19_20_VALIDATION.md |
 
-The complete chain is in [the RTM](TSMP-22_REQUIREMENTS_TRACEABILITY_MATRIX.md). That matrix and the 6 November validation reports predate the React merge. Their missing-UI findings need a final retest and reconciliation during Part 3. A source file's presence alone does not verify a requirement.
+The current [RTM](TSMP-22_REQUIREMENTS_TRACEABILITY_MATRIX.md) records 46 verified and 2 partial requirements. The 6 November reports are historical discovery evidence. Final browser and regression runs supersede their missing-UI conclusions. A source file's presence alone does not verify a requirement.
 
 ## 3. Project plan and Agile delivery
 The approved baseline described six two-week iterations. The delivery backlog grouped work into three delivery sprints. The course Part 2 dates were 19-23 October and 26-30 October, with optional spillover/testing on 2-6 November. Git history shows Sprint 2 and Sprint 3 merges continuing in November. The team should present the actual history and carry-over dates in the demo.
@@ -56,7 +70,7 @@ The React routes in `frontend/src/App.tsx` include registration, login, upload, 
 2. Choose the target and inspect compatibility results. Invalid or mismatched inputs receive an explanation.
 3. Submit a compatible pair, poll the queued/running status and open the completed evaluation.
 4. Inspect classification metrics, confusion matrix and ROC curves, or regression errors and residual plots.
-5. Compare 2-5 successful owned runs with the same dataset checksum and task. Export JSON/PDF and inspect history/workspaces as the role permits.
+5. Compare 2-5 successful owned runs with the same dataset checksum, target column and task. Export JSON/PDF and inspect history/workspaces as the role permits.
 
 Comparison minimizes MAE/MSE/RMSE and maximizes other scored scalar metrics. Exact ties select the first submitted evaluation. Upload paths use UUIDs; stored checksums preserve provenance. History survives expiry of uploaded files.
 
@@ -66,7 +80,7 @@ Comparison minimizes MAE/MSE/RMSE and maximizes other scored scalar metrics. Exa
 | Sprint 2 | 273 tests passed; 96.17% backend coverage | Historical run in SPRINT_2_EVIDENCE.md |
 | 6 November validation | 381 passed; 7 strict xfails; 97.34% coverage | Historical execution report; contains missing-UI findings |
 | 9 November final regression | 416 passed; zero failures, skips or expected failures; 97.36% backend line coverage | Local Python 3.11 with Redis and real Docker; raw JUnit in docs/evidence/final |
-| Updated CI | Core, security, sandbox, Compose and cross-OS tooling checks | All captured checks succeeded, including the deployed performance workflow; see evidence index for exact runs |
+| Updated CI | Core, security, sandbox, Compose and cross-OS tooling checks | Historical captured remote runs passed; final local changes have not been pushed or run in remote CI |
 | Branch coverage | 92.67% (493/532 destinations) | Same final branch-enabled full-suite run |
 
 The former expected failures are resolved through evaluator access fixes, HTTPS configuration and the documented ADMIN hierarchy. Final regression has no expected failures or infrastructure skips. The merged React workflow passed its final 11-scenario browser run. The five-participant usability study still needs real participants. Windows tooling checks exercise scripts, while full portability needs the actual Compose deployment on the required hosts.
@@ -87,7 +101,7 @@ The captioned [demo evidence index](TSMP-23_DEMO_EVIDENCE.md) links seven existi
 The [maintenance plan](TSMP-23_MAINTENANCE_PLAN.md) defines corrective, adaptive, perfective and preventive work, owner responsibilities, regression checks, backup/recovery, retention and rollback.
 
 ## 10. Outcomes and further work
-The project supplies reusable evaluation and comparison for uploaded trained tabular models, with isolated inference and scoring outside the untrusted process. The team produced a requirements/design/test baseline, incremental implementation, PRs and automated evidence. Further work includes closing the recorded policy/deployment gaps, measuring usability and availability, maintaining dependency pins and reconciling the final validation record.
+The project supplies reusable evaluation and comparison for uploaded trained tabular models, with isolated inference and scoring outside the untrusted process. The team produced a requirements/design/test baseline, incremental implementation, PRs and automated evidence. Remaining work includes real usability participants, complete host/browser evidence, team review, video evidence and eventual remote validation of unpublished changes. The tested local HTTPS/Sonar and five-minute availability results have defined evidence boundaries.
 
 ## Appendices
 - [Repository](https://github.com/bhaveshv24/Web-Based-ML-Model-Evaluator)
@@ -96,4 +110,4 @@ The project supplies reusable evaluation and comparison for uploaded trained tab
 - [CI and demo evidence](TSMP-23_DEMO_EVIDENCE.md)
 - [Risk register](TSMP-24_RISK_REGISTER.md) and [retrospectives](TSMP-24_SPRINT_RETROSPECTIVES.md)
 
-The PDF edition appends the approved Synopsis and SRS/SAD/STP unchanged, followed by captioned historical dashboard captures. Those baseline pages retain their original dates and numbering. The dated implementation and validation qualifications in this report govern the current release assessment.
+The PDF edition appends the approved Synopsis, SRS/SAD/STP with the current amendment, and all four final test reports. Captioned current and historical captures are linked in the evidence index. Those baseline pages retain their original dates and numbering. The dated implementation and validation qualifications in this report govern the current release assessment.

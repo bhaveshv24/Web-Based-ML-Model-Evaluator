@@ -1,14 +1,15 @@
 # TSMP-21 - USA-01 usability study protocol (NFR-005)
 
-**Status: prepared, NOT EXECUTED.** No session has been run and no result exists. The study is
-blocked by DEF-07: the MLE-17 React SPA, which the primary task runs through, does not exist.
-Run it only after MLE-17 is delivered and meets the entry criteria below.
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
+**Status: prepared, NOT EXECUTED.** The React SPA is delivered and the final Chrome workflow passes. Five first-time participants, a pilot and real observation records are still required. DEF-07 is closed; participant availability is the current blocker.
 
 | Item | Value |
 |---|---|
 | Requirement | NFR-005: "A first-time user shall complete a first evaluation (upload, validate, run, view) in no more than 5 primary screens." SRS method: usability walkthrough |
 | STP case | USA-01: "Five new users complete first evaluation". Expected: "At most 5 primary screens; issues logged" |
-| STP strategy | Task-based walkthrough with five first-time users; observation sheet; owners M2 and M4 |
+| STP strategy | Task-based walkthrough with five first-time users; observation sheet; coordinator Ayush (TSMP-21), UI/fixture support Bidre (TSMP-17), report support Bhavesh (TSMP-23) |
 | Design reference | SAD 8: Register → Login → New Evaluation → Dashboard (4 primary screens) |
 | Materials | This protocol; [observation sheet](usability/USA-01_OBSERVATION_SHEET.md); [results template](usability/usa01-results-template.csv); [issue log template](usability/usa01-issues-template.csv); participant kit from `scripts/validation/usability/make_kit.py` |
 
@@ -138,3 +139,5 @@ the facilitator may set up the precondition (logged as "facilitator setup", not 
 | Date | Change |
 |---|---|
 | 6 November 2026 | Protocol, observation sheet, templates and kit generator prepared (TSMP-21). Not executed: blocked by DEF-07 |
+
+| 9 November 2026 | UI prerequisite delivered; participant sessions remain pending. Current coordination follows TEAM_OWNERSHIP.md |

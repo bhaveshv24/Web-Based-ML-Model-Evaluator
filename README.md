@@ -2,6 +2,10 @@
 
 Team 13's Software Engineering Level 3 mini-project: a secure browser-based application that evaluates already-trained tabular ML models against a CSV test dataset, presents trusted metrics and charts, compares models on the same dataset, and exports PDF/JSON reports.
 
+## Start and stop
+
+See [RUN_PROJECT.md](RUN_PROJECT.md) for the configured local startup, first-time setup and shutdown commands.
+
 ## Project baseline
 
 The approved Version 1 scope supports scikit-learn (`.pkl`, `.joblib`) and ONNX (`.onnx`) model artifacts, classification and regression CSV datasets, JWT authentication/RBAC, evaluation history, isolated Docker execution, model comparison, and report export. Model training, GPU inference, deep-learning frameworks, and image/video/NLP pipelines are out of scope.
@@ -15,7 +19,9 @@ The repository follows the approved four-module ownership model:
 | M3 | Sandboxed Model Execution and Metrics Engine | Ayush M Shetty |
 | M4 | Model Benchmarking, Visual Analytics and Report Export | Bhavesh Velluru |
 
-## Current increment
+Delivery task ownership is recorded in [TEAM_OWNERSHIP.md](docs/TEAM_OWNERSHIP.md), including the Sprint 3 work split from the Jira screenshots.
+
+## Foundation increment (historical context)
 
 This foundation increment adds executable, dependency-light domain services for:
 
@@ -35,7 +41,7 @@ The versioned endpoints implemented for MLE-02 through MLE-04 are:
 
 - `POST /api/v1/auth/register`, `/auth/login`, `/auth/token/refresh`, `/auth/logout`
 - `GET /api/v1/evaluations` with `status`, `task_type`, `from`, `to` and `page` filters
-- `GET` or `DELETE /api/v1/evaluations/{id}` with owner-only object access
+- `GET` or `DELETE /api/v1/evaluations/{id}` with owner-only deletion and current-workspace evaluator read access
 - `GET` or `POST /api/v1/workspaces` for EVALUATOR/ADMIN accounts
 - `POST /api/v1/workspaces/{id}/members` and `GET /api/v1/workspaces/{id}/evaluations`
 - `PATCH /api/v1/admin/users/{id}` with `{"is_active": bool}` for ADMIN accounts (API-23, BR-08). Deactivation blacklists the user's refresh tokens. Users are never deleted, and admins cannot deactivate themselves.
@@ -62,7 +68,7 @@ Model inspection is behind `ingestion.inspection.inspect_model`. Pickle/joblib a
 | `GET /api/v1/evaluations/{id}` | Detail, including `metrics_json` and `charts_json` (FR-021) | 200; 404 |
 | `GET /api/v1/evaluations/{id}/charts` | Chart data for M4 dashboards | 200; **409** until `SUCCEEDED`; 404 |
 
-All endpoints are owner-only (another user's id returns 404). `DELETE /api/v1/evaluations/{id}` on a running job stops its sandbox.
+Evaluation reads permit the owner or the evaluator managing the selected workspace while membership remains current. Deletion and comparisons remain owner-only; unrelated users receive 404. `DELETE /api/v1/evaluations/{id}` on a running job stops its sandbox.
 
 **Lifecycle.** `QUEUED -> RUNNING -> SUCCEEDED | FAILED | TIMED_OUT`. Transitions are one-way, and terminal states never change (BR-04). Every change is a single conditional `UPDATE` (compare-and-set) in `evaluations/services.py`. A duplicate Celery delivery cannot claim a job twice, and a late or reaped worker cannot overwrite a newer state. `QUEUED -> FAILED` is used only when a job can never start (`QUEUE_UNAVAILABLE`, `QUEUE_EXPIRED`).
 
@@ -87,7 +93,7 @@ Predictions are checked for length, scalar type and finite values before scoring
 
 Each job runs in its own short-lived container started from the sandbox image (`sandbox/Dockerfile`, Python 3.11 with pinned scikit-learn 1.5.2, pandas, joblib and ONNX Runtime 1.19.2). The run policy (`evaluations/sandbox/docker_runner.py`):
 - **Network:** `network=none`.
-- **Filesystem:** read-only root; `/tmp` is a 64 MB `noexec` tmpfs.
+- **Filesystem:** read-only root; `/sandbox-tmp` is a private mode-0700 64 MB `noexec,nosuid,nodev` tmpfs.
 - **Privileges:** user `10001:10001`, `cap_drop=ALL`, `no-new-privileges`, Docker's default seccomp profile.
 - **Limits:** 1 GB memory with no swap, 1 CPU, 128 PIDs, CPU-time, file-size and open-file ulimits.
 - **Environment:** only a fixed safe set of variables (no secrets).
@@ -117,7 +123,7 @@ redis-server                                   # or: docker run -p 6379:6379 red
 docker build -t ml-evaluator-sandbox:1.0 sandbox/   # needs a Docker daemon
 export SANDBOX_INSPECTION_ENABLED=1 SANDBOX_WORK_DIR=/tmp/ml-evaluator-jobs
 PYTHONPATH=backend celery -A config worker --loglevel=INFO   # add --pool=threads on macOS
-PYTHONPATH=backend celery -A config beat --loglevel=INFO     # reaper and daily retention
+PYTHONPATH=backend celery -A config beat --loglevel=INFO     # reaper and hourly retention
 python manage.py runserver
 ```
 
@@ -181,7 +187,7 @@ The Compose topology:
 - `api -> PostgreSQL` for persistence, and `api -> Redis` to queue jobs.
 - `worker` (Celery) runs evaluations and model inspection. It reaches Docker only through `docker-proxy`, on the internal `sandbox-control` network.
 - `sandbox` builds the model-runner image before the worker starts; `init-sandbox-jobs` creates and owns the per-job host directory.
-- `beat` runs the reaper every minute and the 30-day file-retention task daily.
+- `beat` runs the reaper every minute and the 30-day file-retention task hourly.
 
 On macOS and Linux, `.env.example` sets the sandbox directory to `${PWD}/sandbox-jobs`;
 run Compose from the repository root. On Windows, set `SANDBOX_HOST_WORK_DIR` in `.env`
@@ -196,7 +202,7 @@ repair its root ownership once with
 
 The API container never gets Docker access. Secrets are read from `.env`, which is ignored by Git and must never be committed. `api` applies migrations at start-up (`python manage.py migrate`).
 
-## Planned runtime stack
+## Runtime stack
 
 - React + Vite + TypeScript + Tailwind + Recharts
 - Django + Django REST Framework + SimpleJWT

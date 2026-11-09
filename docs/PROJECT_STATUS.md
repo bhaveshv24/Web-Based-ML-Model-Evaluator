@@ -1,5 +1,11 @@
 # Project status - 14 October 2026
 
+Historical execution context: dated results below are preserved, not current readiness claims. Current outcomes are in FINAL_SUBMISSION_CHECKLIST.md and SYSTEM_VALIDATION_REPORT.md.
+
+
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
 ## Repository audit
 
 At audit time the default branch contained only `Team13_SRS_SAD_STP.pdf`, with one commit, no README, no issues and no pull requests. The Jira project contains unrelated legacy conference-review work items, so the ML Model Evaluator backlog is being added with an `MLE` prefix and without deleting or rewriting the pre-existing records.

@@ -1,5 +1,8 @@
 # Team 13 final status - 9 November 2026
 
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
 The final automated build passes 416 backend tests without skips or expected failures,
 121 dedicated unit/service cases, 15 live system cases and 11 current Chrome scenarios.
 Backend line coverage is 97.36%; branch coverage is 92.67%. SonarQube passes its configured

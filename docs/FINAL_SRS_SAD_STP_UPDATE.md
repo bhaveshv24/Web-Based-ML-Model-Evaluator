@@ -1,5 +1,8 @@
 # Team 13 SRS, SAD and Test Plan update
-Version 1.1 | 9 November 2026 | Prepared for final review
+
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+Version 1.2 | 9 November 2026 | Prepared for final review
 
 ## 1. Purpose, scope and references
 This amendment updates the implemented behavior and validation procedure of the approved
@@ -7,6 +10,19 @@ This amendment updates the implemented behavior and validation procedure of the 
 traceability anchors. Read this update with the original IEEE-structured document and the
 final execution reports. The final-demo FAQ permits explained Agile deviations. Changes
 below identify those deviations explicitly for the viva.
+
+## 1.1 Current delivery and validation responsibilities
+
+Current delivery ownership follows the two Jira screenshots supplied on 9 November 2026. Each story has one primary accountable owner. Cross-module implementation support and review do not transfer that ownership. This is a responsibility allocation, not a claim about commit authorship or historical PR review. The screenshot label "Atharva Bidre" refers to Atharva Rakesh Bidre, and "Bhavesh V" to Bhavesh Velluru. The TSMP-22 screenshot repeats [MLE-21] in its title; TSMP-22 / MLE-22 is the traceability story, not a second MLE-21.
+
+| Primary owner | Functional responsibility | TSMP / MLE tasks |
+| --- | --- | --- |
+| Atharva Anand | M1 authentication, roles, history and workspaces | 01-04, 19-20 |
+| Atharva Rakesh Bidre | M2 model/CSV ingestion and compatibility; React workflow and input-security validation | 05-08, 17-18 |
+| Ayush M Shetty | M3 asynchronous execution, sandbox and trusted metrics; regression and traceability | 09-12, 21-22 |
+| Bhavesh Velluru | M4 charts, comparison and exports; final report, maintenance, demo evidence, risks and retrospectives | 13-16, 23-24 |
+
+The original STP Section 6 assigns supporting module-level tests. For the current delivery, Bidre owns TSMP-18 security-matrix coordination, Anand owns TSMP-19/20 performance/portability/retention/quality evidence, Ayush owns TSMP-21/22 full regression and traceability, and Bhavesh owns TSMP-23/24 final packaging and governance. The original module owners still explain and review their implementations.
 
 ## 2. Updated SRS behavior
 | Reference | Final behavior | Verification |

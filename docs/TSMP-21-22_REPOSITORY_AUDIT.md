@@ -1,5 +1,11 @@
 # TSMP-21 / TSMP-22 - Repository and requirements audit
 
+Historical execution context: dated results below are preserved, not current readiness claims. Current outcomes are in FINAL_SUBMISSION_CHECKLIST.md and SYSTEM_VALIDATION_REPORT.md.
+
+
+Current task allocation: [Team ownership](TEAM_OWNERSHIP.md). Primary owners are Anand (01-04, 19-20), Bidre (05-08, 17-18), Ayush (09-12, 21-22), Bhavesh (13-16, 23-24). Module support and historical authorship remain distinct.
+
+
 Audit date: 4 November 2026. Auditor: Ayush M Shetty (TSMP-21 / TSMP-22).
 Baseline: `origin/main` at `714c789` (Merge PR #30, TSMP-13-16). The audit was done before any
 change on branch `feature/TSMP-21-22-validation`.
@@ -105,7 +111,7 @@ Recorded with root cause, fix and retest in [TSMP-21_DEFECT_REGISTER.md](TSMP-21
 
 | Blocker | Effect | Owner |
 |---|---|---|
-| MLE-17 React SPA not delivered | ST-AUTH-01/02, ST-ING-01 and ST-EXE-01 cannot run as specified (through the UI). USA-01 cannot run. NFR-005 cannot be validated | M2 + M4 (backlog) |
+| MLE-17 React SPA not delivered | ST-AUTH-01/02, ST-ING-01 and ST-EXE-01 cannot run as specified (through the UI). USA-01 cannot run. NFR-005 cannot be validated | Bidre (TSMP-17), with report support from M4 |
 | USA-01 needs five first-time users | Needs people and the MLE-17 UI; a single tester cannot run it | Team |
 | PORT-01 second and third OS | Only macOS (Colima) is available locally. Linux is covered by the new CI `compose-smoke` job. Windows was not tested | Team |
 | NFR-004 availability (operational review) | Needs a defined demonstration/operating window; cannot be measured in a test session | Team |
