@@ -12,11 +12,17 @@ def main(path):
     total = int(overall["Request Count"])
     failed = int(overall["Failure Count"])
     p95_ms = float(overall["95%"])
-    passed = total > 0 and failed / total < 0.01 and p95_ms <= 500
+    route_p95_ms = {
+        row["Name"]: float(row["95%"])
+        for row in rows if row["Name"] != "Aggregated" and int(row["Request Count"]) > 0
+    }
+    passed = (total > 0 and failed / total < 0.01 and p95_ms <= 500
+              and set(route_p95_ms) == {"login", "history", "status", "charts"}
+              and all(value <= 500 for value in route_p95_ms.values()))
     print(json.dumps({
         "case": "PERF-01", "requests": total, "failures": failed,
         "error_rate": round(failed / total, 4) if total else None,
-        "p95_ms": p95_ms, "passed": passed,
+        "p95_ms": p95_ms, "route_p95_ms": route_p95_ms, "passed": passed,
     }, indent=2))
     return 0 if passed else 1
 
