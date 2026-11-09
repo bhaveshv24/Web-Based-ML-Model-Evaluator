@@ -5,9 +5,9 @@
 | Case | Requirement | Check | Result available now |
 | --- | --- | --- | --- |
 | PERF-01 | NFR-001: 50 users, five minutes, p95 API latency <=500 ms, errors <1% | `scripts/performance/locustfile.py`, `check_load.py`, deployed Compose stack | Linux CI workflow; see its `sprint-3-performance` artifact |
-| PERF-02 | NFR-002: 10,000 rows x 50 features, model >=20 MiB, job <=60 s | `scripts/performance/evaluations.py` measures server job duration | Linux CI workflow |
+| PERF-02 | NFR-002: 10,000 rows x 50 features, model >=20 MiB, job <=60 s | `scripts/performance/run_evaluations.py` measures server job duration | Linux CI workflow |
 | PERF-03 | NFR-011: validate exactly 50 MiB CSV <=20 s | `scripts/performance/csv_50mb.py` | Local macOS Python 3.12: 52,428,800 bytes, 104,438 rows, 0.583 s, pass |
-| PERF-04 | NFR-003: five jobs keep distinct results | `scripts/performance/evaluations.py` compares each concurrent result to its single-run baseline | Linux CI workflow |
+| PERF-04 | NFR-003: five jobs keep distinct results | `scripts/performance/run_evaluations.py` compares each concurrent result to its single-run baseline | Linux CI workflow |
 | REL-01 | NFR-006: stale RUNNING job and orphan container recover within five minutes | `scripts/performance/crash_cleanup.py` injects the state, SIGKILLs/restarts worker, checks row/container | Linux CI workflow |
 | PORT-01 | NFR-008: one Compose startup | `.github/workflows/performance.yml` builds and starts API, frontend, worker and sandbox, then checks browser route and auth API | Linux CI workflow; a second-OS installation still requires an actual Docker host |
 | RET-01 | NFR-010: stored files older than 30 days removed | Daily Celery task and `tests/test_retention.py` age files to 31 days, check bytes and references | 2 local integration tests passed |
@@ -29,7 +29,7 @@ termination; it does not originate from a naturally interrupted evaluation.
 1. Configure `.env` from `.env.example` and run `docker compose up --build -d`.
 2. Run `docker compose exec -T -e PERF_PASSWORD api python scripts/performance/seed_load.py`.
 3. Run `PYTHONPATH=backend python scripts/performance/csv_50mb.py` and
-   `python scripts/performance/evaluations.py` with `PERF_PASSWORD` set.
+   `python scripts/performance/run_evaluations.py` with `PERF_PASSWORD` set.
 4. Run `locust -f scripts/performance/locustfile.py --headless -u 50 -r 10 -t 5m --host http://localhost:5173 --csv perf-load`, then
    `python scripts/performance/check_load.py perf-load_stats.csv`.
 5. Run `python scripts/performance/crash_cleanup.py` on the disposable stack.

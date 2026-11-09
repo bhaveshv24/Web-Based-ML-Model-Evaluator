@@ -48,7 +48,7 @@ jobs:
       - name: Validate exact 50 MiB CSV
         run: PYTHONPATH=backend python scripts/performance/csv_50mb.py | tee perf-csv.json
       - name: Reference and five-job sandbox evaluations
-        run: python scripts/performance/evaluations.py | tee perf-evaluations.json
+        run: python scripts/performance/run_evaluations.py | tee perf-evaluations.json
       - name: Verify crashed-worker cleanup
         run: python scripts/performance/crash_cleanup.py | tee perf-recovery.json
       - name: Run 50-user five-minute API load
