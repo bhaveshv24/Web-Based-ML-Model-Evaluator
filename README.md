@@ -230,3 +230,14 @@ vulnerabilities after the upgrades and no high-severity Bandit findings.
 - `python scripts/validation/check_rtm.py` checks that the RTM, defect register and reports cite only files, tests and defects that exist
 - `python scripts/validation/portability_check.py --up --smoke` runs PORT-01 on any OS; `scripts/validation/availability_probe.py` measures NFR-004
 - Reproducible scripts are in `scripts/validation/`. Raw evidence is in `docs/evidence/tsmp-21/`.
+
+## Final submission documents (TSMP-23 / TSMP-24)
+
+- [Final report](docs/TSMP-23_FINAL_REPORT.md) and [PDF](docs/Team13_FinalReport.pdf)
+- [Maintenance plan](docs/TSMP-23_MAINTENANCE_PLAN.md) and [PDF](docs/Team13_MaintenancePlan.pdf)
+- [Demo runbook and captioned evidence](docs/TSMP-23_DEMO_EVIDENCE.md) and [13-slide presentation](docs/Team13_FinalPresentation.pptx)
+- [Risk register](docs/TSMP-24_RISK_REGISTER.md)
+- [Sprint retrospectives for team review](docs/TSMP-24_SPRINT_RETROSPECTIVES.md)
+
+These documents identify the implementation baseline and dated validation evidence. Final
+Part 3 results and team review decisions should be added before release acceptance.
