@@ -171,7 +171,7 @@ jobs:
     needs: core-tests
     services:
       sonar:
-        image: sonarqube:community
+        image: sonarqube:community@sha256:1ce197471f5f2bac347694a336862fd2c23e9f57c6edb46acebbfbe70f2c7d9c
         ports:
           - 9000:9000
     steps:
@@ -202,7 +202,7 @@ jobs:
           docker run --rm --network host --user "$(id -u):$(id -g)" \
             --env-file "$RUNNER_TEMP/sonar.env" -e SONAR_USER_HOME=/tmp/.sonar \
             -e SONAR_SCANNER_JAVA_OPTS=-Xmx384m \
-            -v "$PWD:/usr/src" sonarsource/sonar-scanner-cli:latest \
+            -v "$PWD:/usr/src" sonarsource/sonar-scanner-cli:latest@sha256:38207bba3d98c8ce6f6c051ea2b9f05a24480da78c9ee5945ceafc3d9de02b88 \
             -Dsonar.working.directory=/tmp/sonar-work -Dsonar.javascript.node.maxspace=1024 \
             -Dsonar.python.coverage.reportPaths=coverage.xml
       - name: Save quality gate evidence
