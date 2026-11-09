@@ -117,7 +117,7 @@ redis-server                                   # or: docker run -p 6379:6379 red
 docker build -t ml-evaluator-sandbox:1.0 sandbox/   # needs a Docker daemon
 export SANDBOX_INSPECTION_ENABLED=1 SANDBOX_WORK_DIR=/tmp/ml-evaluator-jobs
 PYTHONPATH=backend celery -A config worker --loglevel=INFO   # add --pool=threads on macOS
-PYTHONPATH=backend celery -A config beat --loglevel=INFO     # reaper, every 60 s
+PYTHONPATH=backend celery -A config beat --loglevel=INFO     # reaper and daily retention
 python manage.py runserver
 ```
 
@@ -131,6 +131,23 @@ Open `http://localhost:8000/results` after starting the API. Sign in, open a com
 from the list, or select two to five runs on the same dataset and task and choose **Compare selected**.
 Both result views can download JSON and PDF. The [chart and export contracts and Sprint 2
 evidence](docs/SPRINT_2_EVIDENCE.md) describe the endpoints and verification steps.
+
+## React workflow (TSMP-17)
+
+The React/Vite client in `frontend/` provides registration/login, model and dataset upload, target
+selection, compatibility reports, task override, evaluation status polling, results, history,
+comparisons, evaluator workspaces and JSON/PDF downloads. Start Django using the local workflow
+above, then start the frontend in another PowerShell window:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173`; Vite proxies `/api` requests to Django on port 8000. See
+[`docs/TSMP_18_SECURITY_MATRIX.md`](docs/TSMP_18_SECURITY_MATRIX.md) for the authorization and
+input-security evidence matrix.
 
 ## Run the tests
 
@@ -156,16 +173,21 @@ pytest --cov=backend --cov-fail-under=80
 ```bash
 cp .env.example .env
 # Replace both placeholder secrets in .env before starting the stack.
-# Host directory for per-job sandbox inputs, owned by the worker's UID 10002 (Linux host):
-sudo install -d -m 0711 -o 10002 -g 10002 /var/lib/ml-evaluator/jobs
-docker compose --profile sandbox build sandbox   # builds ml-evaluator-sandbox:1.0
 docker compose up --build
 ```
 
 The Compose topology:
+- `frontend` serves the React app at `http://localhost:5173` and proxies `/api` to Django.
 - `api -> PostgreSQL` for persistence, and `api -> Redis` to queue jobs.
 - `worker` (Celery) runs evaluations and model inspection. It reaches Docker only through `docker-proxy`, on the internal `sandbox-control` network.
-- `beat` runs the reaper every minute.
+- `sandbox` builds the model-runner image before the worker starts; `init-sandbox-jobs` creates and owns the per-job host directory.
+- `beat` runs the reaper every minute and the 30-day file-retention task daily.
+
+On macOS and Linux, `.env.example` sets the sandbox directory to `${PWD}/sandbox-jobs`;
+run Compose from the repository root. On Windows, set `SANDBOX_HOST_WORK_DIR` in `.env`
+to an absolute path shared with Docker Desktop (for example `C:/Users/<name>/ml-evaluator-jobs`).
+The bootstrap service sets ownership and mode. The API and frontend are available after
+the one `docker compose up --build` command; no separate sandbox build is required.
 
 Fresh media volumes are initialized with ownership for the unprivileged application user.
 If an existing volume was created by an older image and uploads fail with a permissions error,
@@ -191,7 +213,12 @@ Pickle and joblib uploads are executable content. They must never be imported or
 
 ## Dependency security status
 
-Framework floors were raised for TSMP-21 (DEF-01, ST-SEC-12) to Django 5.2 LTS (`>=5.2.17`), Django REST Framework `>=3.18.2` and SimpleJWT `>=5.5.1`. The previous pins (Django 5.1.15, DRF 3.15.2, SimpleJWT 5.3.1) had published advisories, including unauthenticated denial-of-service issues, and Django 5.1 is past end of support. After the upgrade, `pip-audit --skip-editable` reports no known vulnerabilities in project dependencies, and `pip-audit -r sandbox/requirements.txt` is clean. Bandit reports no medium or high findings for `backend/` and `sandbox/`. One documented `# nosec B108` marks the container-internal `/tmp` path, and one Low B406 notice concerns `xml.sax.saxutils.escape`, which is used for output escaping, not parsing. The CI `security-scan` job runs both scanners on every push.
+The runtime uses Django 5.2.19+, Django REST Framework 3.18.2+, and SimpleJWT 5.5.1+.
+CI runs Ruff, migration checks, the RTM checker and the 80% backend line-coverage gate.
+The security-scan job checks project and sandbox dependencies with pip-audit, scans
+backend and sandbox code with Bandit at medium severity or above, and scans Git
+history with Gitleaks. The 9 November 2026 local audit recorded no known package
+vulnerabilities after the upgrades and no high-severity Bandit findings.
 
 ## Validation (TSMP-21 / TSMP-22)
 

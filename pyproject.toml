@@ -3,9 +3,8 @@ name = "web-based-ml-model-evaluator"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
-  # Security floors (TSMP-21 DEF-01, ST-SEC-12): Django 5.1 is past end of support, and older
-  # DRF/SimpleJWT releases have published advisories (pip-audit, November 2026).
-  "Django>=5.2.17,<5.3",
+  # Patched Django 5.2 LTS floor shared with main.
+  "Django>=5.2.19,<5.3",
   "djangorestframework>=3.18.2,<3.19",
   "djangorestframework-simplejwt>=5.5.1,<5.6",
   "celery>=5.4,<5.5",
@@ -20,6 +19,8 @@ dev = [
   "pytest-cov>=5.0",
   "pytest-django>=4.9",
   "ruff>=0.6",
+  "bandit>=1.9,<2",
+  "pip-audit>=2.10,<3",
   "pypdf>=6,<7",
   # M3 tests: Docker SDK types for the sandbox policy, real models for the runner and
   # scikit-learn cross-checks of the trusted metric engine, Redis for the async E2E test.
@@ -31,11 +32,13 @@ dev = [
   # Test-only: builds ONNX fixtures. onnx>=1.22 includes all published security fixes.
   "onnx>=1.22,<2",
   "skl2onnx>=1.20,<1.21",
+  "requests>=2.31",
 ]
 runtime = [
   "redis>=6.1,<7",
   "psycopg[binary]>=3.2,<3.3",
   "docker>=7.1,<8",
+  "gunicorn>=23,<24",
 ]
 
 [tool.setuptools.packages.find]
@@ -59,7 +62,5 @@ extend-exclude = ["**/migrations/*.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
-
-
 [tool.setuptools.package-data]
 "backend.benchmarking" = ["dashboard/*"]

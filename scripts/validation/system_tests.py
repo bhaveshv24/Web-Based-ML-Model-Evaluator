@@ -208,7 +208,7 @@ def sandbox_containers() -> list[str]:
 def t_auth(ctx):
     api = Api(ctx.base)
     weak = api.call("POST", "/auth/register", auth=False,
-                    json={"email": api.email, "password": "abc123"})
+                    json={"email": api.email, "password": secrets.token_hex(3)})
     api.register_and_login()
     refresh = api.call("POST", "/auth/token/refresh", auth=False,
                        json={"refresh": api.tokens["refresh"]})

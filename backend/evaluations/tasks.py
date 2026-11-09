@@ -9,7 +9,7 @@ from celery.signals import worker_ready
 from django.conf import settings
 from django.db import InterfaceError, OperationalError
 
-from . import executor, reaper
+from . import executor, reaper, retention
 
 logger = logging.getLogger("evaluations.tasks")
 
@@ -41,6 +41,11 @@ def run_evaluation(evaluation_id: str) -> str | None:
 @shared_task(name="evaluations.reap_stale_evaluations", ignore_result=True)
 def reap_stale_evaluations() -> dict[str, int]:
     return reaper.reap_stale()
+
+
+@shared_task(name="evaluations.purge_expired_files", ignore_result=True)
+def purge_expired_files() -> dict[str, int]:
+    return retention.purge_expired()
 
 
 @shared_task(

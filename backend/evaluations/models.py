@@ -4,6 +4,7 @@ import uuid
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class Evaluation(models.Model):
@@ -90,6 +91,7 @@ class StoredEvaluationFile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     evaluation = models.ForeignKey(Evaluation, on_delete=models.CASCADE)
     file = models.FileField(upload_to="evaluations/%Y/%m/%d")
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:
         abstract = True

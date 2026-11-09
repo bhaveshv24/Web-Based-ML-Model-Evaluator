@@ -23,9 +23,11 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - run: python -m pip install --upgrade pip
+      - run: python -m pip install --upgrade pip setuptools
       - run: python -m pip install -e '.[dev]'
       - run: ruff check backend tests sandbox scripts
+      - run: bandit -r backend sandbox -q -lll -ii
+      - run: pip-audit --progress-spinner off --skip-editable
       - run: python manage.py makemigrations --check --dry-run
       # TSMP-22: RTM, defect register and reports cite only files, tests and defects that exist.
       - run: python scripts/validation/check_rtm.py

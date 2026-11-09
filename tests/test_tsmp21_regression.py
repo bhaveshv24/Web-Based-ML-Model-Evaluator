@@ -6,6 +6,7 @@ was never executed, and it guards a stated requirement. Tests only; no product c
 
 import logging
 import secrets
+import string
 import types
 
 import pytest
@@ -46,8 +47,10 @@ def codes(issues):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("password", ["abcdefghijk", "12345678901"], ids=["letters", "digits"])
-def test_fr001_password_needs_both_letters_and_digits(password):
+@pytest.mark.parametrize("alphabet", [string.ascii_lowercase, string.digits],
+                         ids=["letters", "digits"])
+def test_fr001_password_needs_both_letters_and_digits(alphabet):
+    password = "".join(secrets.choice(alphabet) for _ in range(11))
     response = APIClient().post(
         "/api/v1/auth/register", {"email": "new@pes.edu", "password": password}, format="json"
     )
